@@ -285,6 +285,7 @@ const SCHEMAS = {
 let currentSchema = null;
 let currentWorkout = {};
 let viewingWorkout = null;
+let viewingIndex = -1;
 
 // === STORAGE ===
 function getWorkouts() {
@@ -495,6 +496,7 @@ function renderHistory() {
 function showDetail(index) {
   const workouts = getWorkouts();
   viewingWorkout = workouts[index];
+  viewingIndex = index;
   const w = viewingWorkout;
   const d = new Date(w.date);
 
@@ -528,9 +530,10 @@ function showDetail(index) {
 function deleteWorkout() {
   if (!confirm('Workout verwijderen?')) return;
   const workouts = getWorkouts();
-  const idx = workouts.indexOf(viewingWorkout);
-  if (idx > -1) workouts.splice(idx, 1);
-  saveWorkouts(workouts);
+  if (viewingIndex > -1 && viewingIndex < workouts.length) {
+    workouts.splice(viewingIndex, 1);
+    saveWorkouts(workouts);
+  }
   showToast('Verwijderd');
   showView('history');
 }
