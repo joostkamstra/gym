@@ -12,7 +12,13 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background:#000;color:#fff;
   padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);min-height:100dvh;
-  -webkit-text-size-adjust:100%;overscroll-behavior:none}
+  -webkit-text-size-adjust:100%;overscroll-behavior-x:none}
+
+/* Pull to refresh */
+.ptr{text-align:center;color:#636366;font-size:13px;padding:0;height:0;overflow:hidden;
+  transition:height .2s,opacity .2s;opacity:0}
+.ptr.visible{height:40px;opacity:1;padding:10px 0}
+.ptr.refreshing{color:#30d158}
 
 /* Views */
 .view{display:none}.view.active{display:block}
@@ -115,8 +121,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 
 <!-- HOME VIEW -->
 <div id="home" class="view active">
+  <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
     <h1>Gym Tracker</h1>
+    <button class="header-action" onclick="doRefresh()">↻</button>
   </div>
 
   <div class="stats-bar" id="statsBar">
@@ -589,6 +597,47 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2000);
 }
+
+// === REFRESH ===
+function doRefresh() {
+  window.location.reload(true);
+}
+
+// Pull-to-refresh
+let ptrStart = 0, ptrPulling = false;
+document.addEventListener('touchstart', e => {
+  if (window.scrollY === 0 && document.getElementById('home').classList.contains('active')) {
+    ptrStart = e.touches[0].clientY;
+    ptrPulling = true;
+  }
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!ptrPulling) return;
+  const diff = e.touches[0].clientY - ptrStart;
+  const ptr = document.getElementById('ptr');
+  if (diff > 60 && window.scrollY === 0) {
+    ptr.classList.add('visible');
+    ptr.textContent = '↑ Laat los om te refreshen';
+  } else if (diff > 10 && window.scrollY === 0) {
+    ptr.classList.add('visible');
+    ptr.textContent = '↓ Pull to refresh';
+  } else {
+    ptr.classList.remove('visible');
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  const ptr = document.getElementById('ptr');
+  if (ptr.classList.contains('visible') && ptr.textContent.includes('Laat los')) {
+    ptr.textContent = 'Refreshing...';
+    ptr.classList.add('refreshing');
+    setTimeout(() => doRefresh(), 300);
+  } else {
+    ptr.classList.remove('visible');
+  }
+  ptrPulling = false;
+});
 
 // === INIT ===
 if ('serviceWorker' in navigator) {
