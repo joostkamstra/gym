@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000">
+<link rel="manifest" href="manifest.json">
+<title>Gym Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background:#000;color:#fff;
+  padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);min-height:100dvh;
+  -webkit-text-size-adjust:100%;overscroll-behavior:none}
+
+/* Views */
+.view{display:none}.view.active{display:block}
+
+/* Header */
+.header{padding:16px 0 12px;display:flex;align-items:center;gap:12px}
+.header h1{font-size:22px;font-weight:700;flex:1}
+.back-btn{font-size:28px;color:#0a84ff;background:none;border:none;cursor:pointer;padding:4px 8px 4px 0}
+.header-action{font-size:14px;color:#0a84ff;background:none;border:none;cursor:pointer;font-weight:600;padding:8px}
+
+/* Home */
+.home-card{background:#1c1c1e;border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;
+  display:flex;align-items:center;gap:16px;transition:transform .1s}
+.home-card:active{transform:scale(0.97)}
+.home-card .icon{font-size:36px;width:56px;height:56px;border-radius:14px;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0}
+.home-card .icon.a{background:#1a3a1a}
+.home-card .icon.b{background:#1a2a3a}
+.home-card .icon.hist{background:#2a2a1a}
+.home-card h2{font-size:17px;font-weight:600}
+.home-card p{font-size:13px;color:#8e8e93;margin-top:2px}
+.home-card .arrow{color:#3a3a3c;font-size:20px;margin-left:auto}
+
+/* Stats bar */
+.stats-bar{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:16px;
+  display:flex;justify-content:space-around;text-align:center}
+.stats-bar .stat-val{font-size:20px;font-weight:700}
+.stats-bar .stat-label{font-size:11px;color:#8e8e93;margin-top:2px}
+
+/* Workout */
+.superset{background:#1c1c1e;border-radius:14px;margin-bottom:12px;overflow:hidden}
+.superset-header{padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.superset-header .badge{background:#2c2c2e;border-radius:6px;padding:2px 8px;font-size:11px;
+  color:#aeaeb2;font-weight:500;margin-left:auto}
+.superset.green .superset-header{background:#0d3d1a;color:#30d158}
+.superset.blue .superset-header{background:#0d2540;color:#0a84ff}
+.superset.purple .superset-header{background:#2d1a3d;color:#bf5af2}
+.superset.orange .superset-header{background:#3d2a0d;color:#ff9f0a}
+.superset.red .superset-header{background:#3d1a1a;color:#ff453a}
+
+.exercise{padding:12px 16px;border-bottom:1px solid #2c2c2e}
+.exercise:last-child{border-bottom:none}
+.ex-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ex-name{font-size:15px;font-weight:600}
+.ex-detail{font-size:12px;color:#8e8e93}
+.ex-target{font-size:13px;color:#0a84ff;font-weight:600}
+
+.ex-inputs{display:flex;gap:6px;align-items:center}
+.ex-input{width:64px;height:40px;background:#2c2c2e;border:2px solid #3a3a3c;border-radius:10px;
+  color:#fff;font-size:17px;font-weight:600;text-align:center;-webkit-appearance:none;appearance:none}
+.ex-input:focus{border-color:#0a84ff;outline:none}
+.ex-input::placeholder{color:#636366;font-weight:400}
+.ex-unit{font-size:12px;color:#636366;width:24px}
+.ex-x{font-size:14px;color:#636366}
+
+/* Rest indicator */
+.rest-tag{font-size:11px;color:#636366;text-align:center;padding:4px 0}
+
+/* Bottom actions */
+.bottom-bar{position:sticky;bottom:0;padding:12px 0 20px;background:linear-gradient(transparent,#000 20%)}
+.btn{width:100%;padding:16px;border-radius:14px;font-size:17px;font-weight:600;border:none;
+  cursor:pointer;transition:transform .1s}
+.btn:active{transform:scale(0.97)}
+.btn-green{background:#30d158;color:#000}
+.btn-blue{background:#0a84ff;color:#fff}
+.btn-outline{background:transparent;border:2px solid #3a3a3c;color:#fff}
+.btn+.btn{margin-top:8px}
+
+/* History */
+.hist-item{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:8px;
+  display:flex;align-items:center;cursor:pointer;transition:transform .1s}
+.hist-item:active{transform:scale(0.97)}
+.hist-date{font-size:15px;font-weight:600;flex:1}
+.hist-schema{font-size:13px;color:#8e8e93;margin-left:8px}
+.hist-arrow{color:#3a3a3c;font-size:16px;margin-left:8px}
+.empty-state{text-align:center;padding:60px 20px;color:#636366}
+.empty-state .emoji{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:15px}
+
+/* Detail */
+.detail-exercise{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:8px}
+.detail-name{font-size:15px;font-weight:600;margin-bottom:4px}
+.detail-vals{display:flex;gap:16px}
+.detail-val{font-size:14px}
+.detail-val span{color:#8e8e93}
+
+/* Share */
+.share-preview{background:#1c1c1e;border-radius:12px;padding:16px;margin:12px 0;
+  font-family:monospace;font-size:13px;color:#aeaeb2;white-space:pre-wrap;line-height:1.6}
+
+/* Timer toast */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2c2c2e;
+  color:#fff;padding:10px 20px;border-radius:12px;font-size:14px;font-weight:600;
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- HOME VIEW -->
+<div id="home" class="view active">
+  <div class="header">
+    <h1>Gym Tracker</h1>
+  </div>
+
+  <div class="stats-bar" id="statsBar">
+    <div><div class="stat-val" id="statWorkouts">0</div><div class="stat-label">workouts</div></div>
+    <div><div class="stat-val" id="statStreak">0</div><div class="stat-label">deze week</div></div>
+    <div><div class="stat-val" id="statLast">—</div><div class="stat-label">laatste</div></div>
+  </div>
+
+  <div class="home-card" onclick="startWorkout('A')">
+    <div class="icon a">💪</div>
+    <div><h2>Schema A — Maandag</h2><p>Strength Focus • 30 sets • ~90 min</p></div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="home-card" onclick="startWorkout('B')">
+    <div class="icon b">🔥</div>
+    <div><h2>Schema B — Donderdag</h2><p>Volume Focus • 30 sets • ~90 min</p></div>
+    <div class="arrow">›</div>
+  </div>
+
+  <div class="home-card" onclick="showView('history')">
+    <div class="icon hist">📊</div>
+    <div><h2>Geschiedenis</h2><p>Bekijk en deel eerdere workouts</p></div>
+    <div class="arrow">›</div>
+  </div>
+</div>
+
+<!-- WORKOUT VIEW -->
+<div id="workout" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="confirmExit()">‹</button>
+    <h1 id="workoutTitle"></h1>
+  </div>
+  <div id="workoutExercises"></div>
+  <div class="bottom-bar">
+    <button class="btn btn-green" onclick="saveWorkout()">Workout opslaan</button>
+  </div>
+</div>
+
+<!-- HISTORY VIEW -->
+<div id="history" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('home')">‹</button>
+    <h1>Geschiedenis</h1>
+  </div>
+  <div id="historyList"></div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div id="detail" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('history')">‹</button>
+    <h1 id="detailTitle"></h1>
+    <button class="header-action" onclick="shareWorkout()">Deel</button>
+  </div>
+  <div id="detailContent"></div>
+</div>
+
+<!-- SHARE VIEW -->
+<div id="share" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('detail')">‹</button>
+    <h1>Deel resultaten</h1>
+  </div>
+  <p style="color:#8e8e93;font-size:14px;margin-bottom:8px">Kopieer en plak in de Claude chat:</p>
+  <div class="share-preview" id="sharePreview"></div>
+  <button class="btn btn-blue" onclick="copyToClipboard()">Kopieer naar klembord</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// === SCHEMA DEFINITIONS ===
+const SCHEMAS = {
+  A: {
+    name: 'Schema A — Maandag',
+    subtitle: 'Strength Focus',
+    supersets: [
+      {
+        name: 'A: Squat + Pull-ups', sets: 4, rest: '2 min', color: 'green',
+        warmup: '1x10 @bar, 1x8 @50kg, 1x5 @70kg',
+        exercises: [
+          { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte (90°+)', target_kg: 90 },
+          { id: 'a2', name: 'Pull-ups', detail: '6-8 reps', target_kg: 0, target_label: 'BW' }
+        ]
+      },
+      {
+        name: 'B: Bench Press + Row', sets: 3, rest: '90s', color: 'blue',
+        warmup: '1x8 bench @40kg',
+        exercises: [
+          { id: 'b1', name: 'Flat Bench Press', detail: '8-10 reps', target_kg: 62.5 },
+          { id: 'b2', name: 'Seated Row', detail: '8-10 reps', target_kg: 80 }
+        ]
+      },
+      {
+        name: 'C: RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+        exercises: [
+          { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • straps ok', target_kg: 90 },
+          { id: 'c2', name: 'DB Shoulder Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg' }
+        ]
+      },
+      {
+        name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
+        exercises: [
+          { id: 'd1', name: 'Knee/Leg Raise', detail: '10-15 reps • captain\'s chair', target_kg: 0, target_label: 'BW' },
+          { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 50 }
+        ]
+      },
+      {
+        name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
+        exercises: [
+          { id: 'e1', name: 'Preacher Curl', detail: '10-12 reps • EZ-bar', target_kg: 30 },
+          { id: 'e2', name: 'Tricep Dips', detail: '8-12 reps', target_kg: 5, target_label: 'BW+5 kg' }
+        ]
+      }
+    ]
+  },
+  B: {
+    name: 'Schema B — Donderdag',
+    subtitle: 'Volume Focus',
+    supersets: [
+      {
+        name: 'A: V-Squat + Pulldown', sets: 4, rest: '90s', color: 'green',
+        warmup: '1x10 V-Squat @60kg, 1x10 Pulldown @35kg',
+        exercises: [
+          { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 120 },
+          { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60 }
+        ]
+      },
+      {
+        name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
+        exercises: [
+          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 22, target_label: '2x22 kg' },
+          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps', target_kg: 50 }
+        ]
+      },
+      {
+        name: 'C: Lateral + Row', sets: 3, rest: '75s', color: 'purple',
+        exercises: [
+          { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg' },
+          { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta', target_kg: 45, target_label: '45 kg/kant' }
+        ]
+      },
+      {
+        name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
+        exercises: [
+          { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 50 },
+          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 15 }
+        ]
+      },
+      {
+        name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
+        exercises: [
+          { id: 'e1', name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg' },
+          { id: 'e2', name: 'OH Tricep Extension', detail: '10-12 reps • kabel', target_kg: 20 }
+        ]
+      }
+    ]
+  }
+};
+
+// === STATE ===
+let currentSchema = null;
+let currentWorkout = {};
+let viewingWorkout = null;
+
+// === STORAGE ===
+function getWorkouts() {
+  return JSON.parse(localStorage.getItem('gym_workouts') || '[]');
+}
+function saveWorkouts(w) {
+  localStorage.setItem('gym_workouts', JSON.stringify(w));
+}
+
+// === NAVIGATION ===
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'home') updateStats();
+  if (id === 'history') renderHistory();
+}
+
+// === HOME STATS ===
+function updateStats() {
+  const workouts = getWorkouts();
+  document.getElementById('statWorkouts').textContent = workouts.length;
+
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay() + 1);
+  weekStart.setHours(0,0,0,0);
+  const thisWeek = workouts.filter(w => new Date(w.date) >= weekStart).length;
+  document.getElementById('statStreak').textContent = thisWeek;
+
+  if (workouts.length > 0) {
+    const last = new Date(workouts[0].date);
+    const days = Math.floor((now - last) / 86400000);
+    document.getElementById('statLast').textContent = days === 0 ? 'vandaag' : days === 1 ? 'gisteren' : days + 'd';
+  }
+}
+
+// === WORKOUT ===
+function startWorkout(schema) {
+  currentSchema = schema;
+  currentWorkout = {};
+  const s = SCHEMAS[schema];
+
+  document.getElementById('workoutTitle').textContent = s.name;
+
+  // Pre-fill from last workout of same schema
+  const prev = getWorkouts().find(w => w.schema === schema);
+
+  let html = '';
+  s.supersets.forEach(ss => {
+    html += `<div class="superset ${ss.color}">`;
+    html += `<div class="superset-header">${ss.name}<span class="badge">${ss.sets} sets • ${ss.rest} rust</span></div>`;
+    if (ss.warmup) {
+      html += `<div style="padding:6px 16px;font-size:12px;color:#8e8e93;font-style:italic">Warmup: ${ss.warmup}</div>`;
+    }
+    ss.exercises.forEach(ex => {
+      const prevEx = prev?.exercises?.find(e => e.id === ex.id);
+      const prevKg = prevEx ? prevEx.kg : '';
+      const prevReps = prevEx ? prevEx.reps : '';
+      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+
+      html += `<div class="exercise">
+        <div class="ex-top">
+          <div>
+            <div class="ex-name">${ex.name}</div>
+            <div class="ex-detail">${ex.detail}</div>
+          </div>
+          <div class="ex-target">Doel: ${targetStr}</div>
+        </div>
+        <div class="ex-inputs">
+          <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}"
+            placeholder="${ex.target_kg || '—'}" value="${prevKg}"
+            oninput="autoSave('${ex.id}')">
+          <div class="ex-unit">kg</div>
+          <div class="ex-x">×</div>
+          <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}"
+            placeholder="—" value="${prevReps}"
+            oninput="autoSave('${ex.id}')">
+          <div class="ex-unit">reps</div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('workoutExercises').innerHTML = html;
+  showView('workout');
+}
+
+function autoSave(id) {
+  const kg = document.getElementById('kg_' + id)?.value;
+  const reps = document.getElementById('reps_' + id)?.value;
+  currentWorkout[id] = { kg: kg || '', reps: reps || '' };
+}
+
+function confirmExit() {
+  const hasData = Object.values(currentWorkout).some(v => v.kg || v.reps);
+  if (hasData) {
+    if (confirm('Workout afsluiten zonder opslaan?')) showView('home');
+  } else {
+    showView('home');
+  }
+}
+
+function saveWorkout() {
+  // Collect all exercise data
+  const s = SCHEMAS[currentSchema];
+  const exercises = [];
+  let hasAny = false;
+
+  s.supersets.forEach(ss => {
+    ss.exercises.forEach(ex => {
+      const kgEl = document.getElementById('kg_' + ex.id);
+      const repsEl = document.getElementById('reps_' + ex.id);
+      const kg = kgEl?.value || '';
+      const reps = repsEl?.value || '';
+      if (kg || reps) hasAny = true;
+      exercises.push({
+        id: ex.id,
+        name: ex.name,
+        target_kg: ex.target_kg,
+        target_label: ex.target_label || null,
+        kg: kg,
+        reps: reps
+      });
+    });
+  });
+
+  if (!hasAny) {
+    showToast('Vul minimaal 1 oefening in');
+    return;
+  }
+
+  const workout = {
+    date: new Date().toISOString(),
+    schema: currentSchema,
+    schemaName: s.name,
+    exercises: exercises
+  };
+
+  const workouts = getWorkouts();
+  workouts.unshift(workout);
+  saveWorkouts(workouts);
+
+  showToast('Workout opgeslagen!');
+  setTimeout(() => showView('home'), 800);
+}
+
+// === HISTORY ===
+function renderHistory() {
+  const workouts = getWorkouts();
+  const container = document.getElementById('historyList');
+
+  if (workouts.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="emoji">🏋️</div><p>Nog geen workouts.<br>Start je eerste training!</p></div>';
+    return;
+  }
+
+  container.innerHTML = workouts.map((w, i) => {
+    const d = new Date(w.date);
+    const dateStr = d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
+    return `<div class="hist-item" onclick="showDetail(${i})">
+      <div class="hist-date">${dateStr}</div>
+      <div class="hist-schema">${w.schema === 'A' ? 'Strength' : 'Volume'}</div>
+      <div class="hist-arrow">›</div>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(index) {
+  const workouts = getWorkouts();
+  viewingWorkout = workouts[index];
+  const w = viewingWorkout;
+  const d = new Date(w.date);
+
+  document.getElementById('detailTitle').textContent =
+    d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  let html = '';
+  const schema = SCHEMAS[w.schema];
+  schema.supersets.forEach(ss => {
+    ss.exercises.forEach(ex => {
+      const logged = w.exercises.find(e => e.id === ex.id);
+      if (logged && (logged.kg || logged.reps)) {
+        const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+        html += `<div class="detail-exercise">
+          <div class="detail-name">${ex.name}</div>
+          <div class="detail-vals">
+            <div class="detail-val"><strong>${logged.kg || '—'}</strong> <span>kg</span></div>
+            <div class="detail-val"><strong>${logged.reps || '—'}</strong> <span>reps</span></div>
+            <div class="detail-val" style="margin-left:auto;color:#636366">doel: ${targetStr}</div>
+          </div>
+        </div>`;
+      }
+    });
+  });
+
+  document.getElementById('detailContent').innerHTML = html;
+  showView('detail');
+}
+
+// === SHARE ===
+function shareWorkout() {
+  const w = viewingWorkout;
+  if (!w) return;
+
+  const d = new Date(w.date);
+  const dateStr = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const schema = SCHEMAS[w.schema];
+
+  let text = `Workout ${dateStr}\n`;
+  text += `${schema.name} (${schema.subtitle})\n`;
+  text += '─'.repeat(30) + '\n';
+
+  schema.supersets.forEach(ss => {
+    ss.exercises.forEach(ex => {
+      const logged = w.exercises.find(e => e.id === ex.id);
+      if (logged && (logged.kg || logged.reps)) {
+        const kg = logged.kg || '—';
+        const reps = logged.reps || '—';
+        text += `${ex.name}: ${kg} kg × ${reps} reps\n`;
+      }
+    });
+  });
+
+  document.getElementById('sharePreview').textContent = text;
+  showView('share');
+}
+
+function copyToClipboard() {
+  const text = document.getElementById('sharePreview').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Gekopieerd!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Gekopieerd!');
+  });
+}
+
+// === TOAST ===
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// === INIT ===
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+updateStats();
+</script>
+</body>
+</html>
