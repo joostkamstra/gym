@@ -173,6 +173,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <button class="header-action" onclick="shareWorkout()">Deel</button>
   </div>
   <div id="detailContent"></div>
+  <div style="padding:20px 0">
+    <button class="btn btn-outline" style="color:#ff453a;border-color:#ff453a" onclick="deleteWorkout()">Verwijder workout</button>
+  </div>
 </div>
 
 <!-- SHARE VIEW -->
@@ -519,6 +522,17 @@ function showDetail(index) {
 
   document.getElementById('detailContent').innerHTML = html;
   showView('detail');
+}
+
+// === DELETE ===
+function deleteWorkout() {
+  if (!confirm('Workout verwijderen?')) return;
+  const workouts = getWorkouts();
+  const idx = workouts.indexOf(viewingWorkout);
+  if (idx > -1) workouts.splice(idx, 1);
+  saveWorkouts(workouts);
+  showToast('Verwijderd');
+  showView('history');
 }
 
 // === SHARE ===
