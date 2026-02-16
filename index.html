@@ -426,34 +426,46 @@ function saveWorkout() {
   workouts.unshift(workout);
   saveWorkouts(workouts);
 
-  // Auto-email results
-  sendWorkoutEmail(workout, s);
+  // Auto-send results via FormSubmit (silent, no user action needed)
+  sendWorkoutData(workout, s);
 
   showToast('Workout opgeslagen!');
   setTimeout(() => showView('home'), 800);
 }
 
-function sendWorkoutEmail(workout, schema) {
+function sendWorkoutData(workout, schema) {
   const d = new Date(workout.date);
   const dateStr = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const subject = `Gym ${schema.name} — ${d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}`;
+  const subject = `[GYM] ${schema.name} — ${d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 
-  let body = `Workout ${dateStr}\n${schema.name} (${schema.subtitle})\n\n`;
-
+  let summary = '';
   schema.supersets.forEach(ss => {
-    body += `${ss.name}\n`;
     ss.exercises.forEach(ex => {
       const logged = workout.exercises.find(e => e.id === ex.id);
-      const kg = logged?.kg || '—';
-      const reps = logged?.reps || '—';
-      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
-      body += `  ${ex.name}: ${kg} kg x ${reps} reps (doel: ${targetStr})\n`;
+      if (logged && (logged.kg || logged.reps)) {
+        const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+        summary += `${ex.name}: ${logged.kg || '—'} kg x ${logged.reps || '—'} reps (doel: ${targetStr})\n`;
+      }
     });
-    body += '\n';
   });
 
-  const mailto = `mailto:kamstra@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailto;
+  fetch('https://formsubmit.co/ajax/kamstra@gmail.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      _subject: subject,
+      _template: 'box',
+      datum: dateStr,
+      schema: `${schema.name} (${schema.subtitle})`,
+      resultaten: summary,
+      raw_json: JSON.stringify(workout.exercises)
+    })
+  }).then(r => r.json()).then(data => {
+    if (data.success) console.log('Workout data sent');
+  }).catch(() => {
+    // Silent fail - data is saved locally regardless
+    console.log('Email send failed, data saved locally');
+  });
 }
 
 // === HISTORY ===
