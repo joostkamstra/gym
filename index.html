@@ -63,17 +63,61 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .exercise{padding:12px 16px;border-bottom:1px solid #2c2c2e}
 .exercise:last-child{border-bottom:none}
 .ex-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ex-name-row{display:flex;align-items:center;gap:6px}
 .ex-name{font-size:15px;font-weight:600}
 .ex-detail{font-size:12px;color:#8e8e93}
-.ex-target{font-size:13px;color:#0a84ff;font-weight:600}
+.ex-target{font-size:13px;color:#0a84ff;font-weight:600;flex-shrink:0}
 
-.ex-inputs{display:flex;gap:6px;align-items:center}
-.ex-input{width:64px;height:40px;background:#2c2c2e;border:2px solid #3a3a3c;border-radius:10px;
-  color:#fff;font-size:17px;font-weight:600;text-align:center;-webkit-appearance:none;appearance:none}
+/* Multi-set rows */
+.set-row{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.set-row:last-child{margin-bottom:0}
+.set-label{font-size:11px;color:#636366;width:20px;text-align:center;font-weight:600;flex-shrink:0}
+.ex-input{width:56px;height:38px;background:#2c2c2e;border:2px solid #3a3a3c;border-radius:10px;
+  color:#fff;font-size:16px;font-weight:600;text-align:center;-webkit-appearance:none;appearance:none}
 .ex-input:focus{border-color:#0a84ff;outline:none}
 .ex-input::placeholder{color:#636366;font-weight:400}
-.ex-unit{font-size:12px;color:#636366;width:24px}
-.ex-x{font-size:14px;color:#636366}
+.ex-unit{font-size:11px;color:#636366;width:20px}
+.ex-x{font-size:13px;color:#636366}
+
+/* Info button */
+.info-btn{background:none;border:none;color:#636366;font-size:16px;cursor:pointer;padding:2px 4px;
+  line-height:1;border-radius:50%;flex-shrink:0}
+.info-btn:active{color:#0a84ff}
+
+/* Exercise info modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:#1c1c1e;border-radius:20px 20px 0 0;width:100%;max-width:500px;
+  max-height:70vh;overflow-y:auto;padding:20px 20px env(safe-area-inset-bottom);
+  animation:slideUp .25s ease-out}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:5px;background:#3a3a3c;border-radius:3px;margin:0 auto 16px}
+.modal-title{font-size:19px;font-weight:700;margin-bottom:4px}
+.modal-muscles{font-size:13px;color:#8e8e93;margin-bottom:16px}
+.modal-section{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.modal-section.do{color:#30d158}
+.modal-section.dont{color:#ff453a}
+.do-list,.dont-list{list-style:none;margin-bottom:16px}
+.do-list li,.dont-list li{font-size:14px;padding:6px 0;padding-left:20px;position:relative;line-height:1.4}
+.do-list li::before{content:'✓';position:absolute;left:0;color:#30d158;font-weight:700}
+.dont-list li::before{content:'✗';position:absolute;left:0;color:#ff453a;font-weight:700}
+.modal-close{width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:600;
+  background:#2c2c2e;color:#fff;border:none;cursor:pointer;margin-top:4px}
+
+/* Feedback textarea */
+.feedback-area{width:100%;background:#1c1c1e;border:2px solid #3a3a3c;border-radius:14px;
+  color:#fff;font-size:14px;font-family:inherit;padding:12px 16px;resize:vertical;min-height:80px;
+  margin-bottom:12px;-webkit-appearance:none;appearance:none}
+.feedback-area:focus{border-color:#0a84ff;outline:none}
+.feedback-area::placeholder{color:#636366}
+
+/* Feedback display in detail */
+.detail-feedback{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:8px;
+  border-left:3px solid #ff9f0a}
+.detail-feedback-label{font-size:12px;color:#ff9f0a;font-weight:600;text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:4px}
+.detail-feedback-text{font-size:14px;color:#aeaeb2;line-height:1.5}
 
 /* Rest indicator */
 .rest-tag{font-size:11px;color:#636366;text-align:center;padding:4px 0}
@@ -101,7 +145,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 
 /* Detail */
 .detail-exercise{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:8px}
-.detail-name{font-size:15px;font-weight:600;margin-bottom:4px}
+.detail-name{font-size:15px;font-weight:600;margin-bottom:6px}
+.detail-sets-table{width:100%}
+.detail-set-row{display:flex;gap:8px;align-items:center;padding:2px 0}
+.detail-set-label{font-size:11px;color:#636366;width:22px;font-weight:600}
+.detail-set-val{font-size:14px}
+.detail-set-val span{color:#8e8e93}
 .detail-vals{display:flex;gap:16px}
 .detail-val{font-size:14px}
 .detail-val span{color:#8e8e93}
@@ -159,6 +208,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <h1 id="workoutTitle"></h1>
   </div>
   <div id="workoutExercises"></div>
+  <textarea id="workoutFeedback" class="feedback-area" rows="3"
+    placeholder="Opmerkingen (optioneel) — bijv. schouder voelde strak, squat diepte was beter..."></textarea>
   <div class="bottom-bar">
     <button class="btn btn-green" onclick="saveWorkout()">Workout opslaan</button>
   </div>
@@ -197,9 +248,127 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   <button class="btn btn-blue" onclick="copyToClipboard()">Kopieer naar klembord</button>
 </div>
 
+<!-- EXERCISE INFO MODAL -->
+<div class="modal-overlay" id="exerciseModal" onclick="closeExerciseInfo(event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-muscles" id="modalMuscles"></div>
+    <div class="modal-section do">DO's</div>
+    <ul class="do-list" id="modalDos"></ul>
+    <div class="modal-section dont">DON'Ts</div>
+    <ul class="dont-list" id="modalDonts"></ul>
+    <button class="modal-close" onclick="closeExerciseInfo()">Sluiten</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
+// === EXERCISE INFO ===
+const EXERCISE_INFO = {
+  'Barbell Squat': {
+    muscles: 'Quadriceps, glutes, core',
+    dos: ['Voeten schouderbreedte, tenen licht naar buiten', 'Daal tot minstens 90° kniehoek', 'Borst omhoog, rug neutraal houden'],
+    donts: ['Knieën niet naar binnen laten vallen', 'Niet op je tenen leunen', 'Geen bouncing onderaan']
+  },
+  'Pull-ups': {
+    muscles: 'Lats, biceps, bovenarmen',
+    dos: ['Volledige ROM: hang tot kin boven stang', 'Schouderbladen naar beneden trekken bij start', 'Gecontroleerd laten zakken (negatief)'],
+    donts: ['Niet kip-achtig swingen/kippen', 'Niet halverwege stoppen', 'Geen overmatig momentum gebruiken']
+  },
+  'Flat Bench Press': {
+    muscles: 'Borst, triceps, voorste schouder',
+    dos: ['Schouderbladen samenknijpen en naar beneden', 'Stang naar midden borst laten zakken', 'Voeten plat op de grond voor stabiliteit'],
+    donts: ['Billen niet van de bank tillen', 'Stang niet laten bouncen op je borst', 'Polsen niet laten knikken (recht houden)']
+  },
+  'Seated Row': {
+    muscles: 'Middenrug, lats, biceps',
+    dos: ['Borst naar het pad toe trekken', 'Ellebogen langs het lichaam houden', 'Schouderbladen samenknijpen aan het eind'],
+    donts: ['Niet te ver achterover leunen', 'Niet met je onderrug trekken', 'Schouders niet optrekken']
+  },
+  'Romanian Deadlift': {
+    muscles: 'Hamstrings, glutes, onderrug',
+    dos: ['Heupscharnier: kont naar achteren duwen', 'Stang dicht langs je benen houden', 'Lichte kniebuiging, niet doorbuigen'],
+    donts: ['Rug niet laten afronden', 'Niet te diep gaan (halverwege scheenbeen is genoeg)', 'Niet met de armen trekken']
+  },
+  'DB Shoulder Press': {
+    muscles: 'Schouders (deltoids), triceps',
+    dos: ['Ellebogen op 45° naast het lichaam', 'Dumbbells tot net boven schouderhoogte laten zakken', 'Core aanspannen, geen holle rug'],
+    donts: ['Niet achterover leunen voor extra kracht', 'Gewicht niet te snel laten zakken', 'Ellebogen niet achter de schouders brengen']
+  },
+  'Cable Crunch': {
+    muscles: 'Rectus abdominis (sixpack)',
+    dos: ['Heupen gefixeerd houden, alleen buigen vanuit de buik', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het crunchen'],
+    donts: ['Niet met je armen/heupen trekken', 'Niet te snel of ongecontroleerd bewegen', 'Nek niet forceren']
+  },
+  'Leg Raise': {
+    muscles: 'Onderbuik, hip flexors',
+    dos: ['Benen gestrekt of licht gebogen omhoog brengen', 'Bekken kantelen aan de top voor maximale activatie', 'Langzaam laten zakken (controle)'],
+    donts: ['Niet swingen voor momentum', 'Onderrug niet van het pad laten komen', 'Niet halverwege stoppen']
+  },
+  'Preacher Curl': {
+    muscles: 'Biceps (korte kop), brachialis',
+    dos: ['Bovenarmen volledig op het pad laten rusten', 'Gecontroleerde beweging omhoog en omlaag', 'Volledige ROM: bijna gestrekt tot volledig gebogen'],
+    donts: ['Niet achterover leunen om te helpen', 'Ellebogen niet van het pad tillen', 'Geen swingbeweging gebruiken']
+  },
+  'Tricep Dips': {
+    muscles: 'Triceps, borst, voorste schouder',
+    dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden'],
+    donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
+  },
+  'V-Squat': {
+    muscles: 'Quadriceps, glutes',
+    dos: ['Voeten op schouderbreedte, hoog op het platform voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden'],
+    donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen']
+  },
+  'Lat Pulldown': {
+    muscles: 'Lats, biceps, middenrug',
+    dos: ['Trek de stang naar je bovenborst', 'Schouderbladen naar beneden en samen trekken', 'Licht achterover leunen (15-20°)'],
+    donts: ['Niet te ver achterover leunen', 'Niet met momentum trekken', 'Stang niet achter je hoofd trekken']
+  },
+  'DB Incline Press': {
+    muscles: 'Bovenborst, schouders, triceps',
+    dos: ['Bank op 30-45° incline', 'Dumbbells op schouderlijn laten zakken', 'Schouderbladen samenknijpen tegen de bank'],
+    donts: ['Niet te steil instellen (>45° = teveel schouder)', 'Ellebogen niet te wijd (90°+) openen', 'Gewicht niet laten bouncen']
+  },
+  'Leg Curl': {
+    muscles: 'Hamstrings',
+    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam terugbrengen (excentrisch)'],
+    donts: ['Heupen niet van de bank tillen', 'Niet met je onderrug compenseren', 'Niet te snel bewegen']
+  },
+  'DB Lateral Raise': {
+    muscles: 'Zijschouder (mediale deltoid)',
+    dos: ['Lichte vooroverbuiging, ellebogen iets gebogen', 'Til tot schouderhoogte, niet hoger', 'Pinken iets omhoog draaien (gietbeweging)'],
+    donts: ['Niet swingen of momentum gebruiken', 'Traps niet overnemen (schouders laag houden)', 'Niet te zwaar gaan ten koste van techniek']
+  },
+  'Plate-loaded Row': {
+    muscles: 'Lats, middenrug, biceps',
+    dos: ['Borst tegen het pad drukken', 'Trek naar je navel/onderborst', 'Schouderbladen samenknijpen bovenin'],
+    donts: ['Niet achterover leunen van het pad af', 'Niet met je onderrug trekken', 'Schouders niet optrekken naar je oren']
+  },
+  'Ab Machine': {
+    muscles: 'Rectus abdominis (sixpack)',
+    dos: ['Buik aanspannen vóór de beweging', 'Langzaam en gecontroleerd crunchen', 'Focus op buikspieren, niet op armen'],
+    donts: ['Niet met je armen/handen duwen', 'Niet met momentum werken', 'Nek niet forceren of vooruit duwen']
+  },
+  'Pallof Press': {
+    muscles: 'Core (anti-rotatie), obliques',
+    dos: ['Sta op schouderbreedte, knieën licht gebogen', 'Duw handen recht naar voren vanuit je borst', 'Houd je heupen en schouders recht naar voren'],
+    donts: ['Niet laten draaien door de kabel', 'Niet te snel bewegen', 'Heupen niet laten meedraaien']
+  },
+  'DB Hammer Curl': {
+    muscles: 'Biceps, brachialis, brachioradialis',
+    dos: ['Houd dumbbells in neutrale grip (duimen omhoog)', 'Bovenarmen langs je lichaam gefixeerd', 'Volledige ROM: gestrekt tot volledig gebogen'],
+    donts: ['Niet met je hele lichaam swingen', 'Ellebogen niet naar voren brengen', 'Niet afwisselend (doe beide tegelijk voor focus)']
+  },
+  'OH Tricep Extension': {
+    muscles: 'Triceps (lange kop)',
+    dos: ['Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
+    donts: ['Ellebogen niet naar buiten laten wijken', 'Niet met je rug compenseren', 'Niet te snel of ongecontroleerd bewegen']
+  }
+};
+
 // === SCHEMA DEFINITIONS ===
 const SCHEMAS = {
   A: {
@@ -331,6 +500,22 @@ function updateStats() {
   }
 }
 
+// === EXERCISE INFO MODAL ===
+function showExerciseInfo(name) {
+  const info = EXERCISE_INFO[name];
+  if (!info) return;
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalMuscles').textContent = info.muscles;
+  document.getElementById('modalDos').innerHTML = info.dos.map(d => `<li>${d}</li>`).join('');
+  document.getElementById('modalDonts').innerHTML = info.donts.map(d => `<li>${d}</li>`).join('');
+  document.getElementById('exerciseModal').classList.add('open');
+}
+
+function closeExerciseInfo(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('exerciseModal').classList.remove('open');
+}
+
 // === WORKOUT ===
 function startWorkout(schema) {
   currentSchema = schema;
@@ -338,6 +523,7 @@ function startWorkout(schema) {
   const s = SCHEMAS[schema];
 
   document.getElementById('workoutTitle').textContent = s.name;
+  document.getElementById('workoutFeedback').value = '';
 
   // Pre-fill from last workout of same schema
   const prev = getWorkouts().find(w => w.schema === schema);
@@ -351,30 +537,53 @@ function startWorkout(schema) {
     }
     ss.exercises.forEach(ex => {
       const prevEx = prev?.exercises?.find(e => e.id === ex.id);
-      const prevKg = prevEx ? prevEx.kg : '';
-      const prevReps = prevEx ? prevEx.reps : '';
       const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+      const hasInfo = EXERCISE_INFO[ex.name];
+
+      // Get previous set data (migration: old format has kg/reps, new has sets[])
+      let prevSets = [];
+      if (prevEx) {
+        if (Array.isArray(prevEx.sets)) {
+          prevSets = prevEx.sets;
+        } else {
+          // Old format: fill all sets with same value
+          for (let i = 0; i < ss.sets; i++) {
+            prevSets.push({ kg: prevEx.kg || '', reps: prevEx.reps || '' });
+          }
+        }
+      }
 
       html += `<div class="exercise">
         <div class="ex-top">
           <div>
-            <div class="ex-name">${ex.name}</div>
+            <div class="ex-name-row">
+              <div class="ex-name">${ex.name}</div>
+              ${hasInfo ? `<button class="info-btn" onclick="showExerciseInfo('${ex.name.replace(/'/g, "\\'")}')">ⓘ</button>` : ''}
+            </div>
             <div class="ex-detail">${ex.detail}</div>
           </div>
           <div class="ex-target">Doel: ${targetStr}</div>
-        </div>
-        <div class="ex-inputs">
-          <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}"
+        </div>`;
+
+      // Render N set rows based on superset.sets
+      for (let si = 0; si < ss.sets; si++) {
+        const prevKg = prevSets[si]?.kg || '';
+        const prevReps = prevSets[si]?.reps || '';
+        html += `<div class="set-row">
+          <div class="set-label">S${si + 1}</div>
+          <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}_${si}"
             placeholder="${ex.target_kg || '—'}" value="${prevKg}"
-            oninput="autoSave('${ex.id}')">
+            oninput="autoSave('${ex.id}',${ss.sets})">
           <div class="ex-unit">kg</div>
           <div class="ex-x">×</div>
-          <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}"
+          <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}_${si}"
             placeholder="—" value="${prevReps}"
-            oninput="autoSave('${ex.id}')">
+            oninput="autoSave('${ex.id}',${ss.sets})">
           <div class="ex-unit">reps</div>
-        </div>
-      </div>`;
+        </div>`;
+      }
+
+      html += '</div>';
     });
     html += '</div>';
   });
@@ -383,14 +592,20 @@ function startWorkout(schema) {
   showView('workout');
 }
 
-function autoSave(id) {
-  const kg = document.getElementById('kg_' + id)?.value;
-  const reps = document.getElementById('reps_' + id)?.value;
-  currentWorkout[id] = { kg: kg || '', reps: reps || '' };
+function autoSave(id, numSets) {
+  const sets = [];
+  for (let i = 0; i < numSets; i++) {
+    const kg = document.getElementById('kg_' + id + '_' + i)?.value || '';
+    const reps = document.getElementById('reps_' + id + '_' + i)?.value || '';
+    sets.push({ kg, reps });
+  }
+  currentWorkout[id] = sets;
 }
 
 function confirmExit() {
-  const hasData = Object.values(currentWorkout).some(v => v.kg || v.reps);
+  const hasData = Object.values(currentWorkout).some(sets =>
+    Array.isArray(sets) && sets.some(s => s.kg || s.reps)
+  );
   if (hasData) {
     if (confirm('Workout afsluiten zonder opslaan?')) showView('home');
   } else {
@@ -399,25 +614,25 @@ function confirmExit() {
 }
 
 function saveWorkout() {
-  // Collect all exercise data
   const s = SCHEMAS[currentSchema];
   const exercises = [];
   let hasAny = false;
 
   s.supersets.forEach(ss => {
     ss.exercises.forEach(ex => {
-      const kgEl = document.getElementById('kg_' + ex.id);
-      const repsEl = document.getElementById('reps_' + ex.id);
-      const kg = kgEl?.value || '';
-      const reps = repsEl?.value || '';
-      if (kg || reps) hasAny = true;
+      const sets = [];
+      for (let i = 0; i < ss.sets; i++) {
+        const kg = document.getElementById('kg_' + ex.id + '_' + i)?.value || '';
+        const reps = document.getElementById('reps_' + ex.id + '_' + i)?.value || '';
+        if (kg || reps) hasAny = true;
+        sets.push({ kg, reps });
+      }
       exercises.push({
         id: ex.id,
         name: ex.name,
         target_kg: ex.target_kg,
         target_label: ex.target_label || null,
-        kg: kg,
-        reps: reps
+        sets: sets
       });
     });
   });
@@ -427,10 +642,13 @@ function saveWorkout() {
     return;
   }
 
+  const feedback = document.getElementById('workoutFeedback').value.trim();
+
   const workout = {
     date: new Date().toISOString(),
     schema: currentSchema,
     schemaName: s.name,
+    feedback: feedback || null,
     exercises: exercises
   };
 
@@ -438,7 +656,6 @@ function saveWorkout() {
   workouts.unshift(workout);
   saveWorkouts(workouts);
 
-  // Auto-send results via FormSubmit (silent, no user action needed)
   sendWorkoutData(workout, s);
 
   showToast('Workout opgeslagen!');
@@ -454,12 +671,28 @@ function sendWorkoutData(workout, schema) {
   schema.supersets.forEach(ss => {
     ss.exercises.forEach(ex => {
       const logged = workout.exercises.find(e => e.id === ex.id);
-      if (logged && (logged.kg || logged.reps)) {
-        const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+      if (!logged) return;
+      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+
+      if (Array.isArray(logged.sets)) {
+        const filledSets = logged.sets.filter(s => s.kg || s.reps);
+        if (filledSets.length > 0) {
+          const setStrs = logged.sets.map((s, i) => {
+            if (!s.kg && !s.reps) return null;
+            return `S${i+1}: ${s.kg || '—'}kg × ${s.reps || '—'}`;
+          }).filter(Boolean);
+          summary += `${ex.name} (doel: ${targetStr})\n  ${setStrs.join(' | ')}\n`;
+        }
+      } else if (logged.kg || logged.reps) {
+        // Old format fallback
         summary += `${ex.name}: ${logged.kg || '—'} kg x ${logged.reps || '—'} reps (doel: ${targetStr})\n`;
       }
     });
   });
+
+  if (workout.feedback) {
+    summary += `\nOpmerkingen:\n${workout.feedback}\n`;
+  }
 
   fetch('https://formsubmit.co/ajax/kamstra@gmail.com', {
     method: 'POST',
@@ -475,7 +708,6 @@ function sendWorkoutData(workout, schema) {
   }).then(r => r.json()).then(data => {
     if (data.success) console.log('Workout data sent');
   }).catch(() => {
-    // Silent fail - data is saved locally regardless
     console.log('Email send failed, data saved locally');
   });
 }
@@ -513,11 +745,38 @@ function showDetail(index) {
 
   let html = '';
   const schema = SCHEMAS[w.schema];
+
+  // Show feedback if present
+  if (w.feedback) {
+    html += `<div class="detail-feedback">
+      <div class="detail-feedback-label">Opmerkingen</div>
+      <div class="detail-feedback-text">${w.feedback.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>
+    </div>`;
+  }
+
   schema.supersets.forEach(ss => {
     ss.exercises.forEach(ex => {
       const logged = w.exercises.find(e => e.id === ex.id);
-      if (logged && (logged.kg || logged.reps)) {
-        const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+      if (!logged) return;
+      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+
+      if (Array.isArray(logged.sets)) {
+        const filledSets = logged.sets.filter(s => s.kg || s.reps);
+        if (filledSets.length === 0) return;
+        html += `<div class="detail-exercise">
+          <div class="detail-name">${ex.name} <span style="color:#636366;font-size:12px;font-weight:400">doel: ${targetStr}</span></div>
+          <div class="detail-sets-table">`;
+        logged.sets.forEach((s, i) => {
+          if (!s.kg && !s.reps) return;
+          html += `<div class="detail-set-row">
+            <div class="detail-set-label">S${i+1}</div>
+            <div class="detail-set-val"><strong>${s.kg || '—'}</strong> <span>kg</span></div>
+            <div class="detail-set-val"><strong>${s.reps || '—'}</strong> <span>reps</span></div>
+          </div>`;
+        });
+        html += '</div></div>';
+      } else if (logged.kg || logged.reps) {
+        // Old format
         html += `<div class="detail-exercise">
           <div class="detail-name">${ex.name}</div>
           <div class="detail-vals">
@@ -557,18 +816,32 @@ function shareWorkout() {
 
   let text = `Workout ${dateStr}\n`;
   text += `${schema.name} (${schema.subtitle})\n`;
-  text += '─'.repeat(30) + '\n';
+  text += '\u2500'.repeat(30) + '\n';
 
   schema.supersets.forEach(ss => {
     ss.exercises.forEach(ex => {
       const logged = w.exercises.find(e => e.id === ex.id);
-      if (logged && (logged.kg || logged.reps)) {
-        const kg = logged.kg || '—';
-        const reps = logged.reps || '—';
-        text += `${ex.name}: ${kg} kg × ${reps} reps\n`;
+      if (!logged) return;
+
+      if (Array.isArray(logged.sets)) {
+        const filledSets = logged.sets.filter(s => s.kg || s.reps);
+        if (filledSets.length > 0) {
+          text += `${ex.name}:\n`;
+          logged.sets.forEach((s, i) => {
+            if (!s.kg && !s.reps) return;
+            text += `  S${i+1}: ${s.kg || '—'} kg \u00d7 ${s.reps || '—'} reps\n`;
+          });
+        }
+      } else if (logged.kg || logged.reps) {
+        text += `${ex.name}: ${logged.kg || '—'} kg \u00d7 ${logged.reps || '—'} reps\n`;
       }
     });
   });
+
+  if (w.feedback) {
+    text += '\u2500'.repeat(30) + '\n';
+    text += `Opmerkingen: ${w.feedback}\n`;
+  }
 
   document.getElementById('sharePreview').textContent = text;
   showView('share');
@@ -579,7 +852,6 @@ function copyToClipboard() {
   navigator.clipboard.writeText(text).then(() => {
     showToast('Gekopieerd!');
   }).catch(() => {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);
