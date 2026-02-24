@@ -380,37 +380,47 @@ const SCHEMAS = {
         name: 'A: Squat + Pull-ups', sets: 4, rest: '2 min', color: 'green',
         warmup: '1x10 @bar, 1x8 @50kg, 1x5 @70kg',
         exercises: [
-          { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte • doel: 4x7', target_kg: 90 },
-          { id: 'a2', name: 'Pull-ups', detail: '6-8 reps', target_kg: 0, target_label: 'BW' }
+          { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte', target_kg: 90,
+            target_sets: [{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6}] },
+          { id: 'a2', name: 'Pull-ups', detail: '6-8 reps', target_kg: 0, target_label: 'BW',
+            target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] }
         ]
       },
       {
         name: 'B: Bench Press + Row', sets: 3, rest: '90s', color: 'blue',
         warmup: '1x8 bench @40kg',
         exercises: [
-          { id: 'b1', name: 'Flat Bench Press', detail: '8-10 reps', target_kg: 65 },
-          { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps', target_kg: 70 }
+          { id: 'b1', name: 'Flat Bench Press', detail: '8-10 reps', target_kg: 65,
+            target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] },
+          { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps', target_kg: 65,
+            target_sets: [{kg:65,reps:8},{kg:65,reps:8},{kg:65,reps:8}] }
         ]
       },
       {
         name: 'C: RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
         exercises: [
-          { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • straps ok', target_kg: 90 },
-          { id: 'c2', name: 'DB Shoulder Press', detail: '10-12 reps • bank ~80°', target_kg: 25, target_label: '2x25 kg' }
+          { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • straps ok', target_kg: 90,
+            target_sets: [{kg:90,reps:10},{kg:90,reps:10},{kg:90,reps:10}] },
+          { id: 'c2', name: 'DB Shoulder Press', detail: '10-12 reps • bank ~80°', target_kg: 22.5, target_label: '2x22.5 kg',
+            target_sets: [{kg:22.5,reps:10},{kg:22.5,reps:10},{kg:22.5,reps:10}] }
         ]
       },
       {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
-          { id: 'd1', name: 'Leg Raise', detail: '10-15 reps • captain\'s chair', target_kg: 0, target_label: 'BW' },
-          { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen', target_kg: 70 }
+          { id: 'd1', name: 'Leg Raise', detail: '10-15 reps • captain\'s chair', target_kg: 0, target_label: 'BW',
+            target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}] },
+          { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen', target_kg: 70,
+            target_sets: [{kg:70,reps:12},{kg:70,reps:12},{kg:70,reps:12}] }
         ]
       },
       {
         name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
         exercises: [
-          { id: 'e1', name: 'Preacher Curl', detail: '10-12 reps • EZ-bar + gewicht', target_kg: 20, target_label: 'EZ+20 kg' },
-          { id: 'e2', name: 'Tricep Dips', detail: '8-12 reps', target_kg: 5, target_label: 'BW+5 kg' }
+          { id: 'e1', name: 'Preacher Curl', detail: '10-12 reps • EZ-bar + gewicht', target_kg: 20, target_label: 'EZ+20 kg',
+            target_sets: [{kg:20,reps:10},{kg:20,reps:10}] },
+          { id: 'e2', name: 'Tricep Dips', detail: '8-12 reps', target_kg: 5, target_label: 'BW+5 kg',
+            target_sets: [{kg:5,reps:8},{kg:5,reps:8}] }
         ]
       }
     ]
@@ -423,36 +433,46 @@ const SCHEMAS = {
         name: 'A: V-Squat + Pulldown', sets: 4, rest: '90s', color: 'green',
         warmup: '1x10 V-Squat @60kg, 1x10 Pulldown @35kg',
         exercises: [
-          { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 115 },
-          { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60 }
+          { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 115,
+            target_sets: [{kg:115,reps:10},{kg:115,reps:10},{kg:115,reps:10},{kg:115,reps:10}] },
+          { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60,
+            target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}] }
         ]
       },
       {
         name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
         exercises: [
-          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 24, target_label: '2x24 kg' },
-          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps', target_kg: 45 }
+          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 24, target_label: '2x24 kg',
+            target_sets: [{kg:24,reps:10},{kg:24,reps:10},{kg:24,reps:10}] },
+          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps', target_kg: 45,
+            target_sets: [{kg:45,reps:12},{kg:45,reps:12},{kg:45,reps:12}] }
         ]
       },
       {
         name: 'C: Lateral + Row', sets: 3, rest: '75s', color: 'purple',
         exercises: [
-          { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 10, target_label: '2x10 kg' },
-          { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta', target_kg: 35, target_label: '35 kg/kant' }
+          { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 10, target_label: '2x10 kg',
+            target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] },
+          { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta', target_kg: 35, target_label: '35 kg/kant',
+            target_sets: [{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}] }
         ]
       },
       {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
-          { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 75 },
-          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 25 }
+          { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 75,
+            target_sets: [{kg:75,reps:12},{kg:75,reps:12},{kg:75,reps:12}] },
+          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 25,
+            target_sets: [{kg:25,reps:10},{kg:25,reps:10},{kg:25,reps:10}] }
         ]
       },
       {
         name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
         exercises: [
-          { id: 'e1', name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg' },
-          { id: 'e2', name: 'OH Tricep Extension', detail: '10-12 reps • kabel', target_kg: 35 }
+          { id: 'e1', name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
+            target_sets: [{kg:14,reps:10},{kg:14,reps:10}] },
+          { id: 'e2', name: 'OH Tricep Extension', detail: '10-12 reps • kabel', target_kg: 35,
+            target_sets: [{kg:35,reps:10},{kg:35,reps:10}] }
         ]
       }
     ]
@@ -526,9 +546,6 @@ function startWorkout(schema) {
   document.getElementById('workoutTitle').textContent = s.name;
   document.getElementById('workoutFeedback').value = '';
 
-  // Pre-fill from last workout of same schema
-  const prev = getWorkouts().find(w => w.schema === schema);
-
   let html = '';
   s.supersets.forEach(ss => {
     html += `<div class="superset ${ss.color}">`;
@@ -537,22 +554,8 @@ function startWorkout(schema) {
       html += `<div style="padding:6px 16px;font-size:12px;color:#8e8e93;font-style:italic">Warmup: ${ss.warmup}</div>`;
     }
     ss.exercises.forEach(ex => {
-      const prevEx = prev?.exercises?.find(e => e.id === ex.id);
       const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
       const hasInfo = EXERCISE_INFO[ex.name];
-
-      // Get previous set data (migration: old format has kg/reps, new has sets[])
-      let prevSets = [];
-      if (prevEx) {
-        if (Array.isArray(prevEx.sets)) {
-          prevSets = prevEx.sets;
-        } else {
-          // Old format: fill all sets with same value
-          for (let i = 0; i < ss.sets; i++) {
-            prevSets.push({ kg: prevEx.kg || '', reps: prevEx.reps || '' });
-          }
-        }
-      }
 
       html += `<div class="exercise">
         <div class="ex-top">
@@ -566,19 +569,20 @@ function startWorkout(schema) {
           <div class="ex-target">Doel: ${targetStr}</div>
         </div>`;
 
-      // Render N set rows based on superset.sets
+      // Render N set rows — pre-fill with target_sets
       for (let si = 0; si < ss.sets; si++) {
-        const prevKg = prevSets[si]?.kg || '';
-        const prevReps = prevSets[si]?.reps || '';
+        const tgt = ex.target_sets?.[si] || {};
+        const fillKg = tgt.kg !== undefined ? tgt.kg : '';
+        const fillReps = tgt.reps !== undefined ? tgt.reps : '';
         html += `<div class="set-row">
           <div class="set-label">S${si + 1}</div>
           <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}_${si}"
-            placeholder="${ex.target_kg || '—'}" value="${prevKg}"
+            placeholder="${ex.target_kg || '—'}" value="${fillKg}"
             oninput="autoSave('${ex.id}',${ss.sets})">
           <div class="ex-unit">kg</div>
           <div class="ex-x">×</div>
           <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}_${si}"
-            placeholder="—" value="${prevReps}"
+            placeholder="—" value="${fillReps}"
             oninput="autoSave('${ex.id}',${ss.sets})">
           <div class="ex-unit">reps</div>
         </div>`;
