@@ -318,6 +318,11 @@ const EXERCISE_INFO = {
     dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden'],
     donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
   },
+  'Sled Leg Press': {
+    muscles: 'Quadriceps, glutes',
+    dos: ['Voeten schouderbreedte, laag op platform voor meer quads', 'Volle ROM: laat de slee zakken tot 90\u00b0 kniehoek', 'Duw vanuit je hielen, niet je tenen', 'Rug plat tegen het pad houden'],
+    donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet te diep gaan (onderrug mag niet van het pad komen)', 'Niet met halve reps werken', 'Knie\u00ebn niet op slot gooien bovenin']
+  },
   'V-Squat': {
     muscles: 'Quadriceps, glutes',
     dos: ['Voeten op schouderbreedte, hoog op het platform voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen'],
@@ -421,11 +426,11 @@ const SCHEMAS = {
     subtitle: 'Volume Focus',
     supersets: [
       {
-        name: 'A: V-Squat + Pulldown', sets: 4, rest: '90s', color: 'green',
-        warmup: '1x10 V-Squat @60kg, 1x10 Pulldown @35kg',
+        name: 'A: Leg Press + Pulldown', sets: 4, rest: '90s', color: 'green',
+        warmup: '1x10 Leg Press @laag, 1x10 Pulldown @35kg',
         exercises: [
-          { id: 'a1', name: 'V-Squat', detail: '10-12 reps • inward facing', target_kg: 125,
-            target_sets: [{kg:110,reps:10},{kg:125,reps:10},{kg:125,reps:10},{kg:125,reps:8}] },
+          { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 120,
+            target_sets: [{kg:100,reps:10},{kg:120,reps:10},{kg:120,reps:10},{kg:120,reps:10}] },
           { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60,
             target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}] }
         ]
@@ -435,8 +440,8 @@ const SCHEMAS = {
         exercises: [
           { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
             target_sets: [{kg:22.5,reps:12},{kg:25,reps:10},{kg:27.5,reps:8}] },
-          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps • seated', target_kg: 55,
-            target_sets: [{kg:50,reps:15},{kg:55,reps:12},{kg:55,reps:12}] }
+          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps • lying', target_kg: 40,
+            target_sets: [{kg:35,reps:12},{kg:40,reps:12},{kg:40,reps:12}] }
         ]
       },
       {
