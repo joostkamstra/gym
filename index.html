@@ -424,8 +424,8 @@ const SCHEMAS = {
         name: 'A: V-Squat + Pulldown', sets: 4, rest: '90s', color: 'green',
         warmup: '1x10 V-Squat @60kg, 1x10 Pulldown @35kg',
         exercises: [
-          { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 115,
-            target_sets: [{kg:115,reps:10},{kg:115,reps:10},{kg:115,reps:10},{kg:115,reps:10}] },
+          { id: 'a1', name: 'V-Squat', detail: '10-12 reps • inward facing', target_kg: 125,
+            target_sets: [{kg:110,reps:10},{kg:125,reps:10},{kg:125,reps:10},{kg:125,reps:8}] },
           { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60,
             target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}] }
         ]
@@ -433,10 +433,10 @@ const SCHEMAS = {
       {
         name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
         exercises: [
-          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 24, target_label: '2x24 kg',
-            target_sets: [{kg:24,reps:10},{kg:24,reps:10},{kg:24,reps:10}] },
-          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps', target_kg: 45,
-            target_sets: [{kg:45,reps:12},{kg:45,reps:12},{kg:45,reps:12}] }
+          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
+            target_sets: [{kg:22.5,reps:12},{kg:25,reps:10},{kg:27.5,reps:8}] },
+          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps • seated', target_kg: 55,
+            target_sets: [{kg:50,reps:15},{kg:55,reps:12},{kg:55,reps:12}] }
         ]
       },
       {
@@ -451,19 +451,19 @@ const SCHEMAS = {
       {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
-          { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 75,
-            target_sets: [{kg:75,reps:12},{kg:75,reps:12},{kg:75,reps:12}] },
-          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 25,
-            target_sets: [{kg:25,reps:10},{kg:25,reps:10},{kg:25,reps:10}] }
+          { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
+            target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] },
+          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 30,
+            target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10}] }
         ]
       },
       {
         name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
         exercises: [
-          { id: 'e1', name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
-            target_sets: [{kg:14,reps:10},{kg:14,reps:10}] },
-          { id: 'e2', name: 'OH Tricep Extension', detail: '10-12 reps • kabel', target_kg: 35,
-            target_sets: [{kg:35,reps:10},{kg:35,reps:10}] }
+          { id: 'e1', name: 'Preacher Curl', detail: '10-12 reps • EZ-bar', target_kg: 20, target_label: '20 kg (excl. bar)',
+            target_sets: [{kg:20,reps:10},{kg:20,reps:10}] },
+          { id: 'e2', name: 'Tricep Dips', detail: '8-12 reps', target_kg: 0, target_label: 'BW',
+            target_sets: [{kg:0,reps:10},{kg:0,reps:10}] }
         ]
       }
     ]
