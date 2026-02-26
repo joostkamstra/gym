@@ -84,6 +84,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   line-height:1;border-radius:50%;flex-shrink:0}
 .info-btn:active{color:#0a84ff}
 
+/* Swap button */
+.swap-btn{background:none;border:1px solid #3a3a3c;color:#8e8e93;font-size:13px;cursor:pointer;
+  padding:2px 8px;border-radius:8px;flex-shrink:0;line-height:1.2}
+.swap-btn:active{color:#0a84ff;border-color:#0a84ff}
+.swap-btn.swapped{color:#ff9f0a;border-color:#ff9f0a}
+
 /* Exercise info modal */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;
   display:none;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
@@ -313,7 +319,7 @@ const EXERCISE_INFO = {
     dos: ['Bovenarmen volledig op het pad laten rusten', 'Gecontroleerde beweging omhoog en omlaag', 'Volledige ROM: bijna gestrekt tot volledig gebogen'],
     donts: ['Niet achterover leunen om te helpen', 'Ellebogen niet van het pad tillen', 'Geen swingbeweging gebruiken']
   },
-  'Tricep Dips': {
+  'Dips': {
     muscles: 'Triceps, borst, voorste schouder',
     dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden'],
     donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
@@ -324,8 +330,8 @@ const EXERCISE_INFO = {
     donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet te diep gaan (onderrug mag niet van het pad komen)', 'Niet met halve reps werken', 'Knie\u00ebn niet op slot gooien bovenin']
   },
   'V-Squat': {
-    muscles: 'Quadriceps, glutes',
-    dos: ['Voeten op schouderbreedte, hoog op het platform voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen'],
+    muscles: 'Quadriceps, glutes, hamstrings',
+    dos: ['Voeten op schouderbreedte, hoog op het platform voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen', 'Inward looking (gezicht naar machine) = meer hamstring/glute activatie'],
     donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen']
   },
   'Lat Pulldown': {
@@ -372,6 +378,56 @@ const EXERCISE_INFO = {
     muscles: 'Triceps (lange kop)',
     dos: ['Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
     donts: ['Ellebogen niet naar buiten laten wijken', 'Niet met je rug compenseren', 'Niet te snel of ongecontroleerd bewegen']
+  },
+  'Leg Curl (seated)': {
+    muscles: 'Hamstrings',
+    dos: ['Rug stevig tegen rugpad houden', 'Volle ROM: van gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Pad op onderbeen net boven enkels'],
+    donts: ['Niet met je heupen optillen', 'Niet te snel of bouncing werken', 'Niet met je handen aan de grepen trekken']
+  },
+  'Cable Lateral Raise': {
+    muscles: 'Zijschouder (mediale deltoid)',
+    dos: ['Eén arm per keer voor constante spanning', 'Kabel van de andere kant voor optimale weerstandscurve', 'Til tot schouderhoogte', 'Licht voorover leunen'],
+    donts: ['Niet swingen of momentum gebruiken', 'Traps niet overnemen', 'Niet te zwaar gaan']
+  },
+  'Seated Row Machine': {
+    muscles: 'Middenrug, lats, biceps',
+    dos: ['Borst stevig tegen het pad drukken', 'Schouderbladen samenknijpen aan het eind', 'Ellebogen laag houden, langs het lichaam trekken'],
+    donts: ['Niet achterover leunen van het pad', 'Niet met momentum trekken', 'Schouders niet optrekken naar je oren']
+  },
+  'Woodchop': {
+    muscles: 'Obliques, core (rotatie)',
+    dos: ['Rotatie vanuit de core, niet vanuit de armen', 'Voeten vast op de grond, knieën licht gebogen', 'Gecontroleerde beweging in beide richtingen', 'Armen gestrekt als hefboom'],
+    donts: ['Niet met je armen zwaaien', 'Heupen niet mee laten draaien', 'Niet te snel of ongecontroleerd werken']
+  },
+  'DB Flat Bench Press': {
+    muscles: 'Borst, triceps, voorste schouder',
+    dos: ['Schouderbladen samenknijpen voor stabiliteit', 'Boog in je lats houden', 'Gecontroleerd laten zakken tot ellebogen op 90°', 'Dumbbells op borstlijn brengen'],
+    donts: ['Billen niet van de bank tillen', 'Niet laten bouncen onderaan', 'Polsen recht houden']
+  },
+  'DB RDL': {
+    muscles: 'Hamstrings, glutes, onderrug',
+    dos: ['Zelfde techniek als barbell RDL', 'Dumbbells dicht langs je benen houden', 'Heupscharnier: kont naar achteren', 'Lichte kniebuiging behouden'],
+    donts: ['Rug niet laten afronden', 'Niet te diep (halverwege scheenbeen)', 'Niet met de armen trekken']
+  },
+  'Shoulder Press Machine': {
+    muscles: 'Schouders (deltoids), triceps',
+    dos: ['Rug stevig tegen het pad houden', 'Volle ROM: van schouderhoogte tot volledige strekking', 'Core aanspannen', 'Handgrepen op schouderbreedte'],
+    donts: ['Niet te ver achter je hoofd duwen', 'Niet met je rug compenseren', 'Gewricht niet op slot gooien bovenin']
+  },
+  'Hanging Leg Raise': {
+    muscles: 'Onderbuik, hip flexors',
+    dos: ['Dead hang aan de stang, schouders actief', 'Bekken kantelen (posterior tilt) aan de top', 'Benen gestrekt of licht gebogen', 'Langzaam en gecontroleerd'],
+    donts: ['Niet swingen voor momentum', 'Lichaam niet heen en weer slingeren', 'Niet alleen hip flexors gebruiken (bekken moet kantelen)']
+  },
+  'Machine Incline Press': {
+    muscles: 'Bovenborst, schouders, triceps',
+    dos: ['Schouderbladen samenknijpen tegen het pad', 'Volle ROM: van borst tot volledige strekking', 'Voeten plat op de grond', 'Gecontroleerd tempo'],
+    donts: ['Niet bouncen uit de onderste positie', 'Schouders niet optrekken', 'Niet halverwege stoppen']
+  },
+  'Tricep Pushdown': {
+    muscles: 'Triceps',
+    dos: ['Ellebogen gefixeerd langs je lichaam', 'Volledige extensie onderaan', 'Langzaam terugbrengen (excentrisch)', 'Bovenlichaam stabiel houden'],
+    donts: ['Ellebogen niet naar voren laten komen', 'Niet met je hele lichaam meeduwen', 'Niet halverwege stoppen']
   }
 };
 
@@ -386,9 +442,13 @@ const SCHEMAS = {
         warmup: '1x10 @bar, 1x8 @50kg, 1x5 @70kg',
         exercises: [
           { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte', target_kg: 90,
-            target_sets: [{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6}] },
+            target_sets: [{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6},{kg:90,reps:6}],
+            alt: { name: 'V-Squat', detail: '6-8 reps', target_kg: 130,
+              target_sets: [{kg:120,reps:8},{kg:130,reps:6},{kg:130,reps:6},{kg:130,reps:6}] } },
           { id: 'a2', name: 'Pull-ups', detail: '6-8 reps', target_kg: 0, target_label: 'BW',
-            target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] }
+            target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}],
+            alt: { name: 'Lat Pulldown', detail: '6-8 reps • wide grip', target_kg: 60,
+              target_sets: [{kg:60,reps:8},{kg:60,reps:8},{kg:60,reps:8},{kg:60,reps:8}] } }
         ]
       },
       {
@@ -396,27 +456,39 @@ const SCHEMAS = {
         warmup: '1x8 bench @40kg',
         exercises: [
           { id: 'b1', name: 'Flat Bench Press', detail: '8-10 reps', target_kg: 65,
-            target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] },
+            target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}],
+            alt: { name: 'DB Flat Bench Press', detail: '8-10 reps', target_kg: 27.5, target_label: '2x27.5 kg',
+              target_sets: [{kg:27.5,reps:10},{kg:27.5,reps:10},{kg:27.5,reps:10}] } },
           { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps', target_kg: 65,
-            target_sets: [{kg:65,reps:8},{kg:65,reps:8},{kg:65,reps:8}] }
+            target_sets: [{kg:65,reps:8},{kg:65,reps:8},{kg:65,reps:8}],
+            alt: { name: 'Plate-loaded Row', detail: '8-10 reps • Panatta', target_kg: 35, target_label: '35 kg/kant',
+              target_sets: [{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}] } }
         ]
       },
       {
         name: 'C: RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
         exercises: [
           { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • straps ok', target_kg: 90,
-            target_sets: [{kg:90,reps:10},{kg:90,reps:10},{kg:90,reps:10}] },
+            target_sets: [{kg:90,reps:10},{kg:90,reps:10},{kg:90,reps:10}],
+            alt: { name: 'DB RDL', detail: '10-12 reps', target_kg: 30, target_label: '2x30 kg',
+              target_sets: [{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } },
           { id: 'c2', name: 'DB Shoulder Press', detail: '10-12 reps • bank ~80°', target_kg: 22.5, target_label: '2x22.5 kg',
-            target_sets: [{kg:22.5,reps:10},{kg:22.5,reps:10},{kg:22.5,reps:10}] }
+            target_sets: [{kg:22.5,reps:10},{kg:22.5,reps:10},{kg:22.5,reps:10}],
+            alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
+              target_sets: [{kg:40,reps:10},{kg:40,reps:10},{kg:40,reps:10}] } }
         ]
       },
       {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
           { id: 'd1', name: 'Leg Raise', detail: '10-15 reps • captain\'s chair', target_kg: 0, target_label: 'BW',
-            target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}] },
+            target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}],
+            alt: { name: 'Hanging Leg Raise', detail: '10-15 reps', target_kg: 0, target_label: 'BW',
+              target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}] } },
           { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen', target_kg: 70,
-            target_sets: [{kg:70,reps:12},{kg:70,reps:12},{kg:70,reps:12}] }
+            target_sets: [{kg:70,reps:12},{kg:70,reps:12},{kg:70,reps:12}],
+            alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
+              target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } }
         ]
       },
     ]
@@ -429,46 +501,66 @@ const SCHEMAS = {
         name: 'A: Leg Press + Pulldown', sets: 4, rest: '90s', color: 'green',
         warmup: '1x10 Leg Press @laag, 1x10 Pulldown @35kg',
         exercises: [
-          { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 120,
-            target_sets: [{kg:100,reps:10},{kg:120,reps:10},{kg:120,reps:10},{kg:120,reps:10}] },
+          { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 180,
+            target_sets: [{kg:140,reps:12},{kg:160,reps:10},{kg:180,reps:10},{kg:180,reps:10}],
+            alt: { name: 'V-Squat', detail: '10-12 reps • inward looking', target_kg: 130,
+              target_sets: [{kg:100,reps:12},{kg:120,reps:10},{kg:130,reps:10},{kg:130,reps:10}] } },
           { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60,
-            target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}] }
+            target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}],
+            alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 65,
+              target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] } }
         ]
       },
       {
         name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
         exercises: [
           { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
-            target_sets: [{kg:22.5,reps:12},{kg:25,reps:10},{kg:27.5,reps:8}] },
+            target_sets: [{kg:25,reps:12},{kg:27.5,reps:10},{kg:27.5,reps:10}],
+            alt: { name: 'Machine Incline Press', detail: '10-12 reps', target_kg: 50,
+              target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
           { id: 'b2', name: 'Leg Curl', detail: '12-15 reps • lying', target_kg: 40,
-            target_sets: [{kg:35,reps:12},{kg:40,reps:12},{kg:40,reps:12}] }
+            target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
+            alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 60,
+              target_sets: [{kg:50,reps:15},{kg:55,reps:12},{kg:60,reps:12}] } }
         ]
       },
       {
         name: 'C: Lateral + Row', sets: 3, rest: '75s', color: 'purple',
         exercises: [
           { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 10, target_label: '2x10 kg',
-            target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] },
+            target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}],
+            alt: { name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm', target_kg: 10,
+              target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } },
           { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta', target_kg: 35, target_label: '35 kg/kant',
-            target_sets: [{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}] }
+            target_sets: [{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}],
+            alt: { name: 'Seated Row Machine', detail: '10-12 reps', target_kg: 65,
+              target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] } }
         ]
       },
       {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
           { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
-            target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] },
-          { id: 'd2', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 30,
-            target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10}] }
+            target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}],
+            alt: { name: 'Cable Crunch', detail: '12-15 reps', target_kg: 70,
+              target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } },
+          { id: 'd2', name: 'Pallof Press', detail: '12 reps per kant', target_kg: 30,
+            target_sets: [{kg:30,reps:12},{kg:30,reps:12},{kg:30,reps:12}],
+            alt: { name: 'Woodchop', detail: '12 reps per kant', target_kg: 20,
+              target_sets: [{kg:20,reps:12},{kg:20,reps:12},{kg:20,reps:12}] } }
         ]
       },
       {
         name: 'E: Arms', sets: 2, rest: '45s', color: 'red',
         exercises: [
           { id: 'e1', name: 'Preacher Curl', detail: '10-12 reps • EZ-bar', target_kg: 20, target_label: '20 kg (excl. bar)',
-            target_sets: [{kg:20,reps:10},{kg:20,reps:10}] },
-          { id: 'e2', name: 'Tricep Dips', detail: '8-12 reps', target_kg: 0, target_label: 'BW',
-            target_sets: [{kg:0,reps:10},{kg:0,reps:10}] }
+            target_sets: [{kg:20,reps:12},{kg:20,reps:12}],
+            alt: { name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
+              target_sets: [{kg:14,reps:12},{kg:14,reps:12}] } },
+          { id: 'e2', name: 'Dips', detail: '8-12 reps', target_kg: 0, target_label: 'BW',
+            target_sets: [{kg:0,reps:10},{kg:0,reps:10}],
+            alt: { name: 'OH Tricep Extension', detail: '10-15 reps', target_kg: 40,
+              target_sets: [{kg:35,reps:15},{kg:40,reps:12}] } }
         ]
       }
     ]
@@ -480,6 +572,7 @@ let currentSchema = null;
 let currentWorkout = {};
 let viewingWorkout = null;
 let viewingIndex = -1;
+let currentSwaps = {};
 
 // === STORAGE ===
 function getWorkouts() {
@@ -533,10 +626,74 @@ function closeExerciseInfo(e) {
   document.getElementById('exerciseModal').classList.remove('open');
 }
 
+// === SWAP HELPERS ===
+function getResolvedEx(ex) {
+  if (currentSwaps[ex.id] && ex.alt) {
+    return { ...ex, name: ex.alt.name, detail: ex.alt.detail || ex.detail,
+      target_kg: ex.alt.target_kg, target_label: ex.alt.target_label || null,
+      target_sets: ex.alt.target_sets };
+  }
+  return ex;
+}
+
+function renderExerciseInner(ex, numSets) {
+  const resolved = getResolvedEx(ex);
+  const targetStr = resolved.target_label || (resolved.target_kg > 0 ? resolved.target_kg + ' kg' : 'BW');
+  const hasInfo = EXERCISE_INFO[resolved.name];
+  const isSwapped = currentSwaps[ex.id];
+
+  let html = `<div class="ex-top">
+    <div>
+      <div class="ex-name-row">
+        <div class="ex-name">${resolved.name}</div>
+        ${hasInfo ? `<button class="info-btn" onclick="showExerciseInfo('${resolved.name.replace(/'/g, "\\'")}')">ⓘ</button>` : ''}
+        ${ex.alt ? `<button class="swap-btn${isSwapped ? ' swapped' : ''}" onclick="toggleSwap('${ex.id}',${numSets})">⇄</button>` : ''}
+      </div>
+      <div class="ex-detail">${resolved.detail}</div>
+    </div>
+    <div class="ex-target">Doel: ${targetStr}</div>
+  </div>`;
+
+  for (let si = 0; si < numSets; si++) {
+    const tgt = resolved.target_sets?.[si] || {};
+    const fillKg = tgt.kg !== undefined ? tgt.kg : '';
+    const fillReps = tgt.reps !== undefined ? tgt.reps : '';
+    html += `<div class="set-row">
+      <div class="set-label">S${si + 1}</div>
+      <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}_${si}"
+        placeholder="${resolved.target_kg || '—'}" value="${fillKg}"
+        oninput="autoSave('${ex.id}',${numSets})">
+      <div class="ex-unit">kg</div>
+      <div class="ex-x">×</div>
+      <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}_${si}"
+        placeholder="—" value="${fillReps}"
+        oninput="autoSave('${ex.id}',${numSets})">
+      <div class="ex-unit">reps</div>
+    </div>`;
+  }
+  return html;
+}
+
+function toggleSwap(id, numSets) {
+  currentSwaps[id] = !currentSwaps[id];
+  const container = document.getElementById('ex-wrap-' + id);
+  if (!container) return;
+  const s = SCHEMAS[currentSchema];
+  for (const ss of s.supersets) {
+    for (const ex of ss.exercises) {
+      if (ex.id === id) {
+        container.innerHTML = renderExerciseInner(ex, ss.sets);
+        return;
+      }
+    }
+  }
+}
+
 // === WORKOUT ===
 function startWorkout(schema) {
   currentSchema = schema;
   currentWorkout = {};
+  currentSwaps = {};
   const s = SCHEMAS[schema];
 
   document.getElementById('workoutTitle').textContent = s.name;
@@ -550,40 +707,8 @@ function startWorkout(schema) {
       html += `<div style="padding:6px 16px;font-size:12px;color:#8e8e93;font-style:italic">Warmup: ${ss.warmup}</div>`;
     }
     ss.exercises.forEach(ex => {
-      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
-      const hasInfo = EXERCISE_INFO[ex.name];
-
-      html += `<div class="exercise">
-        <div class="ex-top">
-          <div>
-            <div class="ex-name-row">
-              <div class="ex-name">${ex.name}</div>
-              ${hasInfo ? `<button class="info-btn" onclick="showExerciseInfo('${ex.name.replace(/'/g, "\\'")}')">ⓘ</button>` : ''}
-            </div>
-            <div class="ex-detail">${ex.detail}</div>
-          </div>
-          <div class="ex-target">Doel: ${targetStr}</div>
-        </div>`;
-
-      // Render N set rows — pre-fill with target_sets
-      for (let si = 0; si < ss.sets; si++) {
-        const tgt = ex.target_sets?.[si] || {};
-        const fillKg = tgt.kg !== undefined ? tgt.kg : '';
-        const fillReps = tgt.reps !== undefined ? tgt.reps : '';
-        html += `<div class="set-row">
-          <div class="set-label">S${si + 1}</div>
-          <input class="ex-input" type="number" inputmode="decimal" id="kg_${ex.id}_${si}"
-            placeholder="${ex.target_kg || '—'}" value="${fillKg}"
-            oninput="autoSave('${ex.id}',${ss.sets})">
-          <div class="ex-unit">kg</div>
-          <div class="ex-x">×</div>
-          <input class="ex-input" type="number" inputmode="numeric" id="reps_${ex.id}_${si}"
-            placeholder="—" value="${fillReps}"
-            oninput="autoSave('${ex.id}',${ss.sets})">
-          <div class="ex-unit">reps</div>
-        </div>`;
-      }
-
+      html += `<div class="exercise" id="ex-wrap-${ex.id}">`;
+      html += renderExerciseInner(ex, ss.sets);
       html += '</div>';
     });
     html += '</div>';
@@ -621,6 +746,7 @@ function saveWorkout() {
 
   s.supersets.forEach(ss => {
     ss.exercises.forEach(ex => {
+      const resolved = getResolvedEx(ex);
       const sets = [];
       for (let i = 0; i < ss.sets; i++) {
         const kg = document.getElementById('kg_' + ex.id + '_' + i)?.value || '';
@@ -630,9 +756,9 @@ function saveWorkout() {
       }
       exercises.push({
         id: ex.id,
-        name: ex.name,
-        target_kg: ex.target_kg,
-        target_label: ex.target_label || null,
+        name: resolved.name,
+        target_kg: resolved.target_kg,
+        target_label: resolved.target_label || null,
         sets: sets
       });
     });
@@ -669,26 +795,21 @@ function sendWorkoutData(workout, schema) {
   const subject = `[GYM] ${schema.name} — ${d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 
   let summary = '';
-  schema.supersets.forEach(ss => {
-    ss.exercises.forEach(ex => {
-      const logged = workout.exercises.find(e => e.id === ex.id);
-      if (!logged) return;
-      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+  workout.exercises.forEach(logged => {
+    const targetStr = logged.target_label || (logged.target_kg > 0 ? logged.target_kg + ' kg' : 'BW');
 
-      if (Array.isArray(logged.sets)) {
-        const filledSets = logged.sets.filter(s => s.kg || s.reps);
-        if (filledSets.length > 0) {
-          const setStrs = logged.sets.map((s, i) => {
-            if (!s.kg && !s.reps) return null;
-            return `S${i+1}: ${s.kg || '—'}kg × ${s.reps || '—'}`;
-          }).filter(Boolean);
-          summary += `${ex.name} (doel: ${targetStr})\n  ${setStrs.join(' | ')}\n`;
-        }
-      } else if (logged.kg || logged.reps) {
-        // Old format fallback
-        summary += `${ex.name}: ${logged.kg || '—'} kg x ${logged.reps || '—'} reps (doel: ${targetStr})\n`;
+    if (Array.isArray(logged.sets)) {
+      const filledSets = logged.sets.filter(s => s.kg || s.reps);
+      if (filledSets.length > 0) {
+        const setStrs = logged.sets.map((s, i) => {
+          if (!s.kg && !s.reps) return null;
+          return `S${i+1}: ${s.kg || '—'}kg × ${s.reps || '—'}`;
+        }).filter(Boolean);
+        summary += `${logged.name} (doel: ${targetStr})\n  ${setStrs.join(' | ')}\n`;
       }
-    });
+    } else if (logged.kg || logged.reps) {
+      summary += `${logged.name}: ${logged.kg || '—'} kg x ${logged.reps || '—'} reps (doel: ${targetStr})\n`;
+    }
   });
 
   if (workout.feedback) {
@@ -745,7 +866,6 @@ function showDetail(index) {
     d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
 
   let html = '';
-  const schema = SCHEMAS[w.schema];
 
   // Show feedback if present
   if (w.feedback) {
@@ -755,39 +875,35 @@ function showDetail(index) {
     </div>`;
   }
 
-  schema.supersets.forEach(ss => {
-    ss.exercises.forEach(ex => {
-      const logged = w.exercises.find(e => e.id === ex.id);
-      if (!logged) return;
-      const targetStr = ex.target_label || (ex.target_kg > 0 ? ex.target_kg + ' kg' : 'BW');
+  (w.exercises || []).forEach(logged => {
+    const targetStr = logged.target_label || (logged.target_kg > 0 ? logged.target_kg + ' kg' : 'BW');
+    const exName = logged.name || 'Unknown';
 
-      if (Array.isArray(logged.sets)) {
-        const filledSets = logged.sets.filter(s => s.kg || s.reps);
-        if (filledSets.length === 0) return;
-        html += `<div class="detail-exercise">
-          <div class="detail-name">${ex.name} <span style="color:#636366;font-size:12px;font-weight:400">doel: ${targetStr}</span></div>
-          <div class="detail-sets-table">`;
-        logged.sets.forEach((s, i) => {
-          if (!s.kg && !s.reps) return;
-          html += `<div class="detail-set-row">
-            <div class="detail-set-label">S${i+1}</div>
-            <div class="detail-set-val"><strong>${s.kg || '—'}</strong> <span>kg</span></div>
-            <div class="detail-set-val"><strong>${s.reps || '—'}</strong> <span>reps</span></div>
-          </div>`;
-        });
-        html += '</div></div>';
-      } else if (logged.kg || logged.reps) {
-        // Old format
-        html += `<div class="detail-exercise">
-          <div class="detail-name">${ex.name}</div>
-          <div class="detail-vals">
-            <div class="detail-val"><strong>${logged.kg || '—'}</strong> <span>kg</span></div>
-            <div class="detail-val"><strong>${logged.reps || '—'}</strong> <span>reps</span></div>
-            <div class="detail-val" style="margin-left:auto;color:#636366">doel: ${targetStr}</div>
-          </div>
+    if (Array.isArray(logged.sets)) {
+      const filledSets = logged.sets.filter(s => s.kg || s.reps);
+      if (filledSets.length === 0) return;
+      html += `<div class="detail-exercise">
+        <div class="detail-name">${exName} <span style="color:#636366;font-size:12px;font-weight:400">doel: ${targetStr}</span></div>
+        <div class="detail-sets-table">`;
+      logged.sets.forEach((s, i) => {
+        if (!s.kg && !s.reps) return;
+        html += `<div class="detail-set-row">
+          <div class="detail-set-label">S${i+1}</div>
+          <div class="detail-set-val"><strong>${s.kg || '—'}</strong> <span>kg</span></div>
+          <div class="detail-set-val"><strong>${s.reps || '—'}</strong> <span>reps</span></div>
         </div>`;
-      }
-    });
+      });
+      html += '</div></div>';
+    } else if (logged.kg || logged.reps) {
+      html += `<div class="detail-exercise">
+        <div class="detail-name">${exName}</div>
+        <div class="detail-vals">
+          <div class="detail-val"><strong>${logged.kg || '—'}</strong> <span>kg</span></div>
+          <div class="detail-val"><strong>${logged.reps || '—'}</strong> <span>reps</span></div>
+          <div class="detail-val" style="margin-left:auto;color:#636366">doel: ${targetStr}</div>
+        </div>
+      </div>`;
+    }
   });
 
   document.getElementById('detailContent').innerHTML = html;
@@ -819,24 +935,21 @@ function shareWorkout() {
   text += `${schema.name} (${schema.subtitle})\n`;
   text += '\u2500'.repeat(30) + '\n';
 
-  schema.supersets.forEach(ss => {
-    ss.exercises.forEach(ex => {
-      const logged = w.exercises.find(e => e.id === ex.id);
-      if (!logged) return;
+  (w.exercises || []).forEach(logged => {
+    const exName = logged.name || 'Unknown';
 
-      if (Array.isArray(logged.sets)) {
-        const filledSets = logged.sets.filter(s => s.kg || s.reps);
-        if (filledSets.length > 0) {
-          text += `${ex.name}:\n`;
-          logged.sets.forEach((s, i) => {
-            if (!s.kg && !s.reps) return;
-            text += `  S${i+1}: ${s.kg || '—'} kg \u00d7 ${s.reps || '—'} reps\n`;
-          });
-        }
-      } else if (logged.kg || logged.reps) {
-        text += `${ex.name}: ${logged.kg || '—'} kg \u00d7 ${logged.reps || '—'} reps\n`;
+    if (Array.isArray(logged.sets)) {
+      const filledSets = logged.sets.filter(s => s.kg || s.reps);
+      if (filledSets.length > 0) {
+        text += `${exName}:\n`;
+        logged.sets.forEach((s, i) => {
+          if (!s.kg && !s.reps) return;
+          text += `  S${i+1}: ${s.kg || '—'} kg \u00d7 ${s.reps || '—'} reps\n`;
+        });
       }
-    });
+    } else if (logged.kg || logged.reps) {
+      text += `${exName}: ${logged.kg || '—'} kg \u00d7 ${logged.reps || '—'} reps\n`;
+    }
   });
 
   if (w.feedback) {
