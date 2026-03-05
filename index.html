@@ -505,34 +505,34 @@ const SCHEMAS = {
             target_sets: [{kg:140,reps:12},{kg:160,reps:10},{kg:180,reps:10},{kg:180,reps:10}],
             alt: { name: 'V-Squat', detail: '10-12 reps • inward looking', target_kg: 130,
               target_sets: [{kg:100,reps:12},{kg:120,reps:10},{kg:130,reps:10},{kg:130,reps:10}] } },
-          { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 60,
-            target_sets: [{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10},{kg:60,reps:10}],
-            alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 65,
-              target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] } }
+          { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • close grip', target_kg: 65,
+            target_sets: [{kg:60,reps:10},{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}],
+            alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 70,
+              target_sets: [{kg:65,reps:10},{kg:70,reps:10},{kg:70,reps:10},{kg:70,reps:10}] } }
         ]
       },
       {
         name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
         exercises: [
-          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
+          { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
             target_sets: [{kg:25,reps:12},{kg:27.5,reps:10},{kg:27.5,reps:10}],
             alt: { name: 'Machine Incline Press', detail: '10-12 reps', target_kg: 50,
               target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
-          { id: 'b2', name: 'Leg Curl', detail: '12-15 reps • lying', target_kg: 40,
-            target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
-            alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 60,
-              target_sets: [{kg:50,reps:15},{kg:55,reps:12},{kg:60,reps:12}] } }
+          { id: 'b2', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 60,
+            target_sets: [{kg:55,reps:12},{kg:55,reps:12},{kg:60,reps:12}],
+            alt: { name: 'Leg Curl (lying)', detail: '12-15 reps • LET OP: kniepijn links', target_kg: 40,
+              target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
         ]
       },
       {
         name: 'C: Lateral + Row', sets: 3, rest: '75s', color: 'purple',
         exercises: [
-          { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 10, target_label: '2x10 kg',
-            target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}],
+          { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
+            target_sets: [{kg:10,reps:12},{kg:12,reps:12},{kg:12,reps:12}],
             alt: { name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm', target_kg: 10,
               target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } },
           { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta', target_kg: 35, target_label: '35 kg/kant',
-            target_sets: [{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}],
+            target_sets: [{kg:35,reps:12},{kg:35,reps:12},{kg:35,reps:12}],
             alt: { name: 'Seated Row Machine', detail: '10-12 reps', target_kg: 65,
               target_sets: [{kg:65,reps:10},{kg:65,reps:10},{kg:65,reps:10}] } }
         ]
@@ -541,11 +541,11 @@ const SCHEMAS = {
         name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
         exercises: [
           { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
-            target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}],
+            target_sets: [{kg:80,reps:15},{kg:80,reps:15},{kg:80,reps:15}],
             alt: { name: 'Cable Crunch', detail: '12-15 reps', target_kg: 70,
               target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } },
-          { id: 'd2', name: 'Pallof Press', detail: '12 reps per kant', target_kg: 30,
-            target_sets: [{kg:30,reps:12},{kg:30,reps:12},{kg:30,reps:12}],
+          { id: 'd2', name: 'Pallof Press', detail: '12 reps per kant', target_kg: 32.5,
+            target_sets: [{kg:30,reps:12},{kg:32.5,reps:12},{kg:32.5,reps:12}],
             alt: { name: 'Woodchop', detail: '12 reps per kant', target_kg: 20,
               target_sets: [{kg:20,reps:12},{kg:20,reps:12},{kg:20,reps:12}] } }
         ]
@@ -557,8 +557,8 @@ const SCHEMAS = {
             target_sets: [{kg:20,reps:12},{kg:20,reps:12}],
             alt: { name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
               target_sets: [{kg:14,reps:12},{kg:14,reps:12}] } },
-          { id: 'e2', name: 'Dips', detail: '8-12 reps', target_kg: 0, target_label: 'BW',
-            target_sets: [{kg:0,reps:10},{kg:0,reps:10}],
+          { id: 'e2', name: 'Dips', detail: '8-12 reps', target_kg: 5, target_label: 'BW+5 kg',
+            target_sets: [{kg:5,reps:10},{kg:5,reps:10}],
             alt: { name: 'OH Tricep Extension', detail: '10-15 reps', target_kg: 40,
               target_sets: [{kg:35,reps:15},{kg:40,reps:12}] } }
         ]
