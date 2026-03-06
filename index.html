@@ -172,39 +172,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1}
 
-/* User select */
-.user-select{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80dvh;gap:20px}
-.user-select h1{font-size:28px;font-weight:700;margin-bottom:8px}
-.user-select p{font-size:15px;color:#8e8e93;margin-bottom:12px}
-.user-btn{width:200px;padding:20px;border-radius:16px;font-size:18px;font-weight:600;border:none;
-  cursor:pointer;transition:transform .1s;text-align:center}
-.user-btn:active{transform:scale(0.97)}
-.user-btn.joost{background:#1a3a1a;color:#30d158}
-.user-btn.ruud{background:#1a2a3a;color:#0a84ff}
-.user-badge{font-size:12px;color:#8e8e93;margin-top:8px;cursor:pointer}
 </style>
 </head>
 <body>
 
-<!-- USER SELECT VIEW -->
-<div id="userSelect" class="view">
-  <div class="user-select">
-    <h1>Gym Tracker</h1>
-    <p>Wie ben je?</p>
-    <button class="user-btn joost" onclick="selectUser('joost')">Joost</button>
-    <button class="user-btn ruud" onclick="selectUser('ruud')">Ruud</button>
-  </div>
-</div>
-
 <!-- HOME VIEW -->
-<div id="home" class="view">
+<div id="home" class="view active">
   <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
     <h1 id="homeTitle">Gym Tracker</h1>
     <button class="header-action" onclick="doRefresh()">↻</button>
   </div>
-  <div class="user-badge" onclick="switchUser()" id="userBadge"></div>
-
   <div class="stats-bar" id="statsBar">
     <div><div class="stat-val" id="statWorkouts">0</div><div class="stat-label">workouts</div></div>
     <div><div class="stat-val" id="statStreak">0</div><div class="stat-label">deze week</div></div>
@@ -733,25 +711,9 @@ function getUserSchemas() {
   return USERS[currentUser].schemas;
 }
 
-function selectUser(uid) {
-  currentUser = uid;
-  localStorage.setItem('gym_current_user', uid);
-  renderHome();
-  showView('home');
-}
-
-function switchUser() {
-  localStorage.removeItem('gym_current_user');
-  currentUser = null;
-  showView('userSelect');
-}
-
 function renderHome() {
-  const user = USERS[currentUser];
+  const schemas = getUserSchemas();
   document.getElementById('homeTitle').textContent = 'Gym Tracker';
-  document.getElementById('userBadge').textContent = user.name + ' \u2022 wissel';
-
-  const schemas = user.schemas;
   const container = document.getElementById('homeCards');
   container.textContent = '';
 
@@ -1255,18 +1217,11 @@ if (localStorage.getItem('gym_workouts') && !localStorage.getItem('gym_workouts_
   localStorage.removeItem('gym_workouts');
 }
 
-// Determine user from URL param, localStorage, or show picker
+// Determine user from URL param, default to joost
 const urlUser = new URLSearchParams(window.location.search).get('user');
-if (urlUser && USERS[urlUser]) {
-  selectUser(urlUser);
-} else {
-  const savedUser = localStorage.getItem('gym_current_user');
-  if (savedUser && USERS[savedUser]) {
-    selectUser(savedUser);
-  } else {
-    showView('userSelect');
-  }
-}
+currentUser = (urlUser && USERS[urlUser]) ? urlUser : 'joost';
+renderHome();
+updateStats();
 </script>
 </body>
 </html>
