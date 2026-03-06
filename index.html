@@ -413,7 +413,7 @@ const EXERCISE_INFO = {
     dos: ['Ellebogen gefixeerd langs je lichaam', 'Volledige extensie onderaan', 'Langzaam terugbrengen (excentrisch)', 'Bovenlichaam stabiel houden'],
     donts: ['Ellebogen niet naar voren laten komen', 'Niet met je hele lichaam meeduwen', 'Niet halverwege stoppen']
   },
-  'Chest Press Machine': {
+  'Vertical Chest Press': {
     muscles: 'Borst, triceps, voorste schouder',
     dos: ['Rug stevig tegen het pad drukken', 'Handgrepen op borsthoogte instellen', 'Gecontroleerd duwen en terugbrengen', 'Schouderbladen samenknijpen'],
     donts: ['Schouders niet optrekken naar je oren', 'Niet bouncen uit de onderste positie', 'Ellebogen niet op slot gooien']
@@ -597,14 +597,14 @@ const USERS = {
           {
             name: 'B: Chest Press + Row', sets: 3, rest: '90s', color: 'blue',
             exercises: [
-              { id: 'b1', name: 'Chest Press Machine', detail: '10-12 reps', target_kg: 40,
+              { id: 'b1', name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 40,
                 target_sets: [{kg:30,reps:12},{kg:40,reps:10},{kg:40,reps:10}],
                 alt: { name: 'DB Flat Bench Press', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
                   target_sets: [{kg:12,reps:12},{kg:14,reps:10},{kg:14,reps:10}] } },
-              { id: 'b2', name: 'Seated Row Machine', detail: '10-12 reps', target_kg: 40,
-                target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}],
-                alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
-                  target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}] } }
+              { id: 'b2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
+                target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
+                alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 35,
+                  target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10}] } }
             ]
           },
           {
@@ -658,12 +658,12 @@ const USERS = {
             exercises: [
               { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
                 target_sets: [{kg:10,reps:15},{kg:12,reps:12},{kg:12,reps:12}],
-                alt: { name: 'Machine Incline Press', detail: '12-15 reps', target_kg: 30,
+                alt: { name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 30,
                   target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
               { id: 'b2', name: 'Plate-loaded Row', detail: '12-15 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
                 target_sets: [{kg:15,reps:15},{kg:20,reps:12},{kg:20,reps:12}],
-                alt: { name: 'Seated Row Machine', detail: '12-15 reps', target_kg: 40,
-                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
+                alt: { name: 'Seated Cable Row', detail: '12-15 reps', target_kg: 35,
+                  target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}] } }
             ]
           },
           {
@@ -873,7 +873,7 @@ function startWorkout(schema) {
   currentSchema = schema;
   currentWorkout = {};
   currentSwaps = {};
-  const s = SCHEMAS[schema];
+  const s = getUserSchemas()[schema];
 
   document.getElementById('workoutTitle').textContent = s.name;
   document.getElementById('workoutFeedback').value = '';
