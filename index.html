@@ -305,7 +305,7 @@ const EXERCISE_INFO = {
   },
   'Dips': {
     muscles: 'Triceps, borst, voorste schouder',
-    dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden'],
+    dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden', 'Gebruik de assisted dip machine als bodyweight te zwaar is'],
     donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
   },
   'Sled Leg Press': {
@@ -335,7 +335,7 @@ const EXERCISE_INFO = {
   },
   'DB Lateral Raise': {
     muscles: 'Zijschouder (mediale deltoid)',
-    dos: ['Lichte vooroverbuiging, ellebogen iets gebogen', 'Til tot schouderhoogte, niet hoger', 'Pinken iets omhoog draaien (gietbeweging)'],
+    dos: ['Lichte vooroverbuiging, ellebogen iets gebogen', 'Til tot schouderhoogte, niet hoger', 'Houd je handen neutraal of duimen licht naar voren'],
     donts: ['Niet swingen of momentum gebruiken', 'Traps niet overnemen (schouders laag houden)', 'Niet te zwaar gaan ten koste van techniek']
   },
   'Plate-loaded Row': {
@@ -396,7 +396,7 @@ const EXERCISE_INFO = {
   'Shoulder Press Machine': {
     muscles: 'Schouders (deltoids), triceps',
     dos: ['Rug stevig tegen het pad houden', 'Volle ROM: van schouderhoogte tot volledige strekking', 'Core aanspannen', 'Handgrepen op schouderbreedte'],
-    donts: ['Niet te ver achter je hoofd duwen', 'Niet met je rug compenseren', 'Gewricht niet op slot gooien bovenin']
+    donts: ['Niet met een holle rug compenseren voor meer gewicht', 'Schouders niet optrekken naar je oren', 'Gewricht niet op slot gooien bovenin']
   },
   'Hanging Leg Raise': {
     muscles: 'Onderbuik, hip flexors',
@@ -593,6 +593,7 @@ const USERS = {
         supersets: [
           {
             name: 'A: Leg Press + Pulldown', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x12 Leg Press @40 kg',
             exercises: [
               { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 80,
                 target_sets: [{kg:70,reps:12},{kg:80,reps:10},{kg:80,reps:10}],
@@ -606,6 +607,7 @@ const USERS = {
           },
           {
             name: 'B: Chest Press + Cable Row', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x12 Chest Press @20 kg',
             exercises: [
               { id: 'b1', name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 40,
                 target_sets: [{kg:30,reps:12},{kg:40,reps:10},{kg:40,reps:10}],
@@ -652,6 +654,7 @@ const USERS = {
         supersets: [
           {
             name: 'A: V-Squat + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x12 V-Squat @25 kg',
             exercises: [
               { id: 'a1', name: 'V-Squat', detail: '12-15 reps', target_kg: 50,
                 target_sets: [{kg:40,reps:15},{kg:50,reps:12},{kg:50,reps:12}],
@@ -665,6 +668,7 @@ const USERS = {
           },
           {
             name: 'B: Incline Press + Row', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x12 DB Incline @2x6 kg',
             exercises: [
               { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
                 target_sets: [{kg:10,reps:15},{kg:12,reps:12},{kg:12,reps:12}],
