@@ -423,6 +423,11 @@ const EXERCISE_INFO = {
     dos: ['Rug stevig tegen rugpad houden', 'Volle ROM: van 90\u00b0 tot volledige strekking', 'Langzaam excentrisch terugbrengen', 'Knieën in lijn met draaipunt machine'],
     donts: ['Niet met momentum omhoog zwaaien', 'Niet halverwege stoppen', 'Niet te zwaar gaan ten koste van techniek']
   },
+  'Lying Leg Curl': {
+    muscles: 'Hamstrings',
+    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
+    donts: ['Heupen niet van de bank tillen', 'Niet met momentum omhoog zwaaien', 'Stop bij pijn aan buitenkant knie (lateraal)']
+  },
   'Plank': {
     muscles: 'Core (rectus abdominis, obliques, TVA)',
     dos: ['Lichaam in rechte lijn van hoofd tot hielen', 'Buik aanspannen, navel naar wervelkolom', 'Billen niet te hoog of te laag', 'Regelmatig ademhalen'],
@@ -627,8 +632,8 @@ const USERS = {
                 target_sets: [{kg:0,reps:30},{kg:0,reps:30}],
                 alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 40,
                   target_sets: [{kg:35,reps:15},{kg:40,reps:12}] } },
-              { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 35,
-                target_sets: [{kg:30,reps:15},{kg:35,reps:12}],
+              { id: 'd2', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 25,
+                target_sets: [{kg:20,reps:15},{kg:25,reps:12}],
                 alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 40,
                   target_sets: [{kg:35,reps:15},{kg:40,reps:12}] } }
             ]
@@ -667,12 +672,12 @@ const USERS = {
             ]
           },
           {
-            name: 'C: Leg Extension + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Lying Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'Leg Extension', detail: '12-15 reps', target_kg: 40,
-                target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
-                alt: { name: 'Sled Leg Press', detail: '12-15 reps \u2022 licht', target_kg: 60,
-                  target_sets: [{kg:50,reps:15},{kg:60,reps:12},{kg:60,reps:12}] } },
+              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps', target_kg: 30,
+                target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}],
+                alt: { name: 'Leg Extension', detail: '12-15 reps', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
               { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 6, target_label: '2x6 kg',
                 target_sets: [{kg:5,reps:15},{kg:6,reps:12},{kg:6,reps:12}],
                 alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 5,
@@ -682,8 +687,8 @@ const USERS = {
           {
             name: 'D: Core', sets: 2, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 20,
-                target_sets: [{kg:15,reps:10},{kg:20,reps:10}],
+              { id: 'd1', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 15,
+                target_sets: [{kg:10,reps:10},{kg:15,reps:10}],
                 alt: { name: 'Woodchop', detail: '10 reps per kant', target_kg: 10,
                   target_sets: [{kg:10,reps:10},{kg:10,reps:10}] } },
               { id: 'd2', name: 'Leg Raise', detail: '10-12 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
