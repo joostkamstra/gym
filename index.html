@@ -423,6 +423,11 @@ const EXERCISE_INFO = {
     dos: ['Rug stevig tegen rugpad houden', 'Volle ROM: van 90\u00b0 tot volledige strekking', 'Langzaam excentrisch terugbrengen', 'Knieën in lijn met draaipunt machine'],
     donts: ['Niet met momentum omhoog zwaaien', 'Niet halverwege stoppen', 'Niet te zwaar gaan ten koste van techniek']
   },
+  'Dead Bug': {
+    muscles: 'Core (TVA, rectus abdominis)',
+    dos: ['Rug plat op de grond houden (geen ruimte tussen onderrug en vloer)', 'Tegenovergestelde arm en been tegelijk strekken', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het strekken'],
+    donts: ['Onderrug niet van de grond laten komen', 'Niet te snel bewegen', 'Niet de adem inhouden']
+  },
   'Lying Leg Curl': {
     muscles: 'Hamstrings',
     dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
@@ -600,16 +605,16 @@ const USERS = {
             ]
           },
           {
-            name: 'B: Chest Press + Row', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Chest Press + Cable Row', sets: 3, rest: '90s', color: 'blue',
             exercises: [
               { id: 'b1', name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 40,
                 target_sets: [{kg:30,reps:12},{kg:40,reps:10},{kg:40,reps:10}],
                 alt: { name: 'DB Flat Bench Press', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
                   target_sets: [{kg:12,reps:12},{kg:14,reps:10},{kg:14,reps:10}] } },
-              { id: 'b2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
-                target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
-                alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 35,
-                  target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10}] } }
+              { id: 'b2', name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 35,
+                target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10}],
+                alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
+                  target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}] } }
             ]
           },
           {
@@ -691,10 +696,10 @@ const USERS = {
                 target_sets: [{kg:35,reps:15},{kg:40,reps:12}],
                 alt: { name: 'Pallof Press', detail: '10 reps per kant', target_kg: 15,
                   target_sets: [{kg:10,reps:10},{kg:15,reps:10}] } },
-              { id: 'd2', name: 'Plank', detail: '30-45 sec', target_kg: 0, target_label: 'BW',
-                target_sets: [{kg:0,reps:30},{kg:0,reps:30}],
-                alt: { name: 'Leg Raise', detail: '10-12 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
-                  target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } }
+              { id: 'd2', name: 'Dead Bug', detail: '10 per kant', target_kg: 0, target_label: 'BW',
+                target_sets: [{kg:0,reps:10},{kg:0,reps:10}],
+                alt: { name: 'Plank', detail: '30-45 sec', target_kg: 0, target_label: 'BW',
+                  target_sets: [{kg:0,reps:30},{kg:0,reps:30}] } }
             ]
           }
         ]
