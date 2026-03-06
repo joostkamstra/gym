@@ -646,15 +646,15 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: V-Squat + Cable Row', sets: 3, rest: '90s', color: 'green',
+            name: 'A: V-Squat + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
             exercises: [
               { id: 'a1', name: 'V-Squat', detail: '12-15 reps', target_kg: 50,
                 target_sets: [{kg:40,reps:15},{kg:50,reps:12},{kg:50,reps:12}],
                 alt: { name: 'Sled Leg Press', detail: '12-15 reps', target_kg: 80,
                   target_sets: [{kg:60,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } },
-              { id: 'a2', name: 'Seated Cable Row', detail: '12-15 reps', target_kg: 35,
+              { id: 'a2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 35,
                 target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}],
-                alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 35,
+                alt: { name: 'Seated Cable Row', detail: '12-15 reps', target_kg: 35,
                   target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}] } }
             ]
           },
@@ -687,14 +687,14 @@ const USERS = {
           {
             name: 'D: Core', sets: 2, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Pallof Press', detail: '10 reps per kant', target_kg: 15,
-                target_sets: [{kg:10,reps:10},{kg:15,reps:10}],
-                alt: { name: 'Woodchop', detail: '10 reps per kant', target_kg: 10,
-                  target_sets: [{kg:10,reps:10},{kg:10,reps:10}] } },
-              { id: 'd2', name: 'Leg Raise', detail: '10-12 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
-                target_sets: [{kg:0,reps:10},{kg:0,reps:10}],
-                alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 40,
-                  target_sets: [{kg:35,reps:15},{kg:40,reps:12}] } }
+              { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 40,
+                target_sets: [{kg:35,reps:15},{kg:40,reps:12}],
+                alt: { name: 'Pallof Press', detail: '10 reps per kant', target_kg: 15,
+                  target_sets: [{kg:10,reps:10},{kg:15,reps:10}] } },
+              { id: 'd2', name: 'Plank', detail: '30-45 sec', target_kg: 0, target_label: 'BW',
+                target_sets: [{kg:0,reps:30},{kg:0,reps:30}],
+                alt: { name: 'Leg Raise', detail: '10-12 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
+                  target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } }
             ]
           }
         ]
