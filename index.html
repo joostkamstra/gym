@@ -1228,9 +1228,15 @@ if (localStorage.getItem('gym_workouts') && !localStorage.getItem('gym_workouts_
   localStorage.removeItem('gym_workouts');
 }
 
-// Determine user from URL param, default to joost
+// Determine user from URL param, fallback to saved user, default to joost
 const urlUser = new URLSearchParams(window.location.search).get('user');
-currentUser = (urlUser && USERS[urlUser]) ? urlUser : 'joost';
+if (urlUser && USERS[urlUser]) {
+  currentUser = urlUser;
+  localStorage.setItem('gym_user', urlUser);
+} else {
+  const savedUser = localStorage.getItem('gym_user');
+  currentUser = (savedUser && USERS[savedUser]) ? savedUser : 'joost';
+}
 renderHome();
 updateStats();
 </script>
