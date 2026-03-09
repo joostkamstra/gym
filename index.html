@@ -657,18 +657,18 @@ const USERS = {
                 target_sets: [{kg:40,reps:15},{kg:50,reps:12},{kg:50,reps:12}],
                 alt: { name: 'Sled Leg Press', detail: '12-15 reps', target_kg: 80,
                   target_sets: [{kg:60,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 35,
-                target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}],
-                alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 35,
-                  target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}] } }
+              { id: 'a2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 40,
+                target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:40,reps:12}],
+                alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:40,reps:12}] } }
             ]
           },
           {
             name: 'B: Incline Press + Row', sets: 3, rest: '90s', color: 'blue',
             warmup: '1x12 DB Incline @2x6 kg',
             exercises: [
-              { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
-                target_sets: [{kg:10,reps:15},{kg:12,reps:12},{kg:12,reps:12}],
+              { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 12.5, target_label: '2x12.5 kg',
+                target_sets: [{kg:10,reps:15},{kg:12.5,reps:12},{kg:12.5,reps:12}],
                 alt: { name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 30,
                   target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
               { id: 'b2', name: 'Plate-loaded Row', detail: '12-15 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
@@ -680,10 +680,10 @@ const USERS = {
           {
             name: 'C: Lying Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps', target_kg: 30,
-                target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}],
-                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 35,
-                  target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:35,reps:12}] } },
+              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps', target_kg: 25,
+                target_sets: [{kg:20,reps:15},{kg:22.5,reps:12},{kg:25,reps:12}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 30,
+                  target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
               { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 6, target_label: '2x6 kg',
                 target_sets: [{kg:5,reps:15},{kg:6,reps:12},{kg:6,reps:12}],
                 alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 5,
@@ -693,12 +693,12 @@ const USERS = {
           {
             name: 'D: Core + Triceps', sets: 2, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 40,
-                target_sets: [{kg:35,reps:15},{kg:40,reps:12}],
+              { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 55,
+                target_sets: [{kg:50,reps:15},{kg:55,reps:12}],
                 alt: { name: 'Dead Bug', detail: '10 per kant', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } },
-              { id: 'd2', name: 'Dips', detail: '6-10 reps', target_kg: 0, target_label: 'BW',
-                target_sets: [{kg:0,reps:6},{kg:0,reps:6}],
+              { id: 'd2', name: 'Dips', detail: '6-10 reps \u2022 focus volle ROM', target_kg: 0, target_label: 'BW',
+                target_sets: [{kg:0,reps:8},{kg:0,reps:8}],
                 alt: { name: 'OH Tricep Extension', detail: '10-12 reps \u2022 1 dumbbell', target_kg: 8,
                   target_sets: [{kg:8,reps:12},{kg:8,reps:12}] } }
             ]
