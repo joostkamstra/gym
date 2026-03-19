@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gymtracker
+      POSTGRES_USER: gym
+      POSTGRES_PASSWORD: gym
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gym -d gymtracker"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    ports:
+      - "8001:8001"
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+asyncpg://gym:gym@db:5432/gymtracker
+      SECRET_KEY: dev-secret-key-change-in-production
+    volumes:
+      - ./backend/app:/app/app
+      - ./static:/app/static
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -1,0 +1,48 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'static/**'
+      - 'docker-compose.prod.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Scaleway Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: rg.fr-par.scw.cloud
+          username: nologin
+          password: ${{ secrets.SCW_SECRET_KEY }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build \
+            -f backend/Dockerfile \
+            -t rg.fr-par.scw.cloud/gym-tracker/api:latest \
+            -t "rg.fr-par.scw.cloud/gym-tracker/api:${IMAGE_TAG}" \
+            .
+          docker push rg.fr-par.scw.cloud/gym-tracker/api:latest
+          docker push "rg.fr-par.scw.cloud/gym-tracker/api:${IMAGE_TAG}"
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /opt/gym
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            sleep 5
+            curl -f http://localhost:8001/health || (echo "Health check failed!" && exit 1)

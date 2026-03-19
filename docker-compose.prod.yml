@@ -1,0 +1,29 @@
+services:
+  gym-api:
+    image: rg.fr-par.scw.cloud/gym-tracker/api:latest
+    container_name: gym-api
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      CORS_ORIGINS: https://gym.cloudwijk.nl
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    networks:
+      - cloudwijk-network
+
+networks:
+  cloudwijk-network:
+    external: true
