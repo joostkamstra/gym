@@ -1257,9 +1257,18 @@ function showView(id) {
 }
 
 // === HOME STATS ===
-function updateStats() {
+async function updateStats() {
   if (!currentUser) return;
-  const workouts = getWorkouts();
+  let workouts = getWorkouts();
+
+  // Use cloud data if available
+  if (cloudMode && (!cloudWorkouts || cloudWorkouts.length === 0)) {
+    try { await loadCloudWorkouts(); } catch(e) {}
+  }
+  if (cloudMode && cloudWorkouts && cloudWorkouts.length) {
+    workouts = cloudWorkouts.map(w => ({ date: w.date }));
+  }
+
   document.getElementById('statWorkouts').textContent = workouts.length;
 
   const now = new Date();
@@ -1631,28 +1640,98 @@ function sendWorkoutData(workout, schema) {
 }
 
 // === HISTORY ===
-function renderHistory() {
-  const workouts = getWorkouts();
+let cloudWorkouts = null; // cached from API
+
+async function loadCloudWorkouts() {
+  if (!cloudMode) return null;
+  try {
+    const data = await api('/api/workouts?page_size=100');
+    cloudWorkouts = data.workouts;
+    return cloudWorkouts;
+  } catch (e) { return null; }
+}
+
+function mergeWorkouts() {
+  // Cloud workouts take priority, fall back to localStorage
+  const local = getWorkouts();
+  if (cloudMode && cloudWorkouts && cloudWorkouts.length) {
+    // Convert cloud format to display format
+    return cloudWorkouts.map(w => ({
+      _cloudId: w.id,
+      date: w.date,
+      schema: w.schema_key,
+      schemaName: w.schema_name,
+      feedback: w.feedback,
+      exercises: groupCloudSets(w.sets)
+    }));
+  }
+  return local;
+}
+
+function groupCloudSets(sets) {
+  // Group flat sets array into exercises with nested sets (for detail view)
+  const byEx = {};
+  sets.forEach(s => {
+    const key = s.exercise_name;
+    if (!byEx[key]) byEx[key] = { name: s.exercise_name, target_kg: s.target_kg || 0, sets: [] };
+    byEx[key].sets.push({ kg: s.kg, reps: s.reps });
+  });
+  return Object.values(byEx);
+}
+
+async function renderHistory() {
   const container = document.getElementById('historyList');
+  container.textContent = '';
+
+  if (cloudMode) {
+    const loading = document.createElement('div');
+    loading.className = 'empty-state';
+    loading.textContent = 'Laden...';
+    container.appendChild(loading);
+    await loadCloudWorkouts();
+    container.textContent = '';
+  }
+
+  const workouts = mergeWorkouts();
 
   if (workouts.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="emoji">🏋️</div><p>Nog geen workouts.<br>Start je eerste training!</p></div>';
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    const emoji = document.createElement('div');
+    emoji.className = 'emoji';
+    emoji.textContent = '\ud83c\udfcb\ufe0f';
+    const p = document.createElement('p');
+    p.textContent = 'Nog geen workouts. Start je eerste training!';
+    empty.appendChild(emoji);
+    empty.appendChild(p);
+    container.appendChild(empty);
     return;
   }
 
-  container.innerHTML = workouts.map((w, i) => {
+  workouts.forEach((w, i) => {
     const d = new Date(w.date);
     const dateStr = d.toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' });
-    return `<div class="hist-item" onclick="showDetail(${i})">
-      <div class="hist-date">${dateStr}</div>
-      <div class="hist-schema">${w.schemaName || ('Schema ' + w.schema)}</div>
-      <div class="hist-arrow">›</div>
-    </div>`;
-  }).join('');
+    const item = document.createElement('div');
+    item.className = 'hist-item';
+    item.onclick = () => showDetail(i, workouts);
+    const dateEl = document.createElement('div');
+    dateEl.className = 'hist-date';
+    dateEl.textContent = dateStr;
+    const schemaEl = document.createElement('div');
+    schemaEl.className = 'hist-schema';
+    schemaEl.textContent = w.schemaName || ('Schema ' + w.schema);
+    const arrow = document.createElement('div');
+    arrow.className = 'hist-arrow';
+    arrow.textContent = '\u203a';
+    item.appendChild(dateEl);
+    item.appendChild(schemaEl);
+    item.appendChild(arrow);
+    container.appendChild(item);
+  });
 }
 
-function showDetail(index) {
-  const workouts = getWorkouts();
+function showDetail(index, workouts) {
+  if (!workouts) workouts = mergeWorkouts();
   viewingWorkout = workouts[index];
   viewingIndex = index;
   const w = viewingWorkout;
@@ -1661,14 +1740,21 @@ function showDetail(index) {
   document.getElementById('detailTitle').textContent =
     d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
 
-  let html = '';
+  const content = document.getElementById('detailContent');
+  content.textContent = '';
 
-  // Show feedback if present
   if (w.feedback) {
-    html += `<div class="detail-feedback">
-      <div class="detail-feedback-label">Opmerkingen</div>
-      <div class="detail-feedback-text">${w.feedback.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>
-    </div>`;
+    const fb = document.createElement('div');
+    fb.className = 'detail-feedback';
+    const fbLabel = document.createElement('div');
+    fbLabel.className = 'detail-feedback-label';
+    fbLabel.textContent = 'Opmerkingen';
+    const fbText = document.createElement('div');
+    fbText.className = 'detail-feedback-text';
+    fbText.textContent = w.feedback;
+    fb.appendChild(fbLabel);
+    fb.appendChild(fbText);
+    content.appendChild(fb);
   }
 
   (w.exercises || []).forEach(logged => {
@@ -1678,37 +1764,52 @@ function showDetail(index) {
     if (Array.isArray(logged.sets)) {
       const filledSets = logged.sets.filter(s => s.kg || s.reps);
       if (filledSets.length === 0) return;
-      html += `<div class="detail-exercise">
-        <div class="detail-name">${exName} <span style="color:#636366;font-size:12px;font-weight:400">doel: ${targetStr}</span></div>
-        <div class="detail-sets-table">`;
+      const exDiv = document.createElement('div');
+      exDiv.className = 'detail-exercise';
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'detail-name';
+      nameDiv.textContent = exName;
+      const goalSpan = document.createElement('span');
+      goalSpan.style.cssText = 'color:#636366;font-size:12px;font-weight:400;margin-left:8px';
+      goalSpan.textContent = 'doel: ' + targetStr;
+      nameDiv.appendChild(goalSpan);
+      exDiv.appendChild(nameDiv);
+      const table = document.createElement('div');
+      table.className = 'detail-sets-table';
       logged.sets.forEach((s, i) => {
         if (!s.kg && !s.reps) return;
-        html += `<div class="detail-set-row">
-          <div class="detail-set-label">S${i+1}</div>
-          <div class="detail-set-val"><strong>${s.kg || '—'}</strong> <span>kg</span></div>
-          <div class="detail-set-val"><strong>${s.reps || '—'}</strong> <span>reps</span></div>
-        </div>`;
+        const row = document.createElement('div');
+        row.className = 'detail-set-row';
+        const label = document.createElement('div');
+        label.className = 'detail-set-label';
+        label.textContent = 'S' + (i + 1);
+        const kgVal = document.createElement('div');
+        kgVal.className = 'detail-set-val';
+        kgVal.textContent = (s.kg || '\u2014') + ' kg';
+        const repsVal = document.createElement('div');
+        repsVal.className = 'detail-set-val';
+        repsVal.textContent = (s.reps || '\u2014') + ' reps';
+        row.appendChild(label);
+        row.appendChild(kgVal);
+        row.appendChild(repsVal);
+        table.appendChild(row);
       });
-      html += '</div></div>';
-    } else if (logged.kg || logged.reps) {
-      html += `<div class="detail-exercise">
-        <div class="detail-name">${exName}</div>
-        <div class="detail-vals">
-          <div class="detail-val"><strong>${logged.kg || '—'}</strong> <span>kg</span></div>
-          <div class="detail-val"><strong>${logged.reps || '—'}</strong> <span>reps</span></div>
-          <div class="detail-val" style="margin-left:auto;color:#636366">doel: ${targetStr}</div>
-        </div>
-      </div>`;
+      exDiv.appendChild(table);
+      content.appendChild(exDiv);
     }
   });
 
-  document.getElementById('detailContent').innerHTML = html;
   showView('detail');
 }
 
 // === DELETE ===
-function deleteWorkout() {
+async function deleteWorkout() {
   if (!confirm('Workout verwijderen?')) return;
+  if (cloudMode && viewingWorkout && viewingWorkout._cloudId) {
+    try {
+      await api('/api/workouts/' + viewingWorkout._cloudId, { method: 'DELETE' });
+    } catch (e) { console.log('Cloud delete failed:', e); }
+  }
   const workouts = getWorkouts();
   if (viewingIndex > -1 && viewingIndex < workouts.length) {
     workouts.splice(viewingIndex, 1);
