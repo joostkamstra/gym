@@ -45,6 +45,13 @@ EQUIPMENT_DATA = [
     {"name": "Stationary Bike", "type": "machine", "brand": None, "location_hint": "Cardio area", "weight_increment": 0},
     {"name": "Resistance Bands", "type": "bodyweight", "brand": None, "location_hint": "Stretching area", "weight_increment": 0},
     {"name": "Pull-up Bar", "type": "bodyweight", "brand": None, "location_hint": "Free weight area", "weight_increment": 0},
+    {"name": "Kettlebell Rack", "type": "free_weight", "brand": None, "location_hint": "Free weight area", "weight_increment": 0},
+    {"name": "Bicep Curl Machine", "type": "machine", "brand": "Panatta", "location_hint": "Machine area", "weight_increment": 5},
+    {"name": "GHD / Hyperextension Bench", "type": "bodyweight", "brand": "Nautilus", "location_hint": "Core area", "weight_increment": 0},
+    {"name": "Decline Bench (Barbell)", "type": "free_weight", "brand": "Panatta", "location_hint": "Bench area", "weight_increment": 5},
+    {"name": "Incline Barbell Bench", "type": "free_weight", "brand": "Panatta", "location_hint": "Bench area", "weight_increment": 5},
+    {"name": "Calf Raise Machine (Seated)", "type": "machine", "brand": "Technogym", "location_hint": "Leg area", "weight_increment": 5},
+    {"name": "Treadmill", "type": "machine", "brand": None, "location_hint": "Cardio area", "weight_increment": 0},
 ]
 
 
@@ -94,6 +101,13 @@ EXERCISE_DATA = [
     {"name": "Plank", "muscles": "Core (rectus abdominis, obliques, TVA)", "equipment": None},
     {"name": "Seated Row Machine", "muscles": "Middenrug, lats, biceps", "equipment": None},
     {"name": "Hanging Leg Raise", "muscles": "Onderbuik, hip flexors", "equipment": "Pull-up Bar"},
+    {"name": "Kettlebell Swing", "muscles": "Glutes, hamstrings, core", "equipment": "Kettlebell Rack"},
+    {"name": "Kettlebell Goblet Squat", "muscles": "Quadriceps, glutes, core", "equipment": "Kettlebell Rack"},
+    {"name": "Machine Bicep Curl", "muscles": "Biceps", "equipment": "Bicep Curl Machine"},
+    {"name": "GHD Back Extension", "muscles": "Erector spinae, glutes, hamstrings", "equipment": "GHD / Hyperextension Bench"},
+    {"name": "Decline Bench Press", "muscles": "Borst (onderste), triceps", "equipment": "Decline Bench (Barbell)"},
+    {"name": "Incline Barbell Bench Press", "muscles": "Bovenborst, schouders, triceps", "equipment": "Incline Barbell Bench"},
+    {"name": "Seated Calf Raise", "muscles": "Calves (soleus)", "equipment": "Calf Raise Machine (Seated)"},
 ]
 
 
