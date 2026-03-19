@@ -29,7 +29,15 @@ def _get_weight_increment(target_kg: float, equipment_increment: float | None = 
     """Return weight increment from equipment data, or fallback heuristic."""
     if equipment_increment and equipment_increment > 0:
         return equipment_increment
-    return 2.5 if target_kg >= 50 else 1.0
+    # Fallback: 5kg for barbell/cable (>=20kg), 2.5kg for dumbbells (<20kg)
+    return 5.0 if target_kg >= 20 else 2.5
+
+
+def _round_to_increment(kg: float, increment: float) -> float:
+    """Round kg to nearest valid increment."""
+    if increment <= 0 or kg <= 0:
+        return kg
+    return round(round(kg / increment) * increment, 1)
 
 
 def _find_exercise_in_schema(schema_data: dict, exercise_name: str) -> tuple[dict | None, str | None]:
@@ -118,7 +126,7 @@ async def auto_update_targets(
             for set_idx, actual, target, _ in set_results:
                 old_kg = target.get("kg", 0)
                 old_reps = target.get("reps", 0)
-                new_kg = old_kg + increment
+                new_kg = _round_to_increment(old_kg + increment, increment)
                 new_reps = min_reps
 
                 target_sets[set_idx]["kg"] = new_kg
