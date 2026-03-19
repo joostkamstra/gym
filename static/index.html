@@ -215,6 +215,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .equip-ex-muscles{font-size:12px;color:#8e8e93;margin-top:1px}
 .home-card .icon.equip{background:#2a1a1a}
 
+/* Progress */
+.modal-progress{margin-top:8px;margin-bottom:16px}
+.progress-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:#0a84ff;margin-bottom:10px}
+.progress-loading{font-size:13px;color:#636366;text-align:center;padding:12px 0}
+.progress-bars{display:flex;align-items:flex-end;gap:3px;height:60px;margin-bottom:8px;
+  padding:0 2px;border-bottom:1px solid #2c2c2e}
+.progress-bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.progress-bar-fill{width:100%;border-radius:3px 3px 0 0;min-height:2px}
+.progress-bar-fill.up{background:#30d158}
+.progress-bar-fill.down{background:#ff453a}
+.progress-bar-fill.stable{background:#636366}
+.progress-bar-fill.first{background:#0a84ff}
+.progress-bar-label{font-size:9px;color:#8e8e93;white-space:nowrap}
+.progress-table{width:100%}
+.progress-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  border-bottom:1px solid #2c2c2e;font-size:13px}
+.progress-row:last-child{border-bottom:none}
+.progress-date{color:#8e8e93;width:70px;flex-shrink:0}
+.progress-set{font-weight:600;flex:1}
+.progress-delta{width:50px;text-align:right;font-weight:600;flex-shrink:0}
+.progress-delta.up{color:#30d158}
+.progress-delta.down{color:#ff453a}
+.progress-delta.stable{color:#636366}
+.progress-empty{font-size:13px;color:#636366;text-align:center;padding:16px 0}
+
 </style>
 </head>
 <body>
@@ -318,6 +344,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <ul class="do-list" id="modalDos"></ul>
     <div class="modal-section dont">DON'Ts</div>
     <ul class="dont-list" id="modalDonts"></ul>
+    <div class="modal-progress" id="modalProgress"></div>
     <button class="modal-close" onclick="closeExerciseInfo()">Sluiten</button>
   </div>
 </div>
@@ -1201,14 +1228,129 @@ function showExerciseInfo(name) {
   if (!info) return;
   document.getElementById('modalTitle').textContent = name;
   document.getElementById('modalMuscles').textContent = info.muscles;
-  document.getElementById('modalDos').innerHTML = info.dos.map(d => `<li>${d}</li>`).join('');
-  document.getElementById('modalDonts').innerHTML = info.donts.map(d => `<li>${d}</li>`).join('');
+  // Note: dos/donts are from trusted EXERCISE_INFO constant, not user input
+  const dosList = document.getElementById('modalDos');
+  dosList.textContent = '';
+  info.dos.forEach(d => { const li = document.createElement('li'); li.textContent = d; dosList.appendChild(li); });
+  const dontsList = document.getElementById('modalDonts');
+  dontsList.textContent = '';
+  info.donts.forEach(d => { const li = document.createElement('li'); li.textContent = d; dontsList.appendChild(li); });
+  document.getElementById('modalProgress').textContent = '';
   document.getElementById('exerciseModal').classList.add('open');
+  showExerciseProgress(name);
 }
 
 function closeExerciseInfo(e) {
   if (e && e.target !== e.currentTarget) return;
   document.getElementById('exerciseModal').classList.remove('open');
+}
+
+// === EXERCISE PROGRESS ===
+let progressCache = {};
+
+async function loadExerciseProgress(name) {
+  if (progressCache[name]) return progressCache[name];
+  if (!cloudMode) return null;
+  try {
+    const data = await api('/api/workouts/progress/' + encodeURIComponent(name));
+    const byDate = {};
+    data.data_points.forEach(p => {
+      const d = p.date.split('T')[0];
+      const ex = byDate[d];
+      if (!ex || p.kg > ex.kg || (p.kg === ex.kg && p.reps > ex.reps)) {
+        byDate[d] = { date: d, kg: p.kg, reps: p.reps };
+      }
+    });
+    const sessions = Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+    progressCache[name] = sessions;
+    return sessions;
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderProgressInto(container, sessions) {
+  container.textContent = '';
+  if (!sessions || !sessions.length) {
+    const empty = document.createElement('div');
+    empty.className = 'progress-empty';
+    empty.textContent = 'Nog geen progressie data';
+    container.appendChild(empty);
+    return;
+  }
+  const recent = sessions.slice(-8);
+  const maxKg = Math.max(...recent.map(s => s.kg)) || 1;
+  const minKg = Math.min(...recent.map(s => s.kg));
+  const range = maxKg - minKg || 1;
+
+  const title = document.createElement('div');
+  title.className = 'progress-title';
+  title.textContent = 'PROGRESSIE';
+  container.appendChild(title);
+
+  // Bar chart
+  const barsDiv = document.createElement('div');
+  barsDiv.className = 'progress-bars';
+  recent.forEach((s, i) => {
+    const pct = Math.max(10, ((s.kg - minKg) / range) * 80 + 20);
+    let cls = 'first';
+    if (i > 0) {
+      const prev = recent[i - 1];
+      cls = s.kg > prev.kg ? 'up' : s.kg < prev.kg ? 'down' : (s.reps > prev.reps ? 'up' : s.reps < prev.reps ? 'down' : 'stable');
+    }
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const fill = document.createElement('div');
+    fill.className = 'progress-bar-fill ' + cls;
+    fill.style.height = pct + '%';
+    const label = document.createElement('div');
+    label.className = 'progress-bar-label';
+    label.textContent = s.date.slice(5);
+    bar.appendChild(fill);
+    bar.appendChild(label);
+    barsDiv.appendChild(bar);
+  });
+  container.appendChild(barsDiv);
+
+  // Table
+  const table = document.createElement('div');
+  table.className = 'progress-table';
+  const rev = [...recent].reverse();
+  rev.forEach((s, i) => {
+    const prev = rev[i + 1];
+    let delta = '', cls = '';
+    if (prev) {
+      const kgD = s.kg - prev.kg, rD = s.reps - prev.reps;
+      if (kgD > 0) { delta = '+' + kgD + 'kg'; cls = 'up'; }
+      else if (kgD < 0) { delta = kgD + 'kg'; cls = 'down'; }
+      else if (rD > 0) { delta = '+' + rD + 'r'; cls = 'up'; }
+      else if (rD < 0) { delta = rD + 'r'; cls = 'down'; }
+      else { delta = '='; cls = 'stable'; }
+    }
+    const row = document.createElement('div');
+    row.className = 'progress-row';
+    const dateEl = document.createElement('div');
+    dateEl.className = 'progress-date';
+    dateEl.textContent = s.date.slice(5).replace('-', '/');
+    const setEl = document.createElement('div');
+    setEl.className = 'progress-set';
+    setEl.textContent = s.kg + ' kg \u00d7 ' + s.reps;
+    const deltaEl = document.createElement('div');
+    deltaEl.className = 'progress-delta ' + cls;
+    deltaEl.textContent = delta;
+    row.appendChild(dateEl);
+    row.appendChild(setEl);
+    row.appendChild(deltaEl);
+    table.appendChild(row);
+  });
+  container.appendChild(table);
+}
+
+async function showExerciseProgress(name) {
+  const el = document.getElementById('modalProgress');
+  el.textContent = 'Laden...';
+  const sessions = await loadExerciseProgress(name);
+  renderProgressInto(el, sessions);
 }
 
 // === SWAP HELPERS ===
