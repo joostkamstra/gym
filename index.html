@@ -174,16 +174,126 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1}
 
+/* Login */
+.login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:80vh;padding:20px;text-align:center}
+.login-icon{font-size:64px;margin-bottom:16px}
+.login-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.login-subtitle{font-size:15px;color:#8e8e93;margin-bottom:32px}
+.login-input{width:100%;max-width:280px;height:52px;background:#1c1c1e;border:2px solid #3a3a3c;
+  border-radius:14px;color:#fff;font-size:18px;font-weight:600;text-align:center;
+  -webkit-appearance:none;appearance:none;letter-spacing:8px;margin-bottom:12px}
+.login-input:focus{border-color:#0a84ff;outline:none}
+.login-input::placeholder{color:#636366;letter-spacing:normal;font-weight:400;font-size:15px}
+.login-error{color:#ff453a;font-size:13px;min-height:20px;margin-bottom:12px}
+.login-users{display:flex;gap:12px;margin-bottom:24px}
+.login-user{background:#1c1c1e;border:2px solid #3a3a3c;border-radius:12px;padding:12px 24px;
+  color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s}
+.login-user.active{border-color:#0a84ff;background:#0d2540}
+.login-user:active{transform:scale(0.95)}
+
+/* Cloud indicator */
+.cloud-badge{font-size:11px;color:#30d158;background:#0d3d1a;padding:2px 8px;border-radius:6px;
+  font-weight:600;margin-left:8px}
+
+/* Equipment browser */
+.search-input{width:100%;background:#1c1c1e;border:2px solid #3a3a3c;border-radius:12px;
+  color:#fff;font-size:15px;padding:10px 16px;margin-bottom:12px;-webkit-appearance:none}
+.search-input:focus{border-color:#0a84ff;outline:none}
+.search-input::placeholder{color:#636366}
+.equip-item{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:4px;
+  cursor:pointer;transition:transform .1s}
+.equip-item:active{transform:scale(0.97)}
+.equip-item.expanded{border-left:3px solid #0a84ff;margin-bottom:8px}
+.equip-name{font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.equip-meta{font-size:12px;color:#8e8e93;margin-top:2px}
+.equip-count{font-size:11px;color:#8e8e93;background:#2c2c2e;padding:2px 8px;border-radius:6px;flex-shrink:0}
+.equip-exercises{margin-top:10px;padding-top:10px;border-top:1px solid #2c2c2e}
+.equip-ex-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.equip-ex-row:not(:last-child){border-bottom:1px solid #2c2c2e}
+.equip-ex-name{font-size:14px;font-weight:600}
+.equip-ex-muscles{font-size:12px;color:#8e8e93;margin-top:1px}
+.home-card .icon.equip{background:#2a1a1a}
+
+/* Progress */
+.modal-progress{margin-top:8px;margin-bottom:16px}
+.progress-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:#0a84ff;margin-bottom:10px}
+.progress-loading{font-size:13px;color:#636366;text-align:center;padding:12px 0}
+.progress-bars{display:flex;align-items:flex-end;gap:3px;height:60px;margin-bottom:8px;
+  padding:0 2px;border-bottom:1px solid #2c2c2e}
+.progress-bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.progress-bar-fill{width:100%;border-radius:3px 3px 0 0;min-height:2px}
+.progress-bar-fill.up{background:#30d158}
+.progress-bar-fill.down{background:#ff453a}
+.progress-bar-fill.stable{background:#636366}
+.progress-bar-fill.first{background:#0a84ff}
+.progress-bar-label{font-size:9px;color:#8e8e93;white-space:nowrap}
+.progress-table{width:100%}
+.progress-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  border-bottom:1px solid #2c2c2e;font-size:13px}
+.progress-row:last-child{border-bottom:none}
+.progress-date{color:#8e8e93;width:70px;flex-shrink:0}
+.progress-set{font-weight:600;flex:1}
+.progress-delta{width:50px;text-align:right;font-weight:600;flex-shrink:0}
+.progress-delta.up{color:#30d158}
+.progress-delta.down{color:#ff453a}
+.progress-delta.stable{color:#636366}
+.progress-empty{font-size:13px;color:#636366;text-align:center;padding:16px 0}
+
+/* Evaluation after workout */
+.eval-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:300;
+  display:none;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.eval-overlay.open{display:flex}
+.eval-sheet{background:#1c1c1e;border-radius:20px 20px 0 0;width:100%;max-width:500px;
+  max-height:85vh;overflow-y:auto;padding:20px 20px env(safe-area-inset-bottom);animation:slideUp .3s ease-out}
+.eval-header{text-align:center;margin-bottom:16px}
+.eval-title{font-size:20px;font-weight:700}
+.eval-subtitle{font-size:13px;color:#8e8e93;margin-top:4px}
+.eval-summary{background:#2c2c2e;border-radius:12px;padding:14px;text-align:center;margin-bottom:16px;
+  font-size:15px;font-weight:600}
+.eval-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #2c2c2e}
+.eval-item:last-child{border-bottom:none}
+.eval-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;flex-shrink:0}
+.eval-icon.up{background:#0d3d1a;color:#30d158}
+.eval-icon.down{background:#3d1a1a;color:#ff453a}
+.eval-icon.stable{background:#2c2c2e;color:#636366}
+.eval-icon.new{background:#0d2540;color:#0a84ff}
+.eval-name{font-size:14px;font-weight:600;flex:1}
+.eval-detail{font-size:12px;color:#8e8e93;text-align:right}
+.eval-change{font-size:13px;font-weight:600;text-align:right}
+.eval-change.up{color:#30d158}
+.eval-change.down{color:#ff453a}
+.eval-change.stable{color:#636366}
+.eval-change.new{color:#0a84ff}
+
 </style>
 </head>
 <body>
 
+<!-- LOGIN VIEW -->
+<div id="login" class="view active">
+  <div class="login-wrap">
+    <div class="login-icon">🏋️</div>
+    <div class="login-title">Gym Tracker</div>
+    <div class="login-subtitle">Kies je profiel en voer je PIN in</div>
+    <div class="login-users" id="loginUsers"></div>
+    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+      class="login-input" id="loginPin" placeholder="PIN code"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-error" id="loginError"></div>
+    <button class="btn btn-green" style="max-width:280px" onclick="doLogin()">Inloggen</button>
+  </div>
+</div>
+
 <!-- HOME VIEW -->
-<div id="home" class="view active">
+<div id="home" class="view">
   <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
     <h1 id="homeTitle">Gym Tracker</h1>
     <button class="header-action" onclick="doRefresh()">↻</button>
+    <button class="header-action" onclick="logout()" title="Uitloggen">⏻</button>
   </div>
   <div class="stats-bar" id="statsBar">
     <div><div class="stat-val" id="statWorkouts">0</div><div class="stat-label">workouts</div></div>
@@ -241,6 +351,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   <button class="btn btn-blue" onclick="copyToClipboard()">Kopieer naar klembord</button>
 </div>
 
+<!-- EQUIPMENT VIEW -->
+<div id="equipment" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('home')">&#8249;</button>
+    <h1>Apparatuur</h1>
+  </div>
+  <input class="search-input" type="text" placeholder="Zoek apparaat of oefening..." id="equipSearch" oninput="filterEquipment(this.value)">
+  <div id="equipmentList"></div>
+</div>
+
 <!-- EXERCISE INFO MODAL -->
 <div class="modal-overlay" id="exerciseModal" onclick="closeExerciseInfo(event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -251,7 +371,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <ul class="do-list" id="modalDos"></ul>
     <div class="modal-section dont">DON'Ts</div>
     <ul class="dont-list" id="modalDonts"></ul>
+    <div class="modal-progress" id="modalProgress"></div>
     <button class="modal-close" onclick="closeExerciseInfo()">Sluiten</button>
+  </div>
+</div>
+
+<!-- EVALUATION OVERLAY -->
+<div class="eval-overlay" id="evalOverlay" onclick="closeEvaluation(event)">
+  <div class="eval-sheet" onclick="event.stopPropagation()">
+    <div class="eval-header">
+      <div class="eval-title" id="evalTitle">Evaluatie</div>
+      <div class="eval-subtitle" id="evalSubtitle"></div>
+    </div>
+    <div class="eval-summary" id="evalSummary"></div>
+    <div id="evalItems"></div>
+    <button class="btn btn-green" style="margin-top:16px" onclick="closeEvaluation()">Top! Naar home</button>
   </div>
 </div>
 
@@ -889,6 +1023,109 @@ const USERS = {
   }
 };
 
+// === API CLIENT ===
+const API_BASE = location.origin;
+let authToken = localStorage.getItem('gym_token');
+let authUser = JSON.parse(localStorage.getItem('gym_auth_user') || 'null');
+let cloudSchemas = null; // cached from API
+let cloudMode = !!authToken;
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+  const res = await fetch(API_BASE + path, { ...opts, headers });
+  if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+function logout() {
+  authToken = null; authUser = null; cloudSchemas = null; cloudMode = false;
+  localStorage.removeItem('gym_token');
+  localStorage.removeItem('gym_auth_user');
+  showView('login');
+  renderLoginUsers();
+}
+
+async function doLogin() {
+  const pin = document.getElementById('loginPin').value;
+  const errEl = document.getElementById('loginError');
+  const selectedUser = document.querySelector('.login-user.active');
+  if (!selectedUser) { errEl.textContent = 'Kies eerst een profiel'; return; }
+  if (!pin) { errEl.textContent = 'Voer je PIN in'; return; }
+  errEl.textContent = '';
+  try {
+    const data = await api('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username: selectedUser.dataset.user, pin })
+    });
+    authToken = data.token;
+    authUser = data.user;
+    cloudMode = true;
+    localStorage.setItem('gym_token', authToken);
+    localStorage.setItem('gym_auth_user', JSON.stringify(authUser));
+    currentUser = authUser.username;
+    localStorage.setItem('gym_user', currentUser);
+    document.getElementById('loginPin').value = '';
+    await loadCloudSchemas();
+    showView('home');
+    renderHome();
+    updateStats();
+  } catch (e) {
+    errEl.textContent = 'Onjuiste PIN of gebruiker';
+  }
+}
+
+function renderLoginUsers() {
+  const c = document.getElementById('loginUsers');
+  c.textContent = '';
+  // Show known users (from USERS constant as fallback, or just joost/ruud)
+  const users = Object.keys(USERS);
+  users.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'login-user';
+    btn.dataset.user = u;
+    btn.textContent = USERS[u].name;
+    btn.onclick = () => {
+      document.querySelectorAll('.login-user').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('loginPin').focus();
+    };
+    c.appendChild(btn);
+  });
+}
+
+async function loadCloudSchemas() {
+  if (!cloudMode) return;
+  try {
+    const data = await api('/api/schemas');
+    if (data.schemas && data.schemas.length > 0) {
+      cloudSchemas = {};
+      data.schemas.forEach(s => {
+        cloudSchemas[s.key] = { name: s.name, subtitle: s.subtitle, desc: s.description, supersets: s.data.supersets || s.data };
+      });
+    } else {
+      // No schemas in cloud yet — auto-import from local USERS data
+      const localSchemas = USERS[currentUser]?.schemas;
+      if (localSchemas) {
+        console.log('No cloud schemas found, importing from local data...');
+        const importData = {};
+        Object.entries(localSchemas).forEach(([key, s]) => {
+          importData[key] = { key, name: s.name, subtitle: s.subtitle, desc: s.desc, supersets: s.supersets };
+        });
+        await api('/api/schemas/import', { method: 'POST', body: JSON.stringify({ schemas: importData }) });
+        console.log('Schemas imported to cloud');
+        // Reload
+        return loadCloudSchemas();
+      }
+    }
+  } catch (e) {
+    console.log('Cloud schemas unavailable, using local');
+    cloudSchemas = null;
+  }
+}
+
 // === STATE ===
 let currentUser = null;
 let currentSchema = null;
@@ -899,7 +1136,8 @@ let currentSwaps = {};
 
 // === USER ===
 function getUserSchemas() {
-  return USERS[currentUser].schemas;
+  if (cloudMode && cloudSchemas) return cloudSchemas;
+  return USERS[currentUser]?.schemas || {};
 }
 
 const SCHEMA_DISPLAY = { A: {emoji:'\ud83d\udcaa',cls:'a'}, B: {emoji:'\ud83d\udd25',cls:'b'}, C: {emoji:'\ud83c\udfcb\ufe0f',cls:'c'}, D: {emoji:'\u26a1',cls:'d'} };
@@ -914,6 +1152,10 @@ function renderHome() {
     const d = SCHEMA_DISPLAY[key] || {emoji:'\ud83c\udfaf',cls:key.toLowerCase()};
     container.appendChild(buildHomeCard(key, schemas[key], d.cls, d.emoji));
   });
+
+  const cardEquip = buildHomeCard('equip', {name:'Apparatuur',subtitle:'Alle toestellen en oefeningen',desc:''}, 'equip', '\ud83d\udcbb');
+  cardEquip.onclick = () => showView('equipment');
+  container.appendChild(cardEquip);
 
   const cardHist = buildHomeCard('hist', {name:'Geschiedenis',subtitle:'Bekijk en deel eerdere workouts',desc:''}, 'hist', '\ud83d\udcca');
   cardHist.onclick = () => showView('history');
@@ -950,6 +1192,49 @@ function getWorkouts() {
 function saveWorkouts(w) {
   localStorage.setItem('gym_workouts_' + currentUser, JSON.stringify(w));
 }
+// Cloud workout save (in addition to local + FormSubmit)
+async function saveWorkoutToCloud(workout, schemaKey) {
+  if (!cloudMode) return null;
+  try {
+    const sets = [];
+    workout.exercises.forEach(ex => {
+      if (Array.isArray(ex.sets)) {
+        ex.sets.forEach((s, i) => {
+          if (s.kg || s.reps) {
+            sets.push({
+              exercise_name: ex.name,
+              superset_key: ex.id,
+              set_number: i + 1,
+              kg: parseFloat(s.kg) || 0,
+              reps: parseInt(s.reps) || 0,
+              target_kg: ex.target_kg || null,
+              target_reps: null
+            });
+          }
+        });
+      }
+    });
+    const res = await api('/api/workouts', {
+      method: 'POST',
+      body: JSON.stringify({
+        schema_key: schemaKey,
+        date: workout.date,
+        feedback: workout.feedback,
+        notes: null,
+        sets
+      })
+    });
+    console.log('Workout saved to cloud:', res.id);
+    if (res.target_updates && res.target_updates.length) {
+      window._lastTargetUpdates = res.target_updates;
+      console.log('Targets auto-updated:', res.target_updates.length, 'changes');
+    }
+    return res;
+  } catch (e) {
+    console.log('Cloud save failed, data saved locally:', e.message);
+    return null;
+  }
+}
 
 // === NAVIGATION ===
 function showView(id) {
@@ -958,6 +1243,7 @@ function showView(id) {
   window.scrollTo(0, 0);
   if (id === 'home') updateStats();
   if (id === 'history') renderHistory();
+  if (id === 'equipment') renderEquipment();
 }
 
 // === HOME STATS ===
@@ -986,14 +1272,129 @@ function showExerciseInfo(name) {
   if (!info) return;
   document.getElementById('modalTitle').textContent = name;
   document.getElementById('modalMuscles').textContent = info.muscles;
-  document.getElementById('modalDos').innerHTML = info.dos.map(d => `<li>${d}</li>`).join('');
-  document.getElementById('modalDonts').innerHTML = info.donts.map(d => `<li>${d}</li>`).join('');
+  // Note: dos/donts are from trusted EXERCISE_INFO constant, not user input
+  const dosList = document.getElementById('modalDos');
+  dosList.textContent = '';
+  info.dos.forEach(d => { const li = document.createElement('li'); li.textContent = d; dosList.appendChild(li); });
+  const dontsList = document.getElementById('modalDonts');
+  dontsList.textContent = '';
+  info.donts.forEach(d => { const li = document.createElement('li'); li.textContent = d; dontsList.appendChild(li); });
+  document.getElementById('modalProgress').textContent = '';
   document.getElementById('exerciseModal').classList.add('open');
+  showExerciseProgress(name);
 }
 
 function closeExerciseInfo(e) {
   if (e && e.target !== e.currentTarget) return;
   document.getElementById('exerciseModal').classList.remove('open');
+}
+
+// === EXERCISE PROGRESS ===
+let progressCache = {};
+
+async function loadExerciseProgress(name) {
+  if (progressCache[name]) return progressCache[name];
+  if (!cloudMode) return null;
+  try {
+    const data = await api('/api/workouts/progress/' + encodeURIComponent(name));
+    const byDate = {};
+    data.data_points.forEach(p => {
+      const d = p.date.split('T')[0];
+      const ex = byDate[d];
+      if (!ex || p.kg > ex.kg || (p.kg === ex.kg && p.reps > ex.reps)) {
+        byDate[d] = { date: d, kg: p.kg, reps: p.reps };
+      }
+    });
+    const sessions = Object.values(byDate).sort((a, b) => a.date.localeCompare(b.date));
+    progressCache[name] = sessions;
+    return sessions;
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderProgressInto(container, sessions) {
+  container.textContent = '';
+  if (!sessions || !sessions.length) {
+    const empty = document.createElement('div');
+    empty.className = 'progress-empty';
+    empty.textContent = 'Nog geen progressie data';
+    container.appendChild(empty);
+    return;
+  }
+  const recent = sessions.slice(-8);
+  const maxKg = Math.max(...recent.map(s => s.kg)) || 1;
+  const minKg = Math.min(...recent.map(s => s.kg));
+  const range = maxKg - minKg || 1;
+
+  const title = document.createElement('div');
+  title.className = 'progress-title';
+  title.textContent = 'PROGRESSIE';
+  container.appendChild(title);
+
+  // Bar chart
+  const barsDiv = document.createElement('div');
+  barsDiv.className = 'progress-bars';
+  recent.forEach((s, i) => {
+    const pct = Math.max(10, ((s.kg - minKg) / range) * 80 + 20);
+    let cls = 'first';
+    if (i > 0) {
+      const prev = recent[i - 1];
+      cls = s.kg > prev.kg ? 'up' : s.kg < prev.kg ? 'down' : (s.reps > prev.reps ? 'up' : s.reps < prev.reps ? 'down' : 'stable');
+    }
+    const bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    const fill = document.createElement('div');
+    fill.className = 'progress-bar-fill ' + cls;
+    fill.style.height = pct + '%';
+    const label = document.createElement('div');
+    label.className = 'progress-bar-label';
+    label.textContent = s.date.slice(5);
+    bar.appendChild(fill);
+    bar.appendChild(label);
+    barsDiv.appendChild(bar);
+  });
+  container.appendChild(barsDiv);
+
+  // Table
+  const table = document.createElement('div');
+  table.className = 'progress-table';
+  const rev = [...recent].reverse();
+  rev.forEach((s, i) => {
+    const prev = rev[i + 1];
+    let delta = '', cls = '';
+    if (prev) {
+      const kgD = s.kg - prev.kg, rD = s.reps - prev.reps;
+      if (kgD > 0) { delta = '+' + kgD + 'kg'; cls = 'up'; }
+      else if (kgD < 0) { delta = kgD + 'kg'; cls = 'down'; }
+      else if (rD > 0) { delta = '+' + rD + 'r'; cls = 'up'; }
+      else if (rD < 0) { delta = rD + 'r'; cls = 'down'; }
+      else { delta = '='; cls = 'stable'; }
+    }
+    const row = document.createElement('div');
+    row.className = 'progress-row';
+    const dateEl = document.createElement('div');
+    dateEl.className = 'progress-date';
+    dateEl.textContent = s.date.slice(5).replace('-', '/');
+    const setEl = document.createElement('div');
+    setEl.className = 'progress-set';
+    setEl.textContent = s.kg + ' kg \u00d7 ' + s.reps;
+    const deltaEl = document.createElement('div');
+    deltaEl.className = 'progress-delta ' + cls;
+    deltaEl.textContent = delta;
+    row.appendChild(dateEl);
+    row.appendChild(setEl);
+    row.appendChild(deltaEl);
+    table.appendChild(row);
+  });
+  container.appendChild(table);
+}
+
+async function showExerciseProgress(name) {
+  const el = document.getElementById('modalProgress');
+  el.textContent = 'Laden...';
+  const sessions = await loadExerciseProgress(name);
+  renderProgressInto(el, sessions);
 }
 
 // === SWAP HELPERS ===
@@ -1109,7 +1510,7 @@ function confirmExit() {
   }
 }
 
-function saveWorkout() {
+async function saveWorkout() {
   const s = getUserSchemas()[currentSchema];
   const exercises = [];
   let hasAny = false;
@@ -1155,8 +1556,21 @@ function saveWorkout() {
 
   sendWorkoutData(workout, s);
 
-  showToast('Workout opgeslagen!');
-  setTimeout(() => showView('home'), 800);
+  // Save to cloud and show evaluation
+  const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
+  if (cloudResult && cloudResult.queued) {
+    // Offline: queued in service worker
+    showToast('Offline opgeslagen \u2014 synct automatisch');
+    registerSync();
+    setTimeout(() => showView('home'), 1200);
+  } else if (cloudResult && cloudResult.id) {
+    showToast('Workout opgeslagen!');
+    showView('home');
+    showWorkoutEvaluation(cloudResult.id, s.name);
+  } else {
+    showToast('Opgeslagen (lokaal)');
+    setTimeout(() => showView('home'), 800);
+  }
 }
 
 function sendWorkoutData(workout, schema) {
@@ -1294,6 +1708,278 @@ function deleteWorkout() {
   showView('history');
 }
 
+// === OFFLINE SYNC ===
+function registerSync() {
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then(reg => reg.sync.register('sync-workouts'));
+  } else {
+    // Fallback: try to sync immediately on visibility change
+    document.addEventListener('visibilitychange', function syncOnFocus() {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.controller?.postMessage('SYNC_NOW');
+        document.removeEventListener('visibilitychange', syncOnFocus);
+      }
+    });
+  }
+}
+
+// Also try to sync queued workouts on app start
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  navigator.serviceWorker.controller.postMessage('SYNC_NOW');
+}
+
+// === WORKOUT EVALUATION ===
+async function showWorkoutEvaluation(workoutId, schemaName) {
+  try {
+    const ev = await api('/api/workouts/' + workoutId + '/evaluation');
+    document.getElementById('evalTitle').textContent = 'Workout Evaluatie';
+    const prevStr = ev.previous_date ? new Date(ev.previous_date).toLocaleDateString('nl-NL', {day:'numeric',month:'short'}) : null;
+    document.getElementById('evalSubtitle').textContent = prevStr ? 'vs ' + prevStr : 'Eerste sessie ' + schemaName;
+    document.getElementById('evalSummary').textContent = ev.summary;
+
+    const container = document.getElementById('evalItems');
+    container.textContent = '';
+    const icons = { up: '\u2191', down: '\u2193', stable: '=', new: '\u2605' };
+    ev.deltas.forEach(d => {
+      const item = document.createElement('div');
+      item.className = 'eval-item';
+
+      const icon = document.createElement('div');
+      icon.className = 'eval-icon ' + d.verdict;
+      icon.textContent = icons[d.verdict] || '?';
+      item.appendChild(icon);
+
+      const name = document.createElement('div');
+      name.className = 'eval-name';
+      name.textContent = d.exercise_name;
+      item.appendChild(name);
+
+      const right = document.createElement('div');
+      right.style.textAlign = 'right';
+      const detail = document.createElement('div');
+      detail.className = 'eval-detail';
+      detail.textContent = d.current_best_kg + ' kg \u00d7 ' + d.current_best_reps;
+      right.appendChild(detail);
+
+      if (d.verdict !== 'new' && d.kg_change !== null) {
+        const change = document.createElement('div');
+        change.className = 'eval-change ' + d.verdict;
+        const parts = [];
+        if (d.kg_change !== 0) parts.push((d.kg_change > 0 ? '+' : '') + d.kg_change + ' kg');
+        if (d.reps_change !== 0) parts.push((d.reps_change > 0 ? '+' : '') + d.reps_change + ' reps');
+        change.textContent = parts.join(', ') || 'gelijk';
+        right.appendChild(change);
+      }
+      item.appendChild(right);
+      container.appendChild(item);
+    });
+
+    // Show target updates if available (from cloud save response)
+    if (window._lastTargetUpdates && window._lastTargetUpdates.length) {
+      const tuDiv = document.createElement('div');
+      tuDiv.style.cssText = 'margin-top:16px;padding-top:12px;border-top:1px solid #3a3a3c';
+      const tuTitle = document.createElement('div');
+      tuTitle.className = 'progress-title';
+      tuTitle.textContent = 'TARGETS BIJGEWERKT';
+      tuTitle.style.color = '#ff9f0a';
+      tuDiv.appendChild(tuTitle);
+      window._lastTargetUpdates.forEach(u => {
+        const row = document.createElement('div');
+        row.className = 'eval-item';
+        const icon = document.createElement('div');
+        icon.className = 'eval-icon up';
+        icon.textContent = u.reason === 'weight_up' ? '\u2b06' : '\u2191';
+        row.appendChild(icon);
+        const name = document.createElement('div');
+        name.className = 'eval-name';
+        name.textContent = u.exercise_name + ' (S' + u.set_number + ')';
+        row.appendChild(name);
+        const detail = document.createElement('div');
+        detail.style.textAlign = 'right';
+        const from = document.createElement('div');
+        from.className = 'eval-detail';
+        from.textContent = u.old_kg + 'kg \u00d7 ' + u.old_reps + ' \u2192 ' + u.new_kg + 'kg \u00d7 ' + u.new_reps;
+        detail.appendChild(from);
+        const reason = document.createElement('div');
+        reason.className = 'eval-change up';
+        reason.textContent = u.reason === 'weight_up' ? '+gewicht' : u.reason === 'reps_up' ? '+reps' : u.reason === 'kg_up' ? '+kg' : '';
+        detail.appendChild(reason);
+        row.appendChild(detail);
+        tuDiv.appendChild(row);
+      });
+      container.appendChild(tuDiv);
+      window._lastTargetUpdates = null;
+    }
+
+    document.getElementById('evalOverlay').classList.add('open');
+    progressCache = {}; // clear cache so progress reflects new data
+  } catch (e) {
+    console.log('Evaluation load failed:', e);
+  }
+}
+
+function closeEvaluation(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('evalOverlay').classList.remove('open');
+}
+
+// === EQUIPMENT ===
+let equipmentData = null; // cached from API
+let expandedEquip = null;
+
+const EQUIP_TYPES = {
+  machine: { label: 'Machines', color: 'green' },
+  cable: { label: 'Kabel', color: 'blue' },
+  free_weight: { label: 'Vrije Gewichten', color: 'purple' },
+  bodyweight: { label: 'Bodyweight', color: 'orange' }
+};
+
+async function loadEquipmentData() {
+  if (equipmentData) return equipmentData;
+  try {
+    const [equipment, exercises] = await Promise.all([
+      api('/api/equipment'),
+      api('/api/exercises')
+    ]);
+    // Build equipment → exercises map
+    const exByEquip = {};
+    exercises.forEach(ex => {
+      const eqName = ex.equipment ? ex.equipment.name : null;
+      if (eqName) {
+        if (!exByEquip[eqName]) exByEquip[eqName] = [];
+        exByEquip[eqName].push(ex);
+      }
+    });
+    equipmentData = equipment.map(eq => ({
+      ...eq,
+      exercises: exByEquip[eq.name] || []
+    }));
+    return equipmentData;
+  } catch (e) {
+    console.log('Failed to load equipment:', e);
+    return [];
+  }
+}
+
+async function renderEquipment() {
+  const container = document.getElementById('equipmentList');
+  container.textContent = '';
+  const data = await loadEquipmentData();
+  if (!data.length) {
+    container.textContent = 'Geen apparatuur gevonden.';
+    return;
+  }
+  // Group by type
+  const groups = {};
+  data.forEach(eq => {
+    const t = eq.type || 'other';
+    if (!groups[t]) groups[t] = [];
+    groups[t].push(eq);
+  });
+  // Render groups
+  Object.entries(EQUIP_TYPES).forEach(([type, cfg]) => {
+    const items = groups[type];
+    if (!items || !items.length) return;
+    const section = document.createElement('div');
+    section.className = 'superset ' + cfg.color;
+    section.dataset.type = type;
+    const header = document.createElement('div');
+    header.className = 'superset-header';
+    header.textContent = cfg.label;
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = items.length + ' items';
+    header.appendChild(badge);
+    section.appendChild(header);
+    items.sort((a, b) => a.name.localeCompare(b.name));
+    items.forEach(eq => {
+      section.appendChild(buildEquipItem(eq));
+    });
+    container.appendChild(section);
+  });
+  expandedEquip = null;
+}
+
+function buildEquipItem(eq) {
+  const div = document.createElement('div');
+  div.className = 'equip-item';
+  div.dataset.name = eq.name.toLowerCase();
+  div.dataset.exercises = eq.exercises.map(e => e.name.toLowerCase()).join(',');
+  const nameRow = document.createElement('div');
+  nameRow.className = 'equip-name';
+  const nameText = document.createElement('span');
+  nameText.textContent = eq.name;
+  nameRow.appendChild(nameText);
+  if (eq.exercises.length) {
+    const count = document.createElement('span');
+    count.className = 'equip-count';
+    count.textContent = eq.exercises.length + ' oef.';
+    nameRow.appendChild(count);
+  }
+  div.appendChild(nameRow);
+  const meta = document.createElement('div');
+  meta.className = 'equip-meta';
+  const parts = [];
+  if (eq.brand) parts.push(eq.brand);
+  if (eq.location_hint) parts.push(eq.location_hint);
+  meta.textContent = parts.join(' \u2022 ') || '';
+  div.appendChild(meta);
+  // Exercise detail container (hidden by default)
+  const exContainer = document.createElement('div');
+  exContainer.className = 'equip-exercises';
+  exContainer.style.display = 'none';
+  eq.exercises.forEach(ex => {
+    const row = document.createElement('div');
+    row.className = 'equip-ex-row';
+    const info = document.createElement('div');
+    const exName = document.createElement('div');
+    exName.className = 'equip-ex-name';
+    exName.textContent = ex.name;
+    const exMuscles = document.createElement('div');
+    exMuscles.className = 'equip-ex-muscles';
+    exMuscles.textContent = ex.muscles;
+    info.appendChild(exName);
+    info.appendChild(exMuscles);
+    row.appendChild(info);
+    // Info button reusing existing modal
+    if (EXERCISE_INFO[ex.name]) {
+      const infoBtn = document.createElement('button');
+      infoBtn.className = 'info-btn';
+      infoBtn.textContent = '\u24d8';
+      infoBtn.onclick = (e) => { e.stopPropagation(); showExerciseInfo(ex.name); };
+      row.appendChild(infoBtn);
+    }
+    exContainer.appendChild(row);
+  });
+  div.appendChild(exContainer);
+  // Toggle expand
+  div.onclick = () => {
+    if (expandedEquip && expandedEquip !== div) {
+      expandedEquip.classList.remove('expanded');
+      expandedEquip.querySelector('.equip-exercises').style.display = 'none';
+    }
+    const isExpanded = div.classList.toggle('expanded');
+    exContainer.style.display = isExpanded ? 'block' : 'none';
+    expandedEquip = isExpanded ? div : null;
+  };
+  return div;
+}
+
+function filterEquipment(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('#equipmentList .superset').forEach(section => {
+    let sectionVisible = false;
+    section.querySelectorAll('.equip-item').forEach(item => {
+      const matchName = item.dataset.name.includes(q);
+      const matchEx = item.dataset.exercises.includes(q);
+      const show = !q || matchName || matchEx;
+      item.style.display = show ? '' : 'none';
+      if (show) sectionVisible = true;
+    });
+    section.style.display = sectionVisible ? '' : 'none';
+  });
+}
+
 // === SHARE ===
 function shareWorkout() {
   const w = viewingWorkout;
@@ -1399,7 +2085,18 @@ document.addEventListener('touchend', () => {
 
 // === INIT ===
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Listen for sync complete messages
+    navigator.serviceWorker.addEventListener('message', e => {
+      if (e.data.type === 'SYNC_COMPLETE') {
+        showToast(e.data.synced + ' workout(s) gesynct!');
+        updateStats();
+      }
+      if (e.data.type === 'WORKOUT_QUEUED') {
+        console.log('Workout queued for offline sync');
+      }
+    });
+  }).catch(() => {});
 }
 
 // Migrate old single-user data to joost
@@ -1417,8 +2114,27 @@ if (urlUser && USERS[urlUser]) {
   const savedUser = localStorage.getItem('gym_user');
   currentUser = (savedUser && USERS[savedUser]) ? savedUser : 'joost';
 }
-renderHome();
-updateStats();
+
+// Auth flow: if token exists, try cloud mode; otherwise show login (or fallback to local)
+(async () => {
+  if (authToken && authUser) {
+    currentUser = authUser.username;
+    cloudMode = true;
+    try {
+      await loadCloudSchemas();
+    } catch (e) {
+      console.log('Cloud unavailable, using local data');
+      cloudMode = false;
+    }
+    showView('home');
+    renderHome();
+    updateStats();
+  } else {
+    // Show login screen, but also prepare fallback
+    renderLoginUsers();
+    showView('login');
+  }
+})();
 </script>
 </body>
 </html>
