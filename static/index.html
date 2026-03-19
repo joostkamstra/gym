@@ -1162,15 +1162,39 @@ function getUserSchemas() {
 
 const SCHEMA_DISPLAY = { A: {emoji:'\ud83d\udcaa',cls:'a'}, B: {emoji:'\ud83d\udd25',cls:'b'}, C: {emoji:'\ud83c\udfcb\ufe0f',cls:'c'}, D: {emoji:'\u26a1',cls:'d'} };
 
+function getTodaySchema(dayOfWeek) {
+  // Mon(1)=A or C, Thu(4)=B or D. Rotation based on last workout.
+  const isMon = dayOfWeek === 1;
+  const isThu = dayOfWeek === 4;
+  if (!isMon && !isThu) return null;
+
+  // Check last workout to determine rotation
+  const workouts = cloudWorkouts || getWorkouts();
+  if (!workouts || !workouts.length) return isMon ? 'A' : 'B';
+
+  const lastSchema = workouts[0].schema_key || workouts[0].schema;
+  if (isMon) return (lastSchema === 'A' || lastSchema === 'B') ? 'C' : 'A';
+  if (isThu) return (lastSchema === 'A' || lastSchema === 'B') ? 'B' : 'D';
+  return null;
+}
+
 function renderHome() {
   const schemas = getUserSchemas();
   document.getElementById('homeTitle').textContent = 'Gym Tracker';
   const container = document.getElementById('homeCards');
   container.textContent = '';
 
+  // Determine today's suggested schema based on day + rotation
+  const today = new Date().getDay(); // 0=sun, 1=mon, 4=thu
+  const todaySchema = getTodaySchema(today);
+
   Object.keys(schemas).forEach(key => {
     const d = SCHEMA_DISPLAY[key] || {emoji:'\ud83c\udfaf',cls:key.toLowerCase()};
-    container.appendChild(buildHomeCard(key, schemas[key], d.cls, d.emoji));
+    const card = buildHomeCard(key, schemas[key], d.cls, d.emoji);
+    if (key === todaySchema) {
+      card.style.border = '2px solid #30d158';
+    }
+    container.appendChild(card);
   });
 
   const cardEquip = buildHomeCard('equip', {name:'Apparatuur',subtitle:'Alle toestellen en oefeningen',desc:''}, 'equip', '\ud83d\udcbb');
@@ -1569,6 +1593,8 @@ async function saveWorkout() {
     return;
   }
 
+  if (!confirm('Workout opslaan?')) return;
+
   const feedback = document.getElementById('workoutFeedback').value.trim();
 
   const workout = {
@@ -1768,7 +1794,12 @@ function showDetail(index, workouts) {
   }
 
   (w.exercises || []).forEach(logged => {
-    const targetStr = logged.target_label || (logged.target_kg > 0 ? logged.target_kg + ' kg' : 'BW');
+    // Derive target from target_kg, or from max kg in sets as fallback
+    let tkg = logged.target_kg;
+    if (!tkg && logged.sets && logged.sets.length) {
+      tkg = Math.max(...logged.sets.map(s => s.kg || 0));
+    }
+    const targetStr = logged.target_label || (tkg > 0 ? tkg + ' kg' : 'BW');
     const exName = logged.name || 'Unknown';
 
     if (Array.isArray(logged.sets)) {
