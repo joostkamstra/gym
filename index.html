@@ -37,6 +37,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   align-items:center;justify-content:center;flex-shrink:0}
 .home-card .icon.a{background:#1a3a1a}
 .home-card .icon.b{background:#1a2a3a}
+.home-card .icon.c{background:#2a1a2a}
+.home-card .icon.d{background:#2a2a1a}
 .home-card .icon.hist{background:#2a2a1a}
 .home-card h2{font-size:17px;font-weight:600}
 .home-card p{font-size:13px;color:#8e8e93;margin-top:2px}
@@ -437,6 +439,46 @@ const EXERCISE_INFO = {
     muscles: 'Core (rectus abdominis, obliques, TVA)',
     dos: ['Lichaam in rechte lijn van hoofd tot hielen', 'Buik aanspannen, navel naar wervelkolom', 'Billen niet te hoog of te laag', 'Regelmatig ademhalen'],
     donts: ['Niet door laten zakken in de onderrug', 'Hoofd niet laten hangen', 'Niet op adem inhouden']
+  },
+  'Bulgarian Split Squat': {
+    muscles: 'Quadriceps, glutes, core (stabilisatie)',
+    dos: ['Achterbeen op bank, voorvoet stevig op de grond', 'Torso rechtop houden, core aanspannen', 'Voorste knie in lijn met tenen (niet voorbij)', 'Volledige diepte: achterknie richting grond'],
+    donts: ['Voorste knie niet naar binnen laten vallen', 'Niet te ver voorover leunen', 'Niet te snel (balans!)']
+  },
+  'Arnold Press': {
+    muscles: 'Schouders (alle hoofden), triceps',
+    dos: ['Start met palmen naar je toe (curled positie)', 'Roteer tijdens het persen naar palmen vooruit', 'Zittend met rug tegen pad voor stabiliteit', 'Gecontroleerd tempo, focus op rotatie'],
+    donts: ['Niet te zwaar gaan (rotatie vraagt controle)', 'Niet met momentum omhoog gooien', 'Stop bij elleboogpijn (tenniselleboog — wissel naar Cable Lateral Raise)']
+  },
+  'Hip Thrust Machine': {
+    muscles: 'Glutes (primair), hamstrings',
+    dos: ['Duw vanuit je hielen, squeeze glutes bovenin', 'Kin naar borst, niet hyperextenderen in de nek', 'Volle heupextensie aan de top (heupen in lijn met schouders)', 'Langzaam excentrisch (2-3 sec)'],
+    donts: ['Niet hyperextenderen in de onderrug', 'Ribben niet laten flaren', 'Niet met momentum werken']
+  },
+  'Lower Back Machine': {
+    muscles: 'Erector spinae, glutes',
+    dos: ['Gecontroleerde extensie vanuit neutrale positie', 'Squeeze bovenin, niet voorbij neutraal', 'Langzaam en gecontroleerd in beide richtingen', 'Core aanspannen gedurende hele beweging'],
+    donts: ['Niet hyperextenderen (voorbij neutraal)', 'Niet met momentum of jerky bewegingen', 'Niet te zwaar starten']
+  },
+  'Dips Press': {
+    muscles: 'Triceps, borst, voorste schouder',
+    dos: ['Machine-geleide variant van dips (Panatta Dual System)', 'Volle ROM: van 90\u00b0 tot volledige extensie', 'Schouders naar beneden houden', 'Gecontroleerd tempo'],
+    donts: ['Niet te diep zakken (schouderstress)', 'Schouders niet naar je oren trekken', 'Ellebogen niet naar buiten laten wijken']
+  },
+  'Straight-arm Pulldown': {
+    muscles: 'Lats, teres major',
+    dos: ['Lichte vooroverbuiging, armen gestrekt houden', 'Trek stang/rope naar je bovenbenen', 'Lifting straps voor grip (tenniselleboog)', 'Focus op lat-squeeze onderaan'],
+    donts: ['Ellebogen niet buigen (armen gestrekt)', 'Niet met momentum swingen', 'Niet te zwaar (isolatie-oefening)']
+  },
+  'Cable Fly': {
+    muscles: 'Borst (stretch + squeeze focus)',
+    dos: ['Kabels op schouderhoogte instellen', 'Lichte buiging in ellebogen, vasthouden gedurende hele ROM', 'Breng handen samen voor je borst, squeeze bovenin', 'Laat langzaam terug tot stretch in borst (armen op 90\u00b0)'],
+    donts: ['Armen niet volledig strekken (elleboogstress)', 'Niet te zwaar (focus op controle en stretch)', 'Niet met momentum of swinging werken']
+  },
+  'Cable Bicep Curl': {
+    muscles: 'Biceps, brachialis',
+    dos: ['E\u00e9n arm per keer voor constante spanning', 'Neutraal of lichte supinatie grip (tenniselleboog-vriendelijk)', 'Bovenarm gefixeerd langs je lichaam', 'Volledige ROM: gestrekt tot gebogen'],
+    donts: ['Niet met je hele lichaam swingen', 'Niet te zwaar (licht houden voor tenniselleboog)', 'Elleboog niet naar voren brengen']
   }
 };
 
@@ -577,6 +619,140 @@ const USERS = {
                 target_sets: [{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
                 alt: { name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 12, target_label: '2x12 kg',
                   target_sets: [{kg:10,reps:12},{kg:12,reps:10},{kg:12,reps:10}] } }
+            ]
+          }
+        ]
+      },
+      C: {
+        name: 'Schema C — Maandag',
+        subtitle: 'Strength Variation',
+        desc: '26 sets \u2022 ~82 min',
+        supersets: [
+          {
+            name: 'A: BSS (Smith) + Lat Pulldown', sets: 4, rest: '2 min', color: 'green',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            exercises: [
+              { id: 'a1', name: 'Bulgarian Split Squat', detail: '8-10 reps per been \u2022 Smith machine, achterbeen op bank', target_kg: 50,
+                target_sets: [{kg:40,reps:10},{kg:45,reps:10},{kg:50,reps:8},{kg:50,reps:8}],
+                alt: { name: 'Hack Squat', detail: '8-10 reps', target_kg: 100,
+                  target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:100,reps:8},{kg:100,reps:8}] } },
+              { id: 'a2', name: 'Lat Pulldown', detail: '8-10 reps \u2022 V-grip/neutraal + straps', target_kg: 72.5,
+                target_sets: [{kg:60,reps:10},{kg:65,reps:10},{kg:70,reps:8},{kg:72.5,reps:8}],
+                alt: { name: 'Straight-arm Pulldown', detail: '10-12 reps \u2022 kabel + straps', target_kg: 30,
+                  target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } }
+            ]
+          },
+          {
+            name: 'B: Machine Chest + Row', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x10 Chest Press @35kg',
+            exercises: [
+              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 65,
+                target_sets: [{kg:55,reps:10},{kg:60,reps:10},{kg:65,reps:8}],
+                alt: { name: 'DB Flat Bench Press', detail: '8-10 reps', target_kg: 27.5, target_label: '2x27.5 kg',
+                  target_sets: [{kg:25,reps:10},{kg:27.5,reps:8},{kg:27.5,reps:8}] } },
+              { id: 'b2', name: 'Plate-loaded Row', detail: '8-10 reps \u2022 Panatta, neutraal grip + straps', target_kg: 40, target_label: '40 kg/kant',
+                target_sets: [{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
+                alt: { name: 'Seated Cable Row', detail: '8-10 reps \u2022 V-grip + straps', target_kg: 75,
+                  target_sets: [{kg:70,reps:10},{kg:75,reps:8},{kg:75,reps:8}] } }
+            ]
+          },
+          {
+            name: 'C: Hip Thrust + Ab Machine', sets: 3, rest: '75s', color: 'purple',
+            exercises: [
+              { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps \u2022 squeeze glutes bovenin', target_kg: 100,
+                target_sets: [{kg:80,reps:12},{kg:100,reps:10},{kg:100,reps:10}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 65,
+                  target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}] } },
+              { id: 'c2', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
+                target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}],
+                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 70,
+                  target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } }
+            ]
+          },
+          {
+            name: 'D: Shoulder Press + Lower Back', sets: 3, rest: '45s', color: 'orange',
+            exercises: [
+              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad', target_kg: 45,
+                target_sets: [{kg:35,reps:10},{kg:40,reps:10},{kg:45,reps:8}],
+                alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
+                  target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } },
+              { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 55,
+                target_sets: [{kg:45,reps:15},{kg:50,reps:15},{kg:55,reps:12}],
+                alt: { name: 'Leg Raise', detail: '10-15 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
+                  target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:12}] } }
+            ]
+          }
+        ]
+      },
+      D: {
+        name: 'Schema D — Donderdag',
+        subtitle: 'Volume Variation',
+        desc: '32 sets \u2022 ~92 min',
+        supersets: [
+          {
+            name: 'A: V-Squat + Lat Pulldown', sets: 4, rest: '90s', color: 'green',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. V-Squat: 1x10 @80kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            exercises: [
+              { id: 'a1', name: 'V-Squat', detail: '10-12 reps \u2022 inward looking', target_kg: 130,
+                target_sets: [{kg:100,reps:12},{kg:115,reps:12},{kg:130,reps:10},{kg:130,reps:10}],
+                alt: { name: 'Hack Squat', detail: '10-12 reps', target_kg: 100,
+                  target_sets: [{kg:80,reps:12},{kg:90,reps:12},{kg:100,reps:10},{kg:100,reps:10}] } },
+              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
+                target_sets: [{kg:55,reps:12},{kg:60,reps:12},{kg:65,reps:12},{kg:70,reps:10}],
+                alt: { name: 'Straight-arm Pulldown', detail: '12-15 reps \u2022 kabel + straps', target_kg: 30,
+                  target_sets: [{kg:25,reps:12},{kg:30,reps:12},{kg:30,reps:10},{kg:30,reps:10}] } }
+            ]
+          },
+          {
+            name: 'B: Cable Fly + Lying Leg Curl', sets: 3, rest: '90s', color: 'blue',
+            exercises: [
+              { id: 'b1', name: 'Cable Fly', detail: '10-12 reps \u2022 stretch + squeeze', target_kg: 20, target_label: '20 kg/hand',
+                target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
+                alt: { name: 'Machine Incline Press', detail: '10-12 reps', target_kg: 50,
+                  target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
+              { id: 'b2', name: 'Lying Leg Curl', detail: '12-15 reps \u2022 LET OP: monitor knie links', target_kg: 40,
+                target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 65,
+                  target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}] } }
+            ]
+          },
+          {
+            name: 'C: Arnold Press + Cable Row', sets: 3, rest: '75s', color: 'purple',
+            exercises: [
+              { id: 'c1', name: 'Arnold Press', detail: '10-12 reps \u2022 zittend, rotatie vanuit neutraal', target_kg: 20, target_label: '2x20 kg',
+                target_sets: [{kg:17.5,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
+                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 10,
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } },
+              { id: 'c2', name: 'Seated Cable Row', detail: '10-12 reps \u2022 V-grip + straps', target_kg: 70,
+                target_sets: [{kg:65,reps:12},{kg:70,reps:10},{kg:70,reps:10}],
+                alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta + straps', target_kg: 35, target_label: '35 kg/kant',
+                  target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10}] } }
+            ]
+          },
+          {
+            name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
+            exercises: [
+              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 70,
+                target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}],
+                alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
+                  target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } },
+              { id: 'd2', name: 'Woodchop', detail: '12 reps per kant \u2022 kabel', target_kg: 20,
+                target_sets: [{kg:15,reps:12},{kg:20,reps:12},{kg:20,reps:12}],
+                alt: { name: 'Pallof Press', detail: '10-15 reps per kant', target_kg: 30,
+                  target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } }
+            ]
+          },
+          {
+            name: 'E: Arms', sets: 3, rest: '45s', color: 'red',
+            exercises: [
+              { id: 'e1', name: 'Dips Press', detail: '10-12 reps \u2022 Panatta Dual System', target_kg: 70,
+                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:70,reps:10}],
+                alt: { name: 'OH Tricep Extension', detail: '10-12 reps \u2022 kabel', target_kg: 30,
+                  target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10}] } },
+              { id: 'e2', name: 'DB Hammer Curl', detail: '10-12 reps \u2022 neutraal grip (duimen omhoog)', target_kg: 12, target_label: '2x12 kg',
+                target_sets: [{kg:10,reps:12},{kg:12,reps:10},{kg:12,reps:10}],
+                alt: { name: 'Cable Bicep Curl', detail: '10-12 reps \u2022 1 arm, neutraal/licht', target_kg: 25,
+                  target_sets: [{kg:20,reps:12},{kg:25,reps:10},{kg:25,reps:10}] } }
             ]
           }
         ]
@@ -726,21 +902,21 @@ function getUserSchemas() {
   return USERS[currentUser].schemas;
 }
 
+const SCHEMA_DISPLAY = { A: {emoji:'\ud83d\udcaa',cls:'a'}, B: {emoji:'\ud83d\udd25',cls:'b'}, C: {emoji:'\ud83c\udfcb\ufe0f',cls:'c'}, D: {emoji:'\u26a1',cls:'d'} };
+
 function renderHome() {
   const schemas = getUserSchemas();
   document.getElementById('homeTitle').textContent = 'Gym Tracker';
   const container = document.getElementById('homeCards');
   container.textContent = '';
 
-  const cardA = buildHomeCard('A', schemas.A, 'a', '\ud83d\udcaa');
-  const cardB = buildHomeCard('B', schemas.B, 'b', '\ud83d\udd25');
-  const cardHist = document.createElement('div');
-  cardHist.className = 'home-card';
-  cardHist.onclick = () => showView('history');
-  cardHist.innerHTML = '<div class="icon hist">\ud83d\udcca</div><div><h2>Geschiedenis</h2><p>Bekijk en deel eerdere workouts</p></div><div class="arrow">\u203a</div>';
+  Object.keys(schemas).forEach(key => {
+    const d = SCHEMA_DISPLAY[key] || {emoji:'\ud83c\udfaf',cls:key.toLowerCase()};
+    container.appendChild(buildHomeCard(key, schemas[key], d.cls, d.emoji));
+  });
 
-  container.appendChild(cardA);
-  container.appendChild(cardB);
+  const cardHist = buildHomeCard('hist', {name:'Geschiedenis',subtitle:'Bekijk en deel eerdere workouts',desc:''}, 'hist', '\ud83d\udcca');
+  cardHist.onclick = () => showView('history');
   container.appendChild(cardHist);
 }
 
@@ -755,7 +931,7 @@ function buildHomeCard(key, schema, iconClass, emoji) {
   const h2 = document.createElement('h2');
   h2.textContent = schema.name;
   const p = document.createElement('p');
-  p.textContent = schema.subtitle + ' \u2022 ' + schema.desc;
+  p.textContent = schema.desc ? schema.subtitle + ' \u2022 ' + schema.desc : schema.subtitle;
   info.appendChild(h2);
   info.appendChild(p);
   const arrow = document.createElement('div');
