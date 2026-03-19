@@ -33,6 +33,7 @@ class Equipment(Base):
     type: Mapped[str] = mapped_column(String(50), nullable=False)  # machine, cable, free_weight, bodyweight
     brand: Mapped[str | None] = mapped_column(String(100), nullable=True)
     location_hint: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    weight_increment: Mapped[float] = mapped_column(Float, default=2.5)  # minimum kg step for this equipment
 
     exercises: Mapped[list["Exercise"]] = relationship(back_populates="equipment")
 

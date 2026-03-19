@@ -25,8 +25,10 @@ from app.schemas import (
 router = APIRouter(prefix="/api/workouts", tags=["workouts"])
 
 
-def _get_weight_increment(target_kg: float) -> float:
-    """Return weight increment: 2.5kg for compounds (>=50kg), 1kg for isolation."""
+def _get_weight_increment(target_kg: float, equipment_increment: float | None = None) -> float:
+    """Return weight increment from equipment data, or fallback heuristic."""
+    if equipment_increment and equipment_increment > 0:
+        return equipment_increment
     return 2.5 if target_kg >= 50 else 1.0
 
 
@@ -54,6 +56,17 @@ async def auto_update_targets(
     """
     updates: list[TargetUpdate] = []
     schema_data = copy.deepcopy(schema.data)
+
+    # Load exercise → equipment weight_increment mapping
+    exercise_names = {ws.exercise_name for ws in workout_sets}
+    from sqlalchemy.orm import joinedload
+    ex_result = await db.execute(
+        select(Exercise).options(joinedload(Exercise.equipment)).where(Exercise.name.in_(exercise_names))
+    )
+    increment_map: dict[str, float] = {}
+    for ex in ex_result.scalars().unique().all():
+        if ex.equipment and ex.equipment.weight_increment:
+            increment_map[ex.name] = ex.equipment.weight_increment
 
     # Group workout sets by exercise name
     sets_by_exercise: dict[str, list[WorkoutSet]] = {}
@@ -96,7 +109,7 @@ async def auto_update_targets(
 
         if all_sets_hit and len(set_results) == len(target_sets):
             # Rule 1: All sets hit → bump weight, reset reps to minimum across target reps
-            increment = _get_weight_increment(target_sets[0].get("kg", 0))
+            increment = _get_weight_increment(target_sets[0].get("kg", 0), increment_map.get(exercise_name))
             # Find the minimum target reps (the "reset" value)
             min_reps = min(t.get("reps", 0) for t in target_sets)
             if min_reps == 0:
