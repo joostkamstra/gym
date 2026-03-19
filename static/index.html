@@ -609,6 +609,16 @@ const EXERCISE_INFO = {
     dos: ['Kabels op schouderhoogte instellen', 'Lichte buiging in ellebogen, vasthouden gedurende hele ROM', 'Breng handen samen voor je borst, squeeze bovenin', 'Laat langzaam terug tot stretch in borst (armen op 90\u00b0)'],
     donts: ['Armen niet volledig strekken (elleboogstress)', 'Niet te zwaar (focus op controle en stretch)', 'Niet met momentum of swinging werken']
   },
+  'Smith Shoulder Press': {
+    muscles: 'Schouders (deltoids), triceps',
+    dos: ['Zittend, rug stevig tegen het pad', 'Laat stang zakken tot kin/neushoogte', 'Volle ROM: van schouderhoogte tot volledige extensie', 'Core aanspannen, voeten plat op de grond'],
+    donts: ['Stang niet achter je hoofd laten zakken (schouderstress)', 'Gewricht niet op slot gooien bovenin', 'Niet met een holle rug compenseren']
+  },
+  'Hack Squat': {
+    muscles: 'Quadriceps, glutes',
+    dos: ['Schouders stevig onder de pads', 'Voeten op schouderbreedte, laag op platform voor meer quads', 'Volle ROM: daal tot minstens 90\u00b0 kniehoek', 'Knie\u00ebn in lijn met tenen duwen'],
+    donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet op slot gooien bovenin', 'Niet met halve reps werken']
+  },
   'Cable Bicep Curl': {
     muscles: 'Biceps, brachialis',
     dos: ['E\u00e9n arm per keer voor constante spanning', 'Neutraal of lichte supinatie grip (tenniselleboog-vriendelijk)', 'Bovenarm gefixeerd langs je lichaam', 'Volledige ROM: gestrekt tot gebogen'],
@@ -766,8 +776,8 @@ const USERS = {
             name: 'A: BSS (Smith) + Lat Pulldown', sets: 4, rest: '2 min', color: 'green',
             warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
             exercises: [
-              { id: 'a1', name: 'Bulgarian Split Squat', detail: '8-10 reps per been \u2022 Smith machine, achterbeen op bank', target_kg: 50,
-                target_sets: [{kg:40,reps:10},{kg:45,reps:10},{kg:50,reps:8},{kg:50,reps:8}],
+              { id: 'a1', name: 'Bulgarian Split Squat', detail: '8-10 reps per been \u2022 Smith machine, achterbeen op bank', target_kg: 40,
+                target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
                 alt: { name: 'Hack Squat', detail: '8-10 reps', target_kg: 100,
                   target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:100,reps:8},{kg:100,reps:8}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '8-10 reps \u2022 V-grip/neutraal + straps', target_kg: 72.5,
@@ -778,7 +788,7 @@ const USERS = {
           },
           {
             name: 'B: Machine Chest + Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: '1x10 Chest Press @35kg',
+            warmup: '1x10 Vertical Chest Press @35kg',
             exercises: [
               { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 65,
                 target_sets: [{kg:55,reps:10},{kg:60,reps:10},{kg:65,reps:8}],
@@ -806,14 +816,14 @@ const USERS = {
           {
             name: 'D: Shoulder Press + Lower Back', sets: 3, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad', target_kg: 45,
+              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad (gewicht excl. stang ~20kg)', target_kg: 45,
                 target_sets: [{kg:35,reps:10},{kg:40,reps:10},{kg:45,reps:8}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } },
               { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 55,
                 target_sets: [{kg:45,reps:15},{kg:50,reps:15},{kg:55,reps:12}],
-                alt: { name: 'Leg Raise', detail: '10-15 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
-                  target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:12}] } }
+                alt: { name: 'Romanian Deadlift', detail: '10-12 reps \u2022 barbell + straps, licht', target_kg: 60,
+                  target_sets: [{kg:50,reps:12},{kg:55,reps:12},{kg:60,reps:10}] } }
             ]
           }
         ]

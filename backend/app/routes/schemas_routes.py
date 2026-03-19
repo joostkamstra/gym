@@ -86,22 +86,35 @@ async def import_schemas(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    # Delete existing schemas for this user
-    await db.execute(delete(Schema).where(Schema.user_id == user.id))
-
+    # Upsert: update existing schemas or create new ones (preserves FK references from workouts)
     sort_map = {"A": 0, "B": 1, "C": 2, "D": 3}
+    result = await db.execute(select(Schema).where(Schema.user_id == user.id))
+    existing = {s.key: s for s in result.scalars().all()}
+
     created = []
     for key, s in req.schemas.items():
-        schema = Schema(
-            user_id=user.id,
-            key=key,
-            name=s.name,
-            subtitle=s.subtitle,
-            description=s.desc,
-            sort_order=sort_map.get(key, 10),
-            data={"supersets": s.supersets},
-        )
-        db.add(schema)
+        if key in existing:
+            # Update existing schema
+            schema = existing[key]
+            schema.name = s.name
+            schema.subtitle = s.subtitle
+            schema.description = s.desc
+            schema.sort_order = sort_map.get(key, 10)
+            schema.data = {"supersets": s.supersets}
+            from sqlalchemy.orm import attributes
+            attributes.flag_modified(schema, "data")
+        else:
+            # Create new schema
+            schema = Schema(
+                user_id=user.id,
+                key=key,
+                name=s.name,
+                subtitle=s.subtitle,
+                description=s.desc,
+                sort_order=sort_map.get(key, 10),
+                data={"supersets": s.supersets},
+            )
+            db.add(schema)
         created.append(key)
 
     return {"imported": created, "count": len(created)}
