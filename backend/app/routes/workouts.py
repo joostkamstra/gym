@@ -102,11 +102,12 @@ async def create_workout(
     ex_result = await db.execute(select(Exercise).where(Exercise.name.in_(exercise_names)))
     exercise_map = {e.name: e.id for e in ex_result.scalars().all()}
 
-    # Create session
+    # Create session — strip timezone for naive TIMESTAMP columns
+    workout_date = req.date.replace(tzinfo=None) if req.date.tzinfo else req.date
     session = WorkoutSession(
         user_id=user.id,
         schema_id=schema.id,
-        date=req.date,
+        date=workout_date,
         feedback=req.feedback,
         notes=req.notes,
     )
