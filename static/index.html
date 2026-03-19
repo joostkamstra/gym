@@ -196,6 +196,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .cloud-badge{font-size:11px;color:#30d158;background:#0d3d1a;padding:2px 8px;border-radius:6px;
   font-weight:600;margin-left:8px}
 
+/* Equipment browser */
+.search-input{width:100%;background:#1c1c1e;border:2px solid #3a3a3c;border-radius:12px;
+  color:#fff;font-size:15px;padding:10px 16px;margin-bottom:12px;-webkit-appearance:none}
+.search-input:focus{border-color:#0a84ff;outline:none}
+.search-input::placeholder{color:#636366}
+.equip-item{background:#1c1c1e;border-radius:12px;padding:14px 16px;margin-bottom:4px;
+  cursor:pointer;transition:transform .1s}
+.equip-item:active{transform:scale(0.97)}
+.equip-item.expanded{border-left:3px solid #0a84ff;margin-bottom:8px}
+.equip-name{font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.equip-meta{font-size:12px;color:#8e8e93;margin-top:2px}
+.equip-count{font-size:11px;color:#8e8e93;background:#2c2c2e;padding:2px 8px;border-radius:6px;flex-shrink:0}
+.equip-exercises{margin-top:10px;padding-top:10px;border-top:1px solid #2c2c2e}
+.equip-ex-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.equip-ex-row:not(:last-child){border-bottom:1px solid #2c2c2e}
+.equip-ex-name{font-size:14px;font-weight:600}
+.equip-ex-muscles{font-size:12px;color:#8e8e93;margin-top:1px}
+.home-card .icon.equip{background:#2a1a1a}
+
 </style>
 </head>
 <body>
@@ -277,6 +296,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   <p style="color:#8e8e93;font-size:14px;margin-bottom:8px">Kopieer en plak in de Claude chat:</p>
   <div class="share-preview" id="sharePreview"></div>
   <button class="btn btn-blue" onclick="copyToClipboard()">Kopieer naar klembord</button>
+</div>
+
+<!-- EQUIPMENT VIEW -->
+<div id="equipment" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('home')">&#8249;</button>
+    <h1>Apparatuur</h1>
+  </div>
+  <input class="search-input" type="text" placeholder="Zoek apparaat of oefening..." id="equipSearch" oninput="filterEquipment(this.value)">
+  <div id="equipmentList"></div>
 </div>
 
 <!-- EXERCISE INFO MODAL -->
@@ -1057,6 +1086,10 @@ function renderHome() {
     container.appendChild(buildHomeCard(key, schemas[key], d.cls, d.emoji));
   });
 
+  const cardEquip = buildHomeCard('equip', {name:'Apparatuur',subtitle:'Alle toestellen en oefeningen',desc:''}, 'equip', '\ud83d\udcbb');
+  cardEquip.onclick = () => showView('equipment');
+  container.appendChild(cardEquip);
+
   const cardHist = buildHomeCard('hist', {name:'Geschiedenis',subtitle:'Bekijk en deel eerdere workouts',desc:''}, 'hist', '\ud83d\udcca');
   cardHist.onclick = () => showView('history');
   container.appendChild(cardHist);
@@ -1139,6 +1172,7 @@ function showView(id) {
   window.scrollTo(0, 0);
   if (id === 'home') updateStats();
   if (id === 'history') renderHistory();
+  if (id === 'equipment') renderEquipment();
 }
 
 // === HOME STATS ===
@@ -1474,6 +1508,163 @@ function deleteWorkout() {
   }
   showToast('Verwijderd');
   showView('history');
+}
+
+// === EQUIPMENT ===
+let equipmentData = null; // cached from API
+let expandedEquip = null;
+
+const EQUIP_TYPES = {
+  machine: { label: 'Machines', color: 'green' },
+  cable: { label: 'Kabel', color: 'blue' },
+  free_weight: { label: 'Vrije Gewichten', color: 'purple' },
+  bodyweight: { label: 'Bodyweight', color: 'orange' }
+};
+
+async function loadEquipmentData() {
+  if (equipmentData) return equipmentData;
+  try {
+    const [equipment, exercises] = await Promise.all([
+      api('/api/equipment'),
+      api('/api/exercises')
+    ]);
+    // Build equipment → exercises map
+    const exByEquip = {};
+    exercises.forEach(ex => {
+      const eqName = ex.equipment ? ex.equipment.name : null;
+      if (eqName) {
+        if (!exByEquip[eqName]) exByEquip[eqName] = [];
+        exByEquip[eqName].push(ex);
+      }
+    });
+    equipmentData = equipment.map(eq => ({
+      ...eq,
+      exercises: exByEquip[eq.name] || []
+    }));
+    return equipmentData;
+  } catch (e) {
+    console.log('Failed to load equipment:', e);
+    return [];
+  }
+}
+
+async function renderEquipment() {
+  const container = document.getElementById('equipmentList');
+  container.textContent = '';
+  const data = await loadEquipmentData();
+  if (!data.length) {
+    container.textContent = 'Geen apparatuur gevonden.';
+    return;
+  }
+  // Group by type
+  const groups = {};
+  data.forEach(eq => {
+    const t = eq.type || 'other';
+    if (!groups[t]) groups[t] = [];
+    groups[t].push(eq);
+  });
+  // Render groups
+  Object.entries(EQUIP_TYPES).forEach(([type, cfg]) => {
+    const items = groups[type];
+    if (!items || !items.length) return;
+    const section = document.createElement('div');
+    section.className = 'superset ' + cfg.color;
+    section.dataset.type = type;
+    const header = document.createElement('div');
+    header.className = 'superset-header';
+    header.textContent = cfg.label;
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = items.length + ' items';
+    header.appendChild(badge);
+    section.appendChild(header);
+    items.sort((a, b) => a.name.localeCompare(b.name));
+    items.forEach(eq => {
+      section.appendChild(buildEquipItem(eq));
+    });
+    container.appendChild(section);
+  });
+  expandedEquip = null;
+}
+
+function buildEquipItem(eq) {
+  const div = document.createElement('div');
+  div.className = 'equip-item';
+  div.dataset.name = eq.name.toLowerCase();
+  div.dataset.exercises = eq.exercises.map(e => e.name.toLowerCase()).join(',');
+  const nameRow = document.createElement('div');
+  nameRow.className = 'equip-name';
+  const nameText = document.createElement('span');
+  nameText.textContent = eq.name;
+  nameRow.appendChild(nameText);
+  if (eq.exercises.length) {
+    const count = document.createElement('span');
+    count.className = 'equip-count';
+    count.textContent = eq.exercises.length + ' oef.';
+    nameRow.appendChild(count);
+  }
+  div.appendChild(nameRow);
+  const meta = document.createElement('div');
+  meta.className = 'equip-meta';
+  const parts = [];
+  if (eq.brand) parts.push(eq.brand);
+  if (eq.location_hint) parts.push(eq.location_hint);
+  meta.textContent = parts.join(' \u2022 ') || '';
+  div.appendChild(meta);
+  // Exercise detail container (hidden by default)
+  const exContainer = document.createElement('div');
+  exContainer.className = 'equip-exercises';
+  exContainer.style.display = 'none';
+  eq.exercises.forEach(ex => {
+    const row = document.createElement('div');
+    row.className = 'equip-ex-row';
+    const info = document.createElement('div');
+    const exName = document.createElement('div');
+    exName.className = 'equip-ex-name';
+    exName.textContent = ex.name;
+    const exMuscles = document.createElement('div');
+    exMuscles.className = 'equip-ex-muscles';
+    exMuscles.textContent = ex.muscles;
+    info.appendChild(exName);
+    info.appendChild(exMuscles);
+    row.appendChild(info);
+    // Info button reusing existing modal
+    if (EXERCISE_INFO[ex.name]) {
+      const infoBtn = document.createElement('button');
+      infoBtn.className = 'info-btn';
+      infoBtn.textContent = '\u24d8';
+      infoBtn.onclick = (e) => { e.stopPropagation(); showExerciseInfo(ex.name); };
+      row.appendChild(infoBtn);
+    }
+    exContainer.appendChild(row);
+  });
+  div.appendChild(exContainer);
+  // Toggle expand
+  div.onclick = () => {
+    if (expandedEquip && expandedEquip !== div) {
+      expandedEquip.classList.remove('expanded');
+      expandedEquip.querySelector('.equip-exercises').style.display = 'none';
+    }
+    const isExpanded = div.classList.toggle('expanded');
+    exContainer.style.display = isExpanded ? 'block' : 'none';
+    expandedEquip = isExpanded ? div : null;
+  };
+  return div;
+}
+
+function filterEquipment(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('#equipmentList .superset').forEach(section => {
+    let sectionVisible = false;
+    section.querySelectorAll('.equip-item').forEach(item => {
+      const matchName = item.dataset.name.includes(q);
+      const matchEx = item.dataset.exercises.includes(q);
+      const show = !q || matchName || matchEx;
+      item.style.display = show ? '' : 'none';
+      if (show) sectionVisible = true;
+    });
+    section.style.display = sectionVisible ? '' : 'none';
+  });
 }
 
 // === SHARE ===
