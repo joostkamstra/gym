@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.models import User, Schema
 from app.auth import get_current_user
-from app.schemas import SchemaResponse, SchemaListResponse
+from app.schemas import SchemaResponse, SchemaListResponse, SchemaTargetsResponse
 
 router = APIRouter(prefix="/api/schemas", tags=["schemas"])
 
@@ -35,6 +35,36 @@ async def get_schemas(
             )
             for s in schemas
         ]
+    )
+
+
+@router.post("/{key}/targets", response_model=SchemaTargetsResponse)
+async def get_schema_targets(
+    key: str,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Return current targets for a schema so the frontend can refresh after auto-update."""
+    result = await db.execute(
+        select(Schema).where(Schema.user_id == user.id, Schema.key == key)
+    )
+    schema = result.scalar_one_or_none()
+    if not schema:
+        raise HTTPException(status_code=404, detail=f"Schema {key} not found")
+
+    exercises = []
+    for superset in schema.data.get("supersets", []):
+        for exercise in superset.get("exercises", []):
+            exercises.append({
+                "name": exercise.get("name"),
+                "id": exercise.get("id"),
+                "target_sets": exercise.get("target_sets", []),
+            })
+
+    return SchemaTargetsResponse(
+        schema_key=schema.key,
+        schema_name=schema.name,
+        exercises=exercises,
     )
 
 

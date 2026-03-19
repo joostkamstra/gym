@@ -84,6 +84,16 @@ class WorkoutSetResponse(BaseModel):
     target_reps: int | None
 
 
+class TargetUpdate(BaseModel):
+    exercise_name: str
+    set_number: int
+    old_kg: float
+    new_kg: float
+    old_reps: int
+    new_reps: int
+    reason: str  # "weight_up", "reps_up", "kg_up", "no_change"
+
+
 class WorkoutResponse(BaseModel):
     id: uuid.UUID
     schema_key: str
@@ -92,6 +102,7 @@ class WorkoutResponse(BaseModel):
     feedback: str | None
     notes: str | None
     sets: list[WorkoutSetResponse]
+    target_updates: list[TargetUpdate] | None = None
     created_at: datetime
 
 
@@ -134,6 +145,13 @@ class WorkoutEvaluation(BaseModel):
     previous_date: datetime | None
     deltas: list[ExerciseDelta]
     summary: str
+    target_updates: list[TargetUpdate] | None = None
+
+
+class SchemaTargetsResponse(BaseModel):
+    schema_key: str
+    schema_name: str
+    exercises: list[dict]  # [{name, id, target_sets: [{kg, reps}]}]
 
 
 # Bulk import

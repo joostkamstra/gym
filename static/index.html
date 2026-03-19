@@ -1225,6 +1225,10 @@ async function saveWorkoutToCloud(workout, schemaKey) {
       })
     });
     console.log('Workout saved to cloud:', res.id);
+    if (res.target_updates && res.target_updates.length) {
+      window._lastTargetUpdates = res.target_updates;
+      console.log('Targets auto-updated:', res.target_updates.length, 'changes');
+    }
     return res;
   } catch (e) {
     console.log('Cloud save failed, data saved locally:', e.message);
@@ -1554,7 +1558,12 @@ async function saveWorkout() {
 
   // Save to cloud and show evaluation
   const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
-  if (cloudResult && cloudResult.id) {
+  if (cloudResult && cloudResult.queued) {
+    // Offline: queued in service worker
+    showToast('Offline opgeslagen \u2014 synct automatisch');
+    registerSync();
+    setTimeout(() => showView('home'), 1200);
+  } else if (cloudResult && cloudResult.id) {
     showToast('Workout opgeslagen!');
     showView('home');
     showWorkoutEvaluation(cloudResult.id, s.name);
@@ -1699,6 +1708,26 @@ function deleteWorkout() {
   showView('history');
 }
 
+// === OFFLINE SYNC ===
+function registerSync() {
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then(reg => reg.sync.register('sync-workouts'));
+  } else {
+    // Fallback: try to sync immediately on visibility change
+    document.addEventListener('visibilitychange', function syncOnFocus() {
+      if (document.visibilityState === 'visible') {
+        navigator.serviceWorker.controller?.postMessage('SYNC_NOW');
+        document.removeEventListener('visibilitychange', syncOnFocus);
+      }
+    });
+  }
+}
+
+// Also try to sync queued workouts on app start
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  navigator.serviceWorker.controller.postMessage('SYNC_NOW');
+}
+
 // === WORKOUT EVALUATION ===
 async function showWorkoutEvaluation(workoutId, schemaName) {
   try {
@@ -1744,6 +1773,43 @@ async function showWorkoutEvaluation(workoutId, schemaName) {
       item.appendChild(right);
       container.appendChild(item);
     });
+
+    // Show target updates if available (from cloud save response)
+    if (window._lastTargetUpdates && window._lastTargetUpdates.length) {
+      const tuDiv = document.createElement('div');
+      tuDiv.style.cssText = 'margin-top:16px;padding-top:12px;border-top:1px solid #3a3a3c';
+      const tuTitle = document.createElement('div');
+      tuTitle.className = 'progress-title';
+      tuTitle.textContent = 'TARGETS BIJGEWERKT';
+      tuTitle.style.color = '#ff9f0a';
+      tuDiv.appendChild(tuTitle);
+      window._lastTargetUpdates.forEach(u => {
+        const row = document.createElement('div');
+        row.className = 'eval-item';
+        const icon = document.createElement('div');
+        icon.className = 'eval-icon up';
+        icon.textContent = u.reason === 'weight_up' ? '\u2b06' : '\u2191';
+        row.appendChild(icon);
+        const name = document.createElement('div');
+        name.className = 'eval-name';
+        name.textContent = u.exercise_name + ' (S' + u.set_number + ')';
+        row.appendChild(name);
+        const detail = document.createElement('div');
+        detail.style.textAlign = 'right';
+        const from = document.createElement('div');
+        from.className = 'eval-detail';
+        from.textContent = u.old_kg + 'kg \u00d7 ' + u.old_reps + ' \u2192 ' + u.new_kg + 'kg \u00d7 ' + u.new_reps;
+        detail.appendChild(from);
+        const reason = document.createElement('div');
+        reason.className = 'eval-change up';
+        reason.textContent = u.reason === 'weight_up' ? '+gewicht' : u.reason === 'reps_up' ? '+reps' : u.reason === 'kg_up' ? '+kg' : '';
+        detail.appendChild(reason);
+        row.appendChild(detail);
+        tuDiv.appendChild(row);
+      });
+      container.appendChild(tuDiv);
+      window._lastTargetUpdates = null;
+    }
 
     document.getElementById('evalOverlay').classList.add('open');
     progressCache = {}; // clear cache so progress reflects new data
@@ -2019,7 +2085,18 @@ document.addEventListener('touchend', () => {
 
 // === INIT ===
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Listen for sync complete messages
+    navigator.serviceWorker.addEventListener('message', e => {
+      if (e.data.type === 'SYNC_COMPLETE') {
+        showToast(e.data.synced + ' workout(s) gesynct!');
+        updateStats();
+      }
+      if (e.data.type === 'WORKOUT_QUEUED') {
+        console.log('Workout queued for offline sync');
+      }
+    });
+  }).catch(() => {});
 }
 
 // Migrate old single-user data to joost
