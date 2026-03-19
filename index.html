@@ -619,6 +619,16 @@ const EXERCISE_INFO = {
     dos: ['Schouders stevig onder de pads', 'Voeten op schouderbreedte, laag op platform voor meer quads', 'Volle ROM: daal tot minstens 90\u00b0 kniehoek', 'Knie\u00ebn in lijn met tenen duwen'],
     donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet op slot gooien bovenin', 'Niet met halve reps werken']
   },
+  'GHD Back Extension': {
+    muscles: 'Erector spinae, glutes, hamstrings',
+    dos: ['Heupen op het pad, bovenlichaam vrij hangend', 'Gecontroleerd zakken tot ~90\u00b0', 'Squeeze glutes en onderrug om terug te komen', 'Handen voor borst of achter hoofd (moeilijker)'],
+    donts: ['Niet hyperextenderen voorbij neutraal', 'Niet te snel of met momentum werken', 'Stop bij pijn in de onderrug']
+  },
+  'Incline Barbell Bench Press': {
+    muscles: 'Bovenborst, schouders, triceps',
+    dos: ['Schouderbladen samenknijpen tegen het pad', 'Laat stang zakken naar bovenborst (sleutelbeen)', 'Voeten plat op de grond', 'Gecontroleerd tempo, niet bouncen'],
+    donts: ['Niet te breed grijpen (schouder stress)', 'Stang niet op de nek laten zakken', 'Billen niet van de bank tillen']
+  },
   'Cable Bicep Curl': {
     muscles: 'Biceps, brachialis',
     dos: ['E\u00e9n arm per keer voor constante spanning', 'Neutraal of lichte supinatie grip (tenniselleboog-vriendelijk)', 'Bovenarm gefixeerd langs je lichaam', 'Volledige ROM: gestrekt tot gebogen'],
@@ -718,8 +728,8 @@ const USERS = {
             exercises: [
               { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
                 target_sets: [{kg:27.5,reps:12},{kg:27.5,reps:12},{kg:27.5,reps:12}],
-                alt: { name: 'Machine Incline Press', detail: '10-12 reps', target_kg: 50,
-                  target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
+                alt: { name: 'Incline Barbell Bench Press', detail: '10-12 reps \u2022 Panatta, vaste hoek', target_kg: 50,
+                  target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:50,reps:10}] } },
               { id: 'b2', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 70,
                 target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:70,reps:12}],
                 alt: { name: 'Leg Curl (lying)', detail: '12-15 reps \u2022 LET OP: kniepijn links', target_kg: 40,
@@ -822,8 +832,8 @@ const USERS = {
                   target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } },
               { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 55,
                 target_sets: [{kg:45,reps:15},{kg:50,reps:15},{kg:55,reps:12}],
-                alt: { name: 'Romanian Deadlift', detail: '10-12 reps \u2022 barbell + straps, licht', target_kg: 60,
-                  target_sets: [{kg:50,reps:12},{kg:55,reps:12},{kg:60,reps:10}] } }
+                alt: { name: 'GHD Back Extension', detail: '12-15 reps \u2022 Nautilus, bodyweight', target_kg: 0, target_label: 'BW',
+                  target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:12}] } }
             ]
           }
         ]
