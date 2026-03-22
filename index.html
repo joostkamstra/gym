@@ -1236,7 +1236,7 @@ function getWorkouts() {
 function saveWorkouts(w) {
   localStorage.setItem('gym_workouts_' + currentUser, JSON.stringify(w));
 }
-// Cloud workout save (in addition to local + FormSubmit)
+// Cloud workout save
 async function saveWorkoutToCloud(workout, schemaKey) {
   if (!cloudMode) return null;
   try {
@@ -1609,8 +1609,6 @@ async function saveWorkout() {
   workouts.unshift(workout);
   saveWorkouts(workouts);
 
-  sendWorkoutData(workout, s);
-
   // Save to cloud and show evaluation
   const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
   if (cloudResult && cloudResult.queued) {
@@ -1628,52 +1626,6 @@ async function saveWorkout() {
   }
 }
 
-function sendWorkoutData(workout, schema) {
-  const d = new Date(workout.date);
-  const dateStr = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const subject = `[GYM] ${schema.name} — ${d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}`;
-
-  let summary = '';
-  workout.exercises.forEach(logged => {
-    const targetStr = logged.target_label || (logged.target_kg > 0 ? logged.target_kg + ' kg' : 'BW');
-
-    if (Array.isArray(logged.sets)) {
-      const filledSets = logged.sets.filter(s => s.kg || s.reps);
-      if (filledSets.length > 0) {
-        const setStrs = logged.sets.map((s, i) => {
-          if (!s.kg && !s.reps) return null;
-          return `S${i+1}: ${s.kg || '—'}kg × ${s.reps || '—'}`;
-        }).filter(Boolean);
-        summary += `${logged.name} (doel: ${targetStr})\n  ${setStrs.join(' | ')}\n`;
-      }
-    } else if (logged.kg || logged.reps) {
-      summary += `${logged.name}: ${logged.kg || '—'} kg x ${logged.reps || '—'} reps (doel: ${targetStr})\n`;
-    }
-  });
-
-  if (workout.feedback) {
-    summary += `\nOpmerkingen:\n${workout.feedback}\n`;
-  }
-
-  const email = USERS[currentUser]?.email;
-  if (!email) return;
-  fetch('https://formsubmit.co/ajax/' + email, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({
-      _subject: subject,
-      _template: 'box',
-      datum: dateStr,
-      schema: `${schema.name} (${schema.subtitle})`,
-      resultaten: summary,
-      raw_json: JSON.stringify(workout.exercises)
-    })
-  }).then(r => r.json()).then(data => {
-    if (data.success) console.log('Workout data sent');
-  }).catch(() => {
-    console.log('Email send failed, data saved locally');
-  });
-}
 
 // === HISTORY ===
 let cloudWorkouts = null; // cached from API
