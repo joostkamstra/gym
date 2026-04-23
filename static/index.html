@@ -484,6 +484,16 @@ const EXERCISE_INFO = {
     dos: ['Buik aanspannen vóór de beweging', 'Langzaam en gecontroleerd crunchen', 'Focus op buikspieren, niet op armen'],
     donts: ['Niet met je armen/handen duwen', 'Niet met momentum werken', 'Nek niet forceren of vooruit duwen']
   },
+  'Decline Crunch': {
+    muscles: 'Rectus abdominis (boven/midden)',
+    dos: ['Decline bench op 30-45°', 'Schijf op borst houden voor extra weerstand', 'Stop wanneer schouderbladen los zijn van de bank', 'Uitademen bij het crunchen'],
+    donts: ['Niet helemaal omhoog komen tot zitpositie', 'Niet met momentum werken', 'Nek niet forceren']
+  },
+  'Ab Wheel Rollout': {
+    muscles: 'Rectus abdominis, TVA, serratus anterior',
+    dos: ['Start op de knieën', 'Hollow body positie houden (core aangespannen)', 'Zo ver mogelijk uitrollen zonder dat onderrug doorhangt', 'Langzaam en gecontroleerd terugrollen'],
+    donts: ['Onderrug niet laten doorzakken', 'Niet te ver uitrollen als je de controle verliest', 'Niet met momentum werken']
+  },
   'Pallof Press': {
     muscles: 'Core (anti-rotatie), obliques',
     dos: ['Sta op schouderbreedte, knieën licht gebogen', 'Duw handen recht naar voren vanuit je borst', 'Houd je heupen en schouders recht naar voren'],
@@ -539,7 +549,7 @@ const EXERCISE_INFO = {
     dos: ['Dead hang aan de stang, schouders actief', 'Bekken kantelen (posterior tilt) aan de top', 'Benen gestrekt of licht gebogen', 'Langzaam en gecontroleerd'],
     donts: ['Niet swingen voor momentum', 'Lichaam niet heen en weer slingeren', 'Niet alleen hip flexors gebruiken (bekken moet kantelen)']
   },
-  'Machine Incline Press': {
+  'Panatta Super Inclined Bench Press': {
     muscles: 'Bovenborst, schouders, triceps',
     dos: ['Schouderbladen samenknijpen tegen het pad', 'Volle ROM: van borst tot volledige strekking', 'Voeten plat op de grond', 'Gecontroleerd tempo'],
     donts: ['Niet bouncen uit de onderste positie', 'Schouders niet optrekken', 'Niet halverwege stoppen']
@@ -676,26 +686,26 @@ const USERS = {
             ]
           },
           {
-            name: 'C: RDL + Cable Crunch', sets: 3, rest: '75s', color: 'purple',
-            warmup: '1x8 RDL @40kg, 1x5 @65kg',
+            name: 'C: Shoulder Press + Decline Crunch', sets: 3, rest: '75s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps \u2022 barbell + straps', target_kg: 90,
-                target_sets: [{kg:90,reps:11},{kg:90,reps:11},{kg:90,reps:11}],
-                alt: { name: 'DB RDL', detail: '10-12 reps', target_kg: 30, target_label: '2x30 kg',
-                  target_sets: [{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } },
-              { id: 'c2', name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 75,
-                target_sets: [{kg:75,reps:15},{kg:75,reps:12},{kg:75,reps:12}],
-                alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
-                  target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } }
-            ]
-          },
-          {
-            name: 'D: Shoulder Press + Leg Raise', sets: 3, rest: '45s', color: 'orange',
-            exercises: [
-              { id: 'd1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 25, target_label: '2x25 kg',
+              { id: 'c1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 25, target_label: '2x25 kg',
                 target_sets: [{kg:25,reps:8},{kg:25,reps:8},{kg:25,reps:8}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:40,reps:10},{kg:40,reps:10},{kg:40,reps:10}] } },
+              { id: 'c2', name: 'Decline Crunch', detail: '12-15 reps \u2022 schijf op borst', target_kg: 10,
+                target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}],
+                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 75,
+                  target_sets: [{kg:75,reps:15},{kg:75,reps:12},{kg:75,reps:12}] } }
+            ]
+          },
+          {
+            name: 'D: RDL + Leg Raise', sets: 3, rest: '45s', color: 'orange',
+            warmup: '1x8 RDL @40kg, 1x5 @65kg',
+            exercises: [
+              { id: 'd1', name: 'Romanian Deadlift', detail: '10-12 reps \u2022 barbell + straps', target_kg: 90,
+                target_sets: [{kg:90,reps:11},{kg:90,reps:11},{kg:90,reps:11}],
+                alt: { name: 'DB RDL', detail: '10-12 reps', target_kg: 30, target_label: '2x30 kg',
+                  target_sets: [{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } },
               { id: 'd2', name: 'Leg Raise', detail: '10-15 reps \u2022 captain\'s chair', target_kg: 0, target_label: 'BW',
                 target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}],
                 alt: { name: 'Hanging Leg Raise', detail: '10-15 reps', target_kg: 0, target_label: 'BW',
@@ -713,38 +723,38 @@ const USERS = {
             name: 'A: Leg Press + Pulldown', sets: 4, rest: '90s', color: 'green',
             warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Leg Press: 1x10 @80kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
             exercises: [
-              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 180,
-                target_sets: [{kg:140,reps:12},{kg:160,reps:12},{kg:180,reps:12},{kg:180,reps:12}],
+              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 185,
+                target_sets: [{kg:145,reps:12},{kg:165,reps:12},{kg:185,reps:12},{kg:185,reps:12}],
                 alt: { name: 'V-Squat', detail: '10-12 reps \u2022 inward looking', target_kg: 130,
                   target_sets: [{kg:100,reps:12},{kg:120,reps:10},{kg:130,reps:10},{kg:130,reps:10}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
-                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:70,reps:12},{kg:70,reps:12}],
+              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps', target_kg: 75,
+                target_sets: [{kg:65,reps:12},{kg:70,reps:12},{kg:75,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 70,
                   target_sets: [{kg:65,reps:10},{kg:70,reps:10},{kg:70,reps:10},{kg:70,reps:10}] } }
             ]
           },
           {
-            name: 'B: Incline + Leg Curl', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'blue',
             exercises: [
-              { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
-                target_sets: [{kg:27.5,reps:12},{kg:27.5,reps:12},{kg:27.5,reps:12}],
-                alt: { name: 'Incline Barbell Bench Press', detail: '10-12 reps \u2022 Panatta, vaste hoek', target_kg: 50,
-                  target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:50,reps:10}] } },
-              { id: 'b2', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 70,
-                target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:70,reps:12}],
+              { id: 'b1', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 75,
+                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Leg Curl (lying)', detail: '12-15 reps \u2022 LET OP: kniepijn links', target_kg: 40,
-                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
+                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
+              { id: 'b2', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
+                target_sets: [{kg:12,reps:12},{kg:12,reps:12},{kg:12,reps:12}],
+                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 10,
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } }
             ]
           },
           {
-            name: 'C: Lateral + Row', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Incline Press + Row', sets: 3, rest: '90s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
-                target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}],
-                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 10,
-                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } },
-              { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta, neutraal grip + straps', target_kg: 35, target_label: '35 kg/kant',
-                target_sets: [{kg:35,reps:12},{kg:35,reps:12},{kg:35,reps:12}],
+              { id: 'c1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
+                target_sets: [{kg:27.5,reps:12},{kg:27.5,reps:12},{kg:27.5,reps:12}],
+                alt: { name: 'Incline Barbell Bench Press', detail: '10-12 reps \u2022 Panatta, vaste hoek', target_kg: 50,
+                  target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:50,reps:10}] } },
+              { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta, neutraal grip (zonder straps)', target_kg: 40, target_label: '40 kg/kant',
+                target_sets: [{kg:40,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
                 alt: { name: 'Seated Row Machine', detail: '10-12 reps', target_kg: 70,
                   target_sets: [{kg:65,reps:12},{kg:70,reps:12},{kg:70,reps:12}] } }
             ]
@@ -752,27 +762,23 @@ const USERS = {
           {
             name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
-                target_sets: [{kg:80,reps:15},{kg:80,reps:15},{kg:80,reps:12}],
-                alt: { name: 'Cable Crunch', detail: '12-15 reps', target_kg: 70,
-                  target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } },
-              { id: 'd2', name: 'Pallof Press', detail: '10-15 reps per kant', target_kg: 35,
-                target_sets: [{kg:30,reps:15},{kg:35,reps:15},{kg:35,reps:15}],
+              { id: 'd1', name: 'Ab Wheel Rollout', detail: '8-12 reps \u2022 op knieën', target_kg: 0, target_label: 'BW',
+                target_sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}],
+                alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 85,
+                  target_sets: [{kg:85,reps:12},{kg:85,reps:12},{kg:85,reps:12}] } },
+              { id: 'd2', name: 'Pallof Press', detail: '10-15 reps per kant', target_kg: 40,
+                target_sets: [{kg:35,reps:15},{kg:40,reps:15},{kg:40,reps:15}],
                 alt: { name: 'Woodchop', detail: '12 reps per kant', target_kg: 20,
                   target_sets: [{kg:20,reps:12},{kg:20,reps:12},{kg:20,reps:12}] } }
             ]
           },
           {
-            name: 'E: Arms', sets: 3, rest: '45s', color: 'red',
+            name: 'E: Triceps', sets: 2, rest: '45s', color: 'red',
             exercises: [
               { id: 'e1', name: 'Tricep Pushdown', detail: '10-12 reps \u2022 rope, neutraal grip', target_kg: 65,
-                target_sets: [{kg:60,reps:12},{kg:60,reps:12},{kg:65,reps:12}],
+                target_sets: [{kg:60,reps:12},{kg:65,reps:12}],
                 alt: { name: 'OH Tricep Extension', detail: '10-12 reps \u2022 kabel', target_kg: 30,
-                  target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
-              { id: 'e2', name: 'Cable Bicep Curl', detail: '10-12 reps \u2022 1 arm, neutraal/licht', target_kg: 25, target_label: '25 kg',
-                target_sets: [{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
-                alt: { name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 12, target_label: '2x12 kg',
-                  target_sets: [{kg:10,reps:12},{kg:12,reps:10},{kg:12,reps:10}] } }
+                  target_sets: [{kg:25,reps:15},{kg:30,reps:12}] } }
             ]
           }
         ]
@@ -783,31 +789,31 @@ const USERS = {
         desc: '26 sets \u2022 ~82 min',
         supersets: [
           {
-            name: 'A: BSS (Smith) + Lat Pulldown', sets: 4, rest: '2 min', color: 'green',
-            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            name: 'A: BSS (Smith) + Straight-arm Pulldown', sets: 4, rest: '2 min', color: 'green',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Straight-arm: 1x12 @20kg',
             exercises: [
               { id: 'a1', name: 'Bulgarian Split Squat', detail: '8-10 reps per been \u2022 Smith machine, achterbeen op bank', target_kg: 40,
                 target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
                 alt: { name: 'Hack Squat', detail: '8-10 reps', target_kg: 100,
                   target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:100,reps:8},{kg:100,reps:8}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '8-10 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
-                target_sets: [{kg:60,reps:10},{kg:65,reps:10},{kg:70,reps:8},{kg:70,reps:8}],
-                alt: { name: 'Straight-arm Pulldown', detail: '10-12 reps \u2022 kabel + straps', target_kg: 30,
-                  target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } }
+              { id: 'a2', name: 'Straight-arm Cable Pulldown', detail: '10-12 reps \u2022 kabel + straight bar + straps. Armen gestrekt, trek naar heupen.', target_kg: 30,
+                target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}],
+                alt: { name: 'Lat Pulldown', detail: '8-10 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
+                  target_sets: [{kg:60,reps:10},{kg:65,reps:10},{kg:70,reps:8},{kg:70,reps:8}] } }
             ]
           },
           {
-            name: 'B: Machine Chest + Row', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Machine Chest + Cable Row', sets: 3, rest: '90s', color: 'blue',
             warmup: '1x10 Vertical Chest Press @35kg',
             exercises: [
               { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 65,
                 target_sets: [{kg:55,reps:10},{kg:60,reps:10},{kg:65,reps:8}],
                 alt: { name: 'DB Flat Bench Press', detail: '8-10 reps', target_kg: 27.5, target_label: '2x27.5 kg',
                   target_sets: [{kg:25,reps:10},{kg:27.5,reps:8},{kg:27.5,reps:8}] } },
-              { id: 'b2', name: 'Plate-loaded Row', detail: '8-10 reps \u2022 Panatta, neutraal grip + straps', target_kg: 40, target_label: '40 kg/kant',
-                target_sets: [{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
-                alt: { name: 'Seated Cable Row', detail: '8-10 reps \u2022 V-grip + straps', target_kg: 75,
-                  target_sets: [{kg:70,reps:10},{kg:75,reps:8},{kg:75,reps:8}] } }
+              { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps \u2022 V-grip + straps', target_kg: 75,
+                target_sets: [{kg:70,reps:10},{kg:75,reps:8},{kg:75,reps:8}],
+                alt: { name: 'Plate-loaded Row', detail: '8-10 reps \u2022 Panatta, neutraal grip', target_kg: 40, target_label: '40 kg/kant',
+                  target_sets: [{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}] } }
             ]
           },
           {
@@ -862,7 +868,7 @@ const USERS = {
             exercises: [
               { id: 'b1', name: 'Cable Fly', detail: '10-12 reps \u2022 stretch + squeeze', target_kg: 20, target_label: '20 kg/hand',
                 target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
-                alt: { name: 'Machine Incline Press', detail: '10-12 reps', target_kg: 50,
+                alt: { name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps', target_kg: 50,
                   target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
               { id: 'b2', name: 'Lying Leg Curl', detail: '12-15 reps \u2022 LET OP: monitor knie links', target_kg: 40,
                 target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
@@ -918,45 +924,46 @@ const USERS = {
     email: 'kamstra@gmail.com',
     schemas: {
       A: {
-        name: 'Schema A — Zaterdag',
+        name: 'Schema A',
         subtitle: 'Full Body Strength',
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: Leg Press + Pulldown', sets: 3, rest: '90s', color: 'green',
-            warmup: '1x12 Leg Press @40 kg',
+            name: 'A: Leg Press + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x12 Leg Press @60 kg',
             exercises: [
-              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 90,
-                target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:90,reps:10}],
-                alt: { name: 'V-Squat', detail: '10-12 reps', target_kg: 55,
-                  target_sets: [{kg:40,reps:12},{kg:55,reps:12},{kg:55,reps:12}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 wide grip', target_kg: 42.5,
-                target_sets: [{kg:40,reps:12},{kg:42.5,reps:12},{kg:42.5,reps:12}],
-                alt: { name: 'Lat Pulldown', detail: '10-12 reps \u2022 close grip / V-bar', target_kg: 42.5,
-                  target_sets: [{kg:40,reps:12},{kg:42.5,reps:12},{kg:42.5,reps:12}] } }
+              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
+                target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:12}],
+                alt: { name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+                  target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}] } },
+              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 wide grip', target_kg: 45,
+                target_sets: [{kg:40,reps:12},{kg:45,reps:12},{kg:45,reps:12}],
+                alt: { name: 'Lat Pulldown', detail: '10-12 reps \u2022 close grip / V-bar', target_kg: 45,
+                  target_sets: [{kg:40,reps:12},{kg:45,reps:12},{kg:45,reps:12}] } }
             ]
           },
           {
-            name: 'B: Chest Press + Cable Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: '1x12 Chest Press @20 kg',
+            name: 'B: Bench Press + Cable Row', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x10 Bench Press @20 kg (stang)',
             exercises: [
-              { id: 'b1', name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 40,
-                target_sets: [{kg:30,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
-                alt: { name: 'DB Flat Bench Press', detail: '10-12 reps', target_kg: 14, target_label: '2x14 kg',
-                  target_sets: [{kg:12,reps:12},{kg:14,reps:10},{kg:14,reps:10}] } },
+              { id: 'b1', name: 'Barbell Bench Press', detail: '8-10 reps \u2022 flat', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+                alt: { name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 45,
+                  target_sets: [{kg:35,reps:12},{kg:45,reps:10},{kg:45,reps:10}] } },
               { id: 'b2', name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 40,
-                target_sets: [{kg:30,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
+                target_sets: [{kg:35,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
                 alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
                   target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}] } }
             ]
           },
           {
-            name: 'C: Leg Curl + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+            warmup: '1x10 RDL @20 kg (stang)',
             exercises: [
-              { id: 'c1', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 40,
-                target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
-                alt: { name: 'Lying Leg Curl', detail: '12-15 reps \u2022 Panatta', target_kg: 30,
-                  target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
+              { id: 'c1', name: 'Barbell Romanian Deadlift', detail: '8-10 reps', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 45,
+                  target_sets: [{kg:40,reps:15},{kg:45,reps:12},{kg:45,reps:12}] } },
               { id: 'c2', name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 25,
                 target_sets: [{kg:20,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
                 alt: { name: 'DB Shoulder Press', detail: '10-12 reps', target_kg: 10, target_label: '2x10 kg',
@@ -966,12 +973,12 @@ const USERS = {
           {
             name: 'D: Core + Biceps', sets: 2, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 25,
-                target_sets: [{kg:20,reps:15},{kg:25,reps:12}],
+              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 55,
+                target_sets: [{kg:45,reps:15},{kg:55,reps:12}],
                 alt: { name: 'Plank', detail: '30-45 sec', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:30},{kg:0,reps:30}] } },
-              { id: 'd2', name: 'Preacher Curl', detail: '10-12 reps \u2022 EZ-bar', target_kg: 12.5, target_label: '12.5 kg (excl. bar)',
-                target_sets: [{kg:10,reps:12},{kg:12.5,reps:12}],
+              { id: 'd2', name: 'Preacher Curl', detail: '10-12 reps \u2022 EZ-bar', target_kg: 10, target_label: '10 kg (excl. bar)',
+                target_sets: [{kg:10,reps:12},{kg:10,reps:12}],
                 alt: { name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 8, target_label: '2x8 kg',
                   target_sets: [{kg:8,reps:12},{kg:8,reps:12}] } }
             ]
@@ -979,22 +986,22 @@ const USERS = {
         ]
       },
       B: {
-        name: 'Schema B — Maandag',
+        name: 'Schema B',
         subtitle: 'Full Body Volume',
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: Sled Leg Press + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
-            warmup: '1x12 Sled Leg Press @40 kg',
+            name: 'A: Barbell Squat + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x10 Squat @20 kg (stang)',
             exercises: [
-              { id: 'a1', name: 'Sled Leg Press', detail: '12-15 reps', target_kg: 100,
-                target_sets: [{kg:60,reps:15},{kg:80,reps:15},{kg:100,reps:12}],
-                alt: { name: 'V-Squat', detail: '12-15 reps', target_kg: 55,
-                  target_sets: [{kg:40,reps:15},{kg:55,reps:12},{kg:55,reps:12}] } },
+              { id: 'a1', name: 'Barbell Back Squat', detail: '8-10 reps', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+                alt: { name: 'Sled Leg Press', detail: '12-15 reps', target_kg: 110,
+                  target_sets: [{kg:100,reps:12},{kg:110,reps:12},{kg:110,reps:15}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 45,
-                target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:12}],
+                target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15}],
                 alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 45,
-                  target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:12}] } }
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15}] } }
             ]
           },
           {
@@ -1002,20 +1009,20 @@ const USERS = {
             warmup: '1x12 DB Incline @2x6 kg',
             exercises: [
               { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 15, target_label: '2x15 kg',
-                target_sets: [{kg:9,reps:15},{kg:12.5,reps:15},{kg:15,reps:10}],
-                alt: { name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 35,
-                  target_sets: [{kg:25,reps:15},{kg:35,reps:12},{kg:35,reps:12}] } },
-              { id: 'b2', name: 'Plate-loaded Row', detail: '12-15 reps \u2022 Panatta', target_kg: 22.5, target_label: '22.5 kg/kant',
-                target_sets: [{kg:15,reps:15},{kg:22.5,reps:12},{kg:22.5,reps:12}],
-                alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 40,
-                  target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
+                target_sets: [{kg:10,reps:15},{kg:12.5,reps:15},{kg:15,reps:12}],
+                alt: { name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
+              { id: 'b2', name: 'Plate-loaded Row', detail: '12-15 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
+                target_sets: [{kg:15,reps:15},{kg:17.5,reps:12},{kg:20,reps:12}],
+                alt: { name: 'Seated Cable Row', detail: '12-15 reps', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:35,reps:12},{kg:40,reps:12}] } }
             ]
           },
           {
             name: 'C: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
             exercises: [
               { id: 'c1', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 45,
-                target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:12}],
+                target_sets: [{kg:40,reps:15},{kg:45,reps:15},{kg:45,reps:15}],
                 alt: { name: 'Lying Leg Curl', detail: '12-15 reps \u2022 Panatta', target_kg: 25,
                   target_sets: [{kg:20,reps:15},{kg:22.5,reps:12},{kg:25,reps:12}] } },
               { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps \u2022 schouders laag, controle', target_kg: 6, target_label: '2x6 kg',
@@ -1032,9 +1039,132 @@ const USERS = {
                 alt: { name: 'Dead Bug', detail: '10 per kant', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } },
               { id: 'd2', name: 'Dips Press', detail: '10-15 reps \u2022 Panatta Dual System', target_kg: 65,
-                target_sets: [{kg:60,reps:15},{kg:65,reps:12}],
-                alt: { name: 'Dips', detail: '6-10 reps \u2022 bodyweight', target_kg: 0, target_label: 'BW',
-                  target_sets: [{kg:0,reps:8},{kg:0,reps:8}] } }
+                target_sets: [{kg:60,reps:15},{kg:65,reps:15}],
+                alt: { name: 'OH Tricep Extension', detail: '12-15 reps \u2022 1 dumbbell', target_kg: 10,
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12}] } }
+            ]
+          }
+        ]
+      },
+      C: {
+        name: 'Schema C',
+        subtitle: 'Full Body Push Focus',
+        desc: '22 sets \u2022 ~60 min',
+        supersets: [
+          {
+            name: 'A: V-Squat + Seated Row', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x12 V-Squat @30 kg',
+            exercises: [
+              { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+                target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}],
+                alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
+                  target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:10}] } },
+              { id: 'a2', name: 'Seated Row Machine', detail: '10-12 reps \u2022 Technogym', target_kg: 40,
+                target_sets: [{kg:30,reps:12},{kg:40,reps:10},{kg:40,reps:10}],
+                alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 40,
+                  target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } }
+            ]
+          },
+          {
+            name: 'B: Incline Press + Lat Pulldown', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x12 Incline Press @15 kg',
+            exercises: [
+              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps \u2022 Panatta', target_kg: 35,
+                target_sets: [{kg:20,reps:12},{kg:30,reps:10},{kg:35,reps:10}],
+                alt: { name: 'DB Incline Press', detail: '10-12 reps', target_kg: 12.5, target_label: '2x12.5 kg',
+                  target_sets: [{kg:10,reps:12},{kg:12.5,reps:10},{kg:12.5,reps:10}] } },
+              { id: 'b2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 wide grip', target_kg: 45,
+                target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:45,reps:10}],
+                alt: { name: 'Lat Pulldown', detail: '10-12 reps \u2022 close grip', target_kg: 45,
+                  target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:45,reps:10}] } }
+            ]
+          },
+          {
+            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+            warmup: '1x10 RDL @20 kg (stang)',
+            exercises: [
+              { id: 'c1', name: 'Barbell Romanian Deadlift', detail: '8-10 reps', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 45,
+                  target_sets: [{kg:40,reps:15},{kg:45,reps:12},{kg:45,reps:12}] } },
+              { id: 'c2', name: 'DB Shoulder Press', detail: '10-12 reps', target_kg: 10, target_label: '2x10 kg',
+                target_sets: [{kg:8,reps:12},{kg:10,reps:10},{kg:10,reps:10}],
+                alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 25,
+                  target_sets: [{kg:20,reps:12},{kg:25,reps:12},{kg:25,reps:12}] } }
+            ]
+          },
+          {
+            name: 'D: Core + Triceps', sets: 2, rest: '45s', color: 'orange',
+            exercises: [
+              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 55,
+                target_sets: [{kg:45,reps:15},{kg:55,reps:12}],
+                alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 55,
+                  target_sets: [{kg:50,reps:15},{kg:55,reps:12}] } },
+              { id: 'd2', name: 'Tricep Pushdown', detail: '12-15 reps \u2022 rope', target_kg: 15,
+                target_sets: [{kg:10,reps:15},{kg:15,reps:12}],
+                alt: { name: 'OH Tricep Extension', detail: '12-15 reps \u2022 1 dumbbell', target_kg: 10,
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12}] } }
+            ]
+          }
+        ]
+      },
+      D: {
+        name: 'Schema D',
+        subtitle: 'Full Body Pull Focus',
+        desc: '22 sets \u2022 ~60 min',
+        supersets: [
+          {
+            name: 'A: Barbell Squat + Row', sets: 3, rest: '90s', color: 'green',
+            warmup: '1x10 Squat @20 kg (stang)',
+            exercises: [
+              { id: 'a1', name: 'Barbell Back Squat', detail: '8-10 reps', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+                alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
+                  target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:10}] } },
+              { id: 'a2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
+                target_sets: [{kg:15,reps:12},{kg:17.5,reps:10},{kg:20,reps:10}],
+                alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 40,
+                  target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } }
+            ]
+          },
+          {
+            name: 'B: Chest Press + Lat Pulldown', sets: 3, rest: '90s', color: 'blue',
+            warmup: '1x12 Chest Press @25 kg',
+            exercises: [
+              { id: 'b1', name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 40,
+                target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
+                alt: { name: 'Panatta Super Inclined Bench Press', detail: '12-15 reps \u2022 Panatta', target_kg: 30,
+                  target_sets: [{kg:20,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
+              { id: 'b2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip / V-bar', target_kg: 45,
+                target_sets: [{kg:35,reps:15},{kg:45,reps:12},{kg:45,reps:12}],
+                alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 45,
+                  target_sets: [{kg:35,reps:15},{kg:45,reps:12},{kg:45,reps:12}] } }
+            ]
+          },
+          {
+            name: 'C: Lying Leg Curl + Cable Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            exercises: [
+              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps \u2022 Panatta', target_kg: 25,
+                target_sets: [{kg:20,reps:15},{kg:25,reps:12},{kg:25,reps:12}],
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 45,
+                  target_sets: [{kg:40,reps:15},{kg:45,reps:12},{kg:45,reps:12}] } },
+              { id: 'c2', name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 5,
+                target_sets: [{kg:5,reps:12},{kg:5,reps:12},{kg:5,reps:12}],
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 5, target_label: '2x5 kg',
+                  target_sets: [{kg:5,reps:12},{kg:5,reps:12},{kg:5,reps:12}] } }
+            ]
+          },
+          {
+            name: 'D: Core + Biceps', sets: 2, rest: '45s', color: 'orange',
+            exercises: [
+              { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 55,
+                target_sets: [{kg:50,reps:15},{kg:55,reps:12}],
+                alt: { name: 'Cable Crunch', detail: '12-15 reps', target_kg: 55,
+                  target_sets: [{kg:45,reps:15},{kg:55,reps:12}] } },
+              { id: 'd2', name: 'DB Hammer Curl', detail: '10-12 reps', target_kg: 7.5, target_label: '2x7.5 kg',
+                target_sets: [{kg:7.5,reps:12},{kg:7.5,reps:12}],
+                alt: { name: 'Preacher Curl', detail: '10-12 reps \u2022 EZ-bar', target_kg: 10, target_label: '10 kg (excl. bar)',
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12}] } }
             ]
           }
         ]

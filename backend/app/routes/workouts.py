@@ -1,4 +1,5 @@
 import copy
+import re
 from datetime import datetime, UTC
 from uuid import UUID
 
@@ -40,13 +41,171 @@ def _round_to_increment(kg: float, increment: float) -> float:
     return round(round(kg / increment) * increment, 1)
 
 
-def _find_exercise_in_schema(schema_data: dict, exercise_name: str) -> tuple[dict | None, str | None]:
-    """Find an exercise in the schema data by name. Returns (exercise_dict, exercise_id) or (None, None)."""
+def _find_exercise_in_schema(
+    schema_data: dict,
+    exercise_name: str | None = None,
+    exercise_id: str | None = None,
+) -> tuple[dict | None, str | None]:
+    """Find an exercise in the schema data. Prefer exercise_id match, fallback to name.
+    Returns (exercise_dict, exercise_id) or (None, None)."""
     for superset in schema_data.get("supersets", []):
         for exercise in superset.get("exercises", []):
-            if exercise.get("name") == exercise_name:
-                return exercise, exercise.get("id")
+            if exercise_id and exercise.get("exercise_id") == exercise_id:
+                return exercise, exercise.get("exercise_id")
+            if exercise_name and exercise.get("name") == exercise_name:
+                return exercise, exercise.get("exercise_id")
     return None, None
+
+
+async def _resolve_exercise_ids(db: AsyncSession, names: set[str]) -> dict[str, str]:
+    """Resolve exercise names (including aliases) to exercise IDs.
+    Returns dict mapping each input name to exercise_id (as str UUID)."""
+    if not names:
+        return {}
+    # Match on name OR aliases (jsonb contains)
+    result = await db.execute(select(Exercise))
+    name_to_id: dict[str, str] = {}
+    for ex in result.scalars().all():
+        ex_id = str(ex.id)
+        name_to_id[ex.name] = ex_id
+        for alias in (ex.aliases or []):
+            name_to_id[alias] = ex_id
+    return {n: name_to_id[n] for n in names if n in name_to_id}
+
+
+def _detect_exercise_deviations(
+    schema_data: dict,
+    sets: list,
+) -> list[str]:
+    """Detect sets whose exercise_name does not match the schema's primary or alt for any slot.
+
+    Strategy: build a flat set of all accepted names across the whole schema (primary + alt).
+    Any workout exercise_name not in that set is a deviation. Also try per-superset matching
+    via slot-id ('a1','a2') for a more specific "expected X got Y in slot A1" message.
+    Returns a list of human-readable tags for session.notes."""
+    # All accepted exercise names across the schema (primary + alt, at any slot)
+    all_accepted: set[str] = set()
+    # Per slot-id (e.g. 'a1','a2','b1'): accepted names for that specific slot
+    slot_accepted: dict[str, set[str]] = {}
+
+    for ss in schema_data.get("supersets", []):
+        for ex in ss.get("exercises", []):
+            names = set()
+            if ex.get("name"):
+                names.add(ex["name"])
+            if ex.get("alt") and ex["alt"].get("name"):
+                names.add(ex["alt"]["name"])
+            all_accepted |= names
+            slot_id = (ex.get("id") or "").lower()
+            if slot_id:
+                slot_accepted[slot_id] = names
+
+    deviations: list[str] = []
+    seen: set[tuple[str, str]] = set()
+    for s in sets:
+        slot = (s.superset_key or "").lower()  # workout uses slot ids like 'a1','b2'
+        ex_name = s.exercise_name
+        if not ex_name:
+            continue
+        dedup = (slot, ex_name)
+        if dedup in seen:
+            continue
+        seen.add(dedup)
+
+        # Prefer slot-level match (more specific)
+        if slot and slot in slot_accepted:
+            if ex_name not in slot_accepted[slot]:
+                expected = " / ".join(sorted(slot_accepted[slot]))
+                deviations.append(
+                    f"[DEVIATION] slot {slot.upper()}: '{ex_name}' (expected: {expected})"
+                )
+                continue
+        # Fallback: global schema match (was the exercise used anywhere else in the schema?)
+        if ex_name not in all_accepted:
+            deviations.append(f"[DEVIATION] '{ex_name}' is not in schema (primary or alt)")
+    return deviations
+
+
+FEEDBACK_PATTERNS = [
+    # "{exercise} stappen van N kilo" -> increment note
+    (re.compile(r"(?i)([a-z0-9\- ]+?)\s+(?:gaat\s+in\s+)?stappen\s+van\s+(\d+(?:[.,]\d+)?)\s*kilo"),
+     lambda m: f"[FEEDBACK] increment-rule: {m.group(1).strip()} → {m.group(2)} kg/step"),
+    # "{A}: dit is de {B}" -> rename/alias hint
+    (re.compile(r"(?i)([a-z0-9\- ]+?):\s*dit\s+is\s+(?:de|het)\s+([a-z0-9\- ]+)"),
+     lambda m: f"[FEEDBACK] alias-hint: '{m.group(1).strip()}' = '{m.group(2).strip()}'"),
+    # "{exercise} ... neutral grip" / "zonder straps" -> detail note
+    (re.compile(r"(?i)(chin[- ]?ups?|pull[- ]?ups?)[^.]*?(neutral grip|zonder straps|geen straps)"),
+     lambda m: f"[FEEDBACK] form-note: {m.group(1)} — {m.group(2)}"),
+]
+
+
+def _parse_feedback(feedback: str | None) -> list[str]:
+    """Extract structured tags from free-form feedback string."""
+    if not feedback:
+        return []
+    tags: list[str] = []
+    for pat, fmt in FEEDBACK_PATTERNS:
+        for m in pat.finditer(feedback):
+            tags.append(fmt(m))
+    return tags
+
+
+async def propagate_target_increase(
+    db: AsyncSession,
+    user_id: UUID,
+    exercise_id: str | None,
+    exercise_name: str,
+    new_kg: float,
+    source_schema_id: UUID,
+    name_to_id: dict[str, str] | None = None,
+) -> list[str]:
+    """Propagate a weight increase to OTHER schemas of the same user that contain this exercise.
+
+    Matches on exercise_id OR name (including aliases via name_to_id lookup).
+    Rule: 'highest wins' — only bump if current max target_kg < new_kg.
+    Also keeps top-level `target_kg` in sync with max(target_sets.kg) to prevent stale summary fields.
+    Returns list of schema keys that were updated."""
+    result = await db.execute(
+        select(Schema).where(Schema.user_id == user_id, Schema.id != source_schema_id)
+    )
+    propagated_keys: list[str] = []
+    for other in result.scalars().all():
+        data = copy.deepcopy(other.data)
+        dirty = False
+        for ss in data.get("supersets", []):
+            for ex in ss.get("exercises", []):
+                # Match priority: exercise_id -> alias-resolved id -> name equality
+                ex_id = ex.get("exercise_id")
+                matches = False
+                if exercise_id and ex_id == exercise_id:
+                    matches = True
+                elif name_to_id and ex_id and ex.get("name") and name_to_id.get(ex["name"]) == exercise_id:
+                    matches = True
+                elif ex.get("name") == exercise_name:
+                    matches = True
+                if not matches:
+                    continue
+                target_sets = ex.get("target_sets", [])
+                if not target_sets:
+                    continue
+                current_max_kg = max((t.get("kg", 0) for t in target_sets), default=0)
+                if new_kg > current_max_kg:
+                    min_reps = min((t.get("reps", 0) for t in target_sets), default=0)
+                    if min_reps == 0:
+                        min_reps = target_sets[0].get("reps", 8)
+                    for t in target_sets:
+                        t["kg"] = new_kg
+                        t["reps"] = min_reps
+                    # Always sync target_kg with the max ladder kg
+                    ex["target_kg"] = new_kg
+                    dirty = True
+        if dirty:
+            other.data = data
+            attributes.flag_modified(other, "data")
+            propagated_keys.append(other.key)
+    if propagated_keys:
+        await db.flush()
+    return propagated_keys
 
 
 async def auto_update_targets(
@@ -76,13 +235,18 @@ async def auto_update_targets(
         if ex.equipment and ex.equipment.weight_increment:
             increment_map[ex.name] = ex.equipment.weight_increment
 
-    # Group workout sets by exercise name
+    # Group workout sets by exercise_id (fallback name if id missing)
     sets_by_exercise: dict[str, list[WorkoutSet]] = {}
     for ws in workout_sets:
-        sets_by_exercise.setdefault(ws.exercise_name, []).append(ws)
+        key = str(ws.exercise_id) if ws.exercise_id else ws.exercise_name
+        sets_by_exercise.setdefault(key, []).append(ws)
 
-    for exercise_name, actual_sets in sets_by_exercise.items():
-        exercise_def, _ = _find_exercise_in_schema(schema_data, exercise_name)
+    for group_key, actual_sets in sets_by_exercise.items():
+        # Use exercise_id if the group key looks like a UUID, else treat as name
+        lookup_id = group_key if len(group_key) == 36 and "-" in group_key else None
+        lookup_name = actual_sets[0].exercise_name
+        exercise_def, _ = _find_exercise_in_schema(schema_data, exercise_name=lookup_name, exercise_id=lookup_id)
+        exercise_name = lookup_name  # for downstream code + update records
         if not exercise_def:
             continue
 
@@ -94,7 +258,13 @@ async def auto_update_targets(
         actual_sets_sorted = sorted(actual_sets, key=lambda s: s.set_number)
 
         # Check if ALL sets met or exceeded targets (for weight bump)
+        # Stricter rule: for weight bump, every working set must hit TOP of rep-range
+        # at top-weight. Prevents false-positive bumps on pyramid ladders where only
+        # the highest-rep-target set actually represents "top of range".
+        top_weight = max((t.get("kg", 0) for t in target_sets), default=0)
+        top_reps = max((t.get("reps", 0) for t in target_sets), default=0)
         all_sets_hit = True
+        all_sets_hit_top = True  # strict: all working sets reach top_reps at top_weight
         set_results = []  # (set_index, actual, target, met_target)
 
         for actual in actual_sets_sorted:
@@ -112,10 +282,15 @@ async def auto_update_targets(
             if not met:
                 all_sets_hit = False
 
+            # Strict check: working sets (at top_weight) must hit top_reps.
+            # Warmup sets (< top_weight) are ignored for the top-reps requirement.
+            if actual.kg >= top_weight and actual.reps < top_reps:
+                all_sets_hit_top = False
+
         if not set_results:
             continue
 
-        if all_sets_hit and len(set_results) == len(target_sets):
+        if all_sets_hit and all_sets_hit_top and len(set_results) == len(target_sets):
             # Rule 1: All sets hit → bump weight, reset reps to minimum across target reps
             increment = _get_weight_increment(target_sets[0].get("kg", 0), increment_map.get(exercise_name))
             # Find the minimum target reps (the "reset" value)
@@ -142,9 +317,29 @@ async def auto_update_targets(
                     reason="weight_up",
                 ))
 
-            # Also update top-level target_kg if present
-            if "target_kg" in exercise_def:
-                exercise_def["target_kg"] = target_sets[0]["kg"]
+            # Always sync top-level target_kg with max ladder kg (prevents stale summary field)
+            max_new_kg = max((t.get("kg", 0) for t in target_sets), default=0)
+            exercise_def["target_kg"] = max_new_kg
+
+            # Propagate weight increase to other schemas (cross-schema sync, 'highest wins').
+            # Fall back to name-matching if exercise_id is missing on source — covers older schemas.
+            ex_id = exercise_def.get("exercise_id")
+            if max_new_kg > 0:
+                name_to_id = {exercise_name: ex_id} if ex_id else {}
+                propagated = await propagate_target_increase(
+                    db,
+                    schema.user_id,
+                    ex_id,
+                    exercise_name,
+                    max_new_kg,
+                    schema.id,
+                    name_to_id=name_to_id,
+                )
+                if propagated:
+                    # Tag all weight_up updates for this exercise with propagated_to
+                    for u in updates:
+                        if u.exercise_name == exercise_name and u.reason == "weight_up":
+                            u.propagated_to = propagated
         else:
             # Rule 2 & 3: Per-set updates
             for set_idx, actual, target, met in set_results:
@@ -267,10 +462,9 @@ async def create_workout(
     if not schema:
         raise HTTPException(status_code=404, detail=f"Schema {req.schema_key} not found")
 
-    # Resolve exercise IDs
+    # Resolve exercise IDs (via name + aliases)
     exercise_names = {s.exercise_name for s in req.sets}
-    ex_result = await db.execute(select(Exercise).where(Exercise.name.in_(exercise_names)))
-    exercise_map = {e.name: e.id for e in ex_result.scalars().all()}
+    exercise_map = await _resolve_exercise_ids(db, exercise_names)
 
     # Create session — strip timezone for naive TIMESTAMP columns
     workout_date = req.date.replace(tzinfo=None) if req.date.tzinfo else req.date
@@ -302,13 +496,24 @@ async def create_workout(
     await db.flush()
 
     # Auto-update targets using double progression protocol
-    target_updates = await auto_update_targets(db, schema, [
-        ws for ws in (
-            await db.execute(
-                select(WorkoutSet).where(WorkoutSet.session_id == session.id)
-            )
-        ).scalars().all()
-    ])
+    session_sets = (
+        await db.execute(
+            select(WorkoutSet).where(WorkoutSet.session_id == session.id)
+        )
+    ).scalars().all()
+    target_updates = await auto_update_targets(db, schema, list(session_sets))
+
+    # Detect exercise deviations (workout exercise != schema primary/alt for that slot)
+    # and parse structured tags from the feedback string. Append to session.notes
+    # so /workout-sync and the propagator-agent can act on them.
+    note_tags: list[str] = []
+    note_tags.extend(_detect_exercise_deviations(schema.data, session_sets))
+    note_tags.extend(_parse_feedback(session.feedback))
+    if note_tags:
+        existing = session.notes or ""
+        tag_block = "\n".join(note_tags)
+        session.notes = f"{existing}\n{tag_block}".strip() if existing else tag_block
+        await db.flush()
 
     # Reload with relationships
     result = await db.execute(
