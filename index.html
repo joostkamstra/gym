@@ -399,11 +399,6 @@ const EXERCISE_INFO = {
     dos: ['Voeten schouderbreedte, tenen licht naar buiten', 'Daal tot minstens 90° kniehoek', 'Borst omhoog, rug neutraal houden', 'Knieën in lijn met tenen duwen (track over 2e/3e teen)'],
     donts: ['Knieën niet naar binnen laten vallen', 'Niet op je tenen leunen', 'Geen bouncing onderaan']
   },
-  'Pull-ups': {
-    muscles: 'Lats, biceps, middenrug',
-    dos: ['Volledige ROM: hang tot kin boven stang', 'Schouderbladen naar beneden trekken bij start', 'Gecontroleerd laten zakken (negatief)'],
-    donts: ['Niet kip-achtig swingen/kippen', 'Niet halverwege stoppen', 'Geen overmatig momentum gebruiken']
-  },
   'Flat Bench Press': {
     muscles: 'Borst, triceps, voorste schouder',
     dos: ['Schouderbladen samenknijpen en naar beneden', 'Stang naar midden borst laten zakken', 'Voeten plat op de grond voor stabiliteit'],
@@ -426,7 +421,7 @@ const EXERCISE_INFO = {
   },
   'Cable Crunch': {
     muscles: 'Rectus abdominis (sixpack)',
-    dos: ['Heupen gefixeerd houden, alleen buigen vanuit de buik', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het crunchen'],
+    dos: ['2 katrollen setup (crossover): één rope-attachment aan elke kant op hoge pulley, zo blijft het gewicht gebalanceerd tijdens crunch', 'Heupen gefixeerd houden, alleen buigen vanuit de buik', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het crunchen'],
     donts: ['Niet met je armen/heupen trekken', 'Niet te snel of ongecontroleerd bewegen', 'Nek niet forceren']
   },
   'Leg Raise': {
@@ -434,19 +429,9 @@ const EXERCISE_INFO = {
     dos: ['Benen gestrekt of licht gebogen omhoog brengen', 'Bekken kantelen aan de top voor maximale activatie', 'Langzaam laten zakken (controle)'],
     donts: ['Niet swingen voor momentum', 'Lichaam niet heen en weer laten slingeren', 'Niet halverwege stoppen (volle ROM)']
   },
-  'Preacher Curl': {
-    muscles: 'Biceps (korte kop), brachialis',
-    dos: ['Bovenarmen volledig op het pad laten rusten', 'Gecontroleerde beweging omhoog en omlaag', 'Volledige ROM: bijna gestrekt tot volledig gebogen'],
-    donts: ['Niet achterover leunen om te helpen', 'Ellebogen niet van het pad tillen', 'Geen swingbeweging gebruiken']
-  },
-  'Dips': {
-    muscles: 'Triceps, borst, voorste schouder',
-    dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden', 'Gebruik de assisted dip machine als bodyweight te zwaar is'],
-    donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
-  },
   'Sled Leg Press': {
     muscles: 'Quadriceps, glutes',
-    dos: ['Voeten schouderbreedte, laag op platform voor meer quads', 'Volle ROM: laat de slee zakken tot 90\u00b0 kniehoek', 'Duw vanuit je hielen, niet je tenen', 'Rug plat tegen het pad houden'],
+    dos: ['Voeten schouderbreedte, laag op platform voor meer quads', '45\u00b0 hoek-platform \u2014 meer pure quad-druk dan Horizontal (Schema D MAIN), minder hamstring-rek', 'Volle ROM: laat de slee zakken tot 90\u00b0 kniehoek', 'Duw vanuit je hielen, niet je tenen', 'Rug plat tegen het pad houden'],
     donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet te diep gaan (onderrug mag niet van het pad komen)', 'Niet met halve reps werken', 'Knie\u00ebn niet op slot gooien bovenin']
   },
   'Horizontal Leg Press': {
@@ -456,7 +441,7 @@ const EXERCISE_INFO = {
   },
   'V-Squat': {
     muscles: 'Quadriceps, glutes, hamstrings',
-    dos: ['Voeten op schouderbreedte, laag op het platform voor meer quads, hoog voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen', 'Outward looking (rug naar machine) = meer quad activatie'],
+    dos: ['Voeten op schouderbreedte, laag op het platform voor meer quads, hoog voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen', 'V-Squat heeft 2 standen: Outward looking (rug naar machine) = meer quad-activatie · Inward looking (gezicht naar machine) = meer glute/hamstring + hipdrive (Schema B gebruikt inward)'],
     donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen']
   },
   'Lat Pulldown': {
@@ -469,11 +454,6 @@ const EXERCISE_INFO = {
     dos: ['Bank op 30-45° incline', 'Dumbbells op schouderlijn laten zakken', 'Schouderbladen samenknijpen tegen de bank'],
     donts: ['Niet te steil instellen (>45° = teveel schouder)', 'Ellebogen niet te wijd (90°+) openen', 'Gewicht niet laten bouncen']
   },
-  'Leg Curl': {
-    muscles: 'Hamstrings',
-    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam terugbrengen (excentrisch)'],
-    donts: ['Heupen niet van de bank tillen', 'Niet met je onderrug compenseren', 'Stop bij pijn aan buitenkant knie (lateraal)']
-  },
   'DB Lateral Raise': {
     muscles: 'Zijschouder (mediale deltoid)',
     dos: ['Lichte vooroverbuiging, ellebogen iets gebogen', 'Til tot schouderhoogte, niet hoger', 'Houd je handen neutraal of duimen licht naar voren'],
@@ -481,8 +461,8 @@ const EXERCISE_INFO = {
   },
   'Plate-loaded Row': {
     muscles: 'Lats, middenrug, biceps',
-    dos: ['Neutraal grip + lifting straps (tenniselleboog)', 'Borst tegen het pad drukken', 'Trek naar je navel/onderborst', 'Schouderbladen samenknijpen bovenin'],
-    donts: ['Niet achterover leunen van het pad af', 'Niet met je onderrug trekken', 'Schouders niet optrekken naar je oren']
+    dos: ['Neutraal grip (handpalmen naar elkaar) — elleboogvriendelijk', 'Lifting straps OPTIONEEL: Schema A/D = met straps (zware sets), Schema B = zonder straps (grip-training)', 'Borst tegen het pad drukken', 'Trek naar je navel/onderborst', 'Schouderbladen samenknijpen bovenin'],
+    donts: ['Niet achterover leunen van het pad af', 'Niet met je onderrug trekken', 'Schouders niet optrekken naar je oren', 'Bij Schema B (zonder straps): laat gewicht zakken als grip faalt, ga niet door op rug-uithoudingsvermogen']
   },
   'Ab Machine': {
     muscles: 'Rectus abdominis (sixpack)',
@@ -511,7 +491,7 @@ const EXERCISE_INFO = {
   },
   'OH Tricep Extension': {
     muscles: 'Triceps (lange kop)',
-    dos: ['Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
+    dos: ['Kabel-variant (Joost gebruikt deze): rope-attachment aan lage of hoge pulley, naar achteren stappen voor strakke kabel, constante spanning door volle ROM', 'Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
     donts: ['Ellebogen niet naar buiten laten wijken', 'Niet met je rug compenseren', 'Niet te snel of ongecontroleerd bewegen']
   },
   'Leg Curl (seated)': {
@@ -569,35 +549,15 @@ const EXERCISE_INFO = {
     dos: ['Rug stevig tegen het pad drukken', 'Handgrepen op borsthoogte instellen', 'Gecontroleerd duwen en terugbrengen', 'Schouderbladen samenknijpen'],
     donts: ['Schouders niet optrekken naar je oren', 'Niet bouncen uit de onderste positie', 'Ellebogen niet op slot gooien']
   },
-  'Leg Extension': {
-    muscles: 'Quadriceps',
-    dos: ['Rug stevig tegen rugpad houden', 'Volle ROM: van 90\u00b0 tot volledige strekking', 'Langzaam excentrisch terugbrengen', 'Knieën in lijn met draaipunt machine'],
-    donts: ['Niet met momentum omhoog zwaaien', 'Niet halverwege stoppen', 'Niet te zwaar gaan ten koste van techniek']
-  },
-  'Dead Bug': {
-    muscles: 'Core (TVA, rectus abdominis)',
-    dos: ['Rug plat op de grond houden (geen ruimte tussen onderrug en vloer)', 'Tegenovergestelde arm en been tegelijk strekken', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het strekken'],
-    donts: ['Onderrug niet van de grond laten komen', 'Niet te snel bewegen', 'Niet de adem inhouden']
-  },
   'Lying Leg Curl': {
     muscles: 'Hamstrings',
     dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
     donts: ['Heupen niet van de bank tillen', 'Niet met momentum omhoog zwaaien', 'Stop bij pijn aan buitenkant knie (lateraal)']
   },
-  'Plank': {
-    muscles: 'Core (rectus abdominis, obliques, TVA)',
-    dos: ['Lichaam in rechte lijn van hoofd tot hielen', 'Buik aanspannen, navel naar wervelkolom', 'Billen niet te hoog of te laag', 'Regelmatig ademhalen'],
-    donts: ['Niet door laten zakken in de onderrug', 'Hoofd niet laten hangen', 'Niet op adem inhouden']
-  },
   'Bulgarian Split Squat': {
     muscles: 'Quadriceps, glutes, core (stabilisatie)',
-    dos: ['Achterbeen op bank, voorvoet stevig op de grond', 'Torso rechtop houden, core aanspannen', 'Voorste knie in lijn met tenen (niet voorbij)', 'Volledige diepte: achterknie richting grond'],
-    donts: ['Voorste knie niet naar binnen laten vallen', 'Niet te ver voorover leunen', 'Niet te snel (balans!)']
-  },
-  'Arnold Press': {
-    muscles: 'Schouders (alle hoofden), triceps',
-    dos: ['Start met palmen naar je toe (curled positie)', 'Roteer tijdens het persen naar palmen vooruit', 'Zittend met rug tegen pad voor stabiliteit', 'Gecontroleerd tempo, focus op rotatie'],
-    donts: ['Niet te zwaar gaan (rotatie vraagt controle)', 'Niet met momentum omhoog gooien', 'Stop bij elleboogpijn (tenniselleboog — wissel naar Cable Lateral Raise)']
+    dos: ['Achterbeen op bank, voorvoet stevig op de grond', 'Smith machine-variant (Schema C): stang op trapezius, voorvoet 30-40cm verder naar voren dan bij DB-versie (vanwege verticale stang-baan)', 'Torso rechtop houden, core aanspannen', 'Voorste knie in lijn met tenen (niet voorbij)', 'Volledige diepte: achterknie richting grond'],
+    donts: ['Voorste knie niet naar binnen laten vallen', 'Niet te ver voorover leunen', 'Niet te snel (balans!)', 'Bij Smith-variant: niet voorvoet te dicht onder lichaam — stang dwingt verticaal, je knie schiet dan voorbij tenen']
   },
   'Hip Thrust Machine': {
     muscles: 'Glutes (primair), hamstrings',
@@ -614,16 +574,6 @@ const EXERCISE_INFO = {
     dos: ['Machine-geleide variant van dips (Panatta Dual System)', 'Volle ROM: van 90\u00b0 tot volledige extensie', 'Schouders naar beneden houden', 'Gecontroleerd tempo'],
     donts: ['Niet te diep zakken (schouderstress)', 'Schouders niet naar je oren trekken', 'Ellebogen niet naar buiten laten wijken']
   },
-  'Straight-arm Pulldown': {
-    muscles: 'Lats, teres major',
-    dos: ['Lichte vooroverbuiging, armen gestrekt houden', 'Trek stang/rope naar je bovenbenen', 'Lifting straps voor grip (tenniselleboog)', 'Focus op lat-squeeze onderaan'],
-    donts: ['Ellebogen niet buigen (armen gestrekt)', 'Niet met momentum swingen', 'Niet te zwaar (isolatie-oefening)']
-  },
-  'Straight-arm Cable Pulldown': {
-    muscles: 'Lats, teres major',
-    dos: ['Lichte vooroverbuiging, armen gestrekt houden', 'Trek stang/rope naar je bovenbenen', 'Lifting straps voor grip (tenniselleboog)', 'Focus op lat-squeeze onderaan'],
-    donts: ['Ellebogen niet buigen (armen gestrekt)', 'Niet met momentum swingen', 'Niet te zwaar (isolatie-oefening)']
-  },
   'Seated Calf Raise': {
     muscles: 'Soleus (primair), gastrocnemius (secondary)',
     dos: ['Volle ROM: diepe stretch onderin (hiel zakken), peak squeeze bovenin', 'Pauze 1 sec bovenin', '2 sec negatieve fase', 'Knieën 90° gebogen — schakelt gastrocnemius grotendeels uit, soleus doet het werk', 'Plates correct op de knie-pad plaatsen'],
@@ -631,8 +581,28 @@ const EXERCISE_INFO = {
   },
   'Chin-ups': {
     muscles: 'Lats, biceps, rhomboids, achterste deltoid',
-    dos: ['Supinated grip (handpalmen naar je toe)', 'Lifting straps tegen grip-stress (tenniselleboog)', 'Volledige strekking onderaan, kin boven de stang bovenaan', 'Rustige controle op de daling (2 sec)', 'Warmup: polsextensie 3x15 + Tyler Twist 3x15 eerst'],
-    donts: ['Geen pronated grip (= pull-up, belast polsextensoren te veel)', 'Niet swingen of kip-beweging', 'Bij brandend/zeurend gevoel in elleboog: direct stoppen en Assisted-variant pakken', 'Niet te zwaar starten — bouw op vanaf bodyweight']
+    dos: ['Neutral grip (handpalmen naar elkaar toe) — elleboog-vriendelijk', 'Zonder straps — bouw grip op vanaf bodyweight', 'Volledige strekking onderaan, kin boven de stang bovenaan', 'Rustige controle op de daling (2 sec)', 'Reps-progressie 6→10 voordat je gewicht toevoegt', 'Warmup: polsextensie 3x15 + Tyler Twist 3x15 eerst'],
+    donts: ['Geen supinated of pronated grip (neutraal is doelgrip)', 'Niet swingen of kip-beweging', 'Bij brandend/zeurend gevoel in elleboog: direct stoppen en Assisted-variant pakken', 'Niet te zwaar starten — eerst reps-progressie, dan pas weight']
+  },
+  'Assisted Chin-up': {
+    muscles: 'Lats, biceps, rhomboids, achterste deltoid',
+    dos: ['Nautilus-machine met counter-weight (gewicht = assist, dus hoger = lichter)', 'Neutral grip (handpalmen naar elkaar) — zelfde grip als Chin-ups', 'Volledige strekking onderaan, kin boven de stang bovenaan', 'Rustige controle op de daling (2 sec)', 'Bouw counter-weight gestaag af naarmate reps op bodyweight Chin-ups stijgen'],
+    donts: ['Geen supinated of pronated grip (neutraal is doelgrip)', 'Niet swingen of kip-beweging', 'Bij brandend/zeurend gevoel in elleboog: stop en pak Lat Pulldown V-grip als alternatief', 'Niet te veel counter-weight gebruiken (anders te makkelijk, geen progressie)']
+  },
+  'Leg Curl (lying)': {
+    muscles: 'Hamstrings',
+    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
+    donts: ['Heupen niet van de bank tillen', 'Niet met momentum omhoog zwaaien', 'LET OP: kniepijn links — stop direct bij pijn aan buitenkant linker knie (lateraal), wissel naar Leg Curl (seated)', 'Niet te zwaar gaan ten koste van techniek']
+  },
+  'Smith Calf Raise': {
+    muscles: 'Gastrocnemius (primair bij gestrekte knie), soleus (secondary bij gebogen knie)',
+    dos: ['Stang van Smith machine op de bovenkant van je rug (high-bar squat positie)', 'Voeten op een board/plate voor extra ROM', 'Gebogen knie ~20° houden — schakelt soleus mee in (rebalance-variant voor Seated Calf)', 'Volle ROM: diepe stretch onderin (hiel zakken), peak squeeze bovenin', 'Pauze 1 sec bovenin, 2 sec negatieve fase'],
+    donts: ['Geen momentum / bouncen', 'Niet half-rep', 'Knieën niet helemaal strekken (anders alleen gastrocnemius)', 'Pas op met balans bij hoge gewichten — Smith stang geleidt verticaal, geen probleem mits voet-positie strak']
+  },
+  'Torso Rotation': {
+    muscles: 'Obliques, core (rotatie), serratus anterior',
+    dos: ['Panatta machine: zittend, heupen gefixeerd door pads', 'Rotatie vanuit de torso, niet vanuit de armen', 'Volle ROM: van volledig geroteerd naar één kant tot midden', 'Gecontroleerd tempo in beide richtingen', '12-15 reps per kant — eerst de ene zijde, dan switchen'],
+    donts: ['Niet met armen/schouders trekken', 'Heupen niet laten meedraaien (anders verlies je oblique-focus)', 'Niet te zwaar starten — rotatie-spieren zijn klein, blessurerisico bij overload', 'Niet bouncing of momentum-gestuurd']
   },
   'Cable Fly': {
     muscles: 'Borst (stretch + squeeze focus)',
@@ -656,7 +626,7 @@ const EXERCISE_INFO = {
   },
   'Incline Barbell Bench Press': {
     muscles: 'Bovenborst, schouders, triceps',
-    dos: ['Schouderbladen samenknijpen tegen het pad', 'Laat stang zakken naar bovenborst (sleutelbeen)', 'Voeten plat op de grond', 'Gecontroleerd tempo, niet bouncen'],
+    dos: ['Panatta-variant (Schema B): vaste bank-hoek (~30°), barbell geleidt — meer focus op pure pers, minder stabilisatie', 'Schouderbladen samenknijpen tegen het pad', 'Laat stang zakken naar bovenborst (sleutelbeen)', 'Voeten plat op de grond', 'Gecontroleerd tempo, niet bouncen'],
     donts: ['Niet te breed grijpen (schouder stress)', 'Stang niet op de nek laten zakken', 'Billen niet van de bank tillen']
   },
   'Cable Bicep Curl': {
@@ -708,8 +678,8 @@ const USERS = {
           {
             name: 'C: Shoulder Press + Decline Crunch', sets: 3, rest: '75s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 25, target_label: '2x25 kg',
-                target_sets: [{kg:25,reps:8},{kg:25,reps:8},{kg:25,reps:8}],
+              { id: 'c1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 22.5, target_label: '2x22.5 kg',
+                target_sets: [{kg:22.5,reps:8},{kg:22.5,reps:8},{kg:22.5,reps:8}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:40,reps:10},{kg:40,reps:10},{kg:40,reps:10}] } },
               { id: 'c2', name: 'Decline Crunch', detail: '12-15 reps \u2022 schijf op borst', target_kg: 10,
@@ -820,7 +790,7 @@ const USERS = {
                 target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
                 alt: { name: 'Hack Squat', detail: '8-10 reps', target_kg: 100,
                   target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:100,reps:8},{kg:100,reps:8}] } },
-              { id: 'a2', name: 'Chin-ups', detail: '6-8 strict reps \u2022 supinated grip + straps. Bij elleboog-stress: Assisted-variant.', target_kg: 0,
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutral grip, zonder straps, reps-progressie 6\u219210', target_kg: 0,
                 target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}],
                 alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight, of Lat Pulldown V-grip (8-10 @70kg)', target_kg: 0,
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8},{kg:0,reps:8}] } }
@@ -830,8 +800,8 @@ const USERS = {
             name: 'B: Machine Chest + Cable Row', sets: 3, rest: '90s', color: 'blue',
             warmup: '1x10 Vertical Chest Press @35kg, 1x6 @50kg',
             exercises: [
-              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 65,
-                target_sets: [{kg:55,reps:10},{kg:60,reps:10},{kg:65,reps:8}],
+              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 80,
+                target_sets: [{kg:70,reps:10},{kg:75,reps:10},{kg:80,reps:10}],
                 alt: { name: 'DB Flat Bench Press', detail: '8-10 reps', target_kg: 27.5, target_label: '2x27.5 kg',
                   target_sets: [{kg:25,reps:10},{kg:27.5,reps:8},{kg:27.5,reps:8}] } },
               { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps \u2022 V-grip + straps', target_kg: 75,
@@ -850,20 +820,20 @@ const USERS = {
                   target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}] } },
               { id: 'c2', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
                 target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}],
-                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 70,
-                  target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } }
+                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 80,
+                  target_sets: [{kg:70,reps:15},{kg:75,reps:12},{kg:80,reps:10}] } }
             ]
           },
           {
             name: 'D: Shoulder Press + Lower Back', sets: 3, rest: '45s', color: 'orange',
             warmup: 'Smith Shoulder Press: 1x8 @20kg',
             exercises: [
-              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad (gewicht excl. stang ~20kg)', target_kg: 45,
-                target_sets: [{kg:35,reps:10},{kg:40,reps:10},{kg:45,reps:8}],
+              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad (gewicht excl. stang ~20kg)', target_kg: 35,
+                target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:35,reps:10}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } },
-              { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 55,
-                target_sets: [{kg:45,reps:15},{kg:50,reps:15},{kg:55,reps:12}],
+              { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 65,
+                target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}],
                 alt: { name: 'GHD Back Extension', detail: '12-15 reps \u2022 Nautilus, bodyweight', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:12}] } }
             ]
@@ -871,8 +841,8 @@ const USERS = {
           {
             name: 'E: Seated Calf Raise + Cable Fly (finisher)', sets: 3, rest: '60s', color: 'red',
             exercises: [
-              { id: 'e1', name: 'Seated Calf Raise', detail: '12-15 reps \u2022 plate-loaded, primary soleus (rebalance 20 apr, was Leg Curl)', target_kg: 25,
-                target_sets: [{kg:20,reps:15},{kg:25,reps:12},{kg:30,reps:12}],
+              { id: 'e1', name: 'Seated Calf Raise', detail: '12-15 reps \u2022 plate-loaded, primary soleus (rebalance 20 apr, was Leg Curl)', target_kg: 50,
+                target_sets: [{kg:40,reps:15},{kg:45,reps:15},{kg:50,reps:15}],
                 alt: { name: 'Smith Calf Raise', detail: '12-15 reps \u2022 plates op rug, gebogen knie', target_kg: 40,
                   target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
               { id: 'e2', name: 'Cable Fly', detail: '12-15 reps \u2022 beide kabels, lichte buiging', target_kg: 25, target_label: '25 kg per katrol',
@@ -896,7 +866,7 @@ const USERS = {
                 target_sets: [{kg:120,reps:12},{kg:130,reps:12},{kg:140,reps:10},{kg:140,reps:10}],
                 alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 140,
                   target_sets: [{kg:120,reps:12},{kg:130,reps:12},{kg:140,reps:10},{kg:140,reps:10}] } },
-              { id: 'a2', name: 'Chin-ups', detail: '6-8 strict reps \u2022 supinated grip + straps \u2022 3 sets (rebalance v2 20 apr). Bij elleboog-stress: Assisted-variant.', target_kg: 0,
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutral grip, zonder straps, reps-progressie 6\u219210 \u2022 3 sets', target_kg: 0,
                 target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}],
                 alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight, of Lat Pulldown V-grip (10-12 @70kg)', target_kg: 0,
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8}] } }
@@ -1449,7 +1419,8 @@ async function saveWorkoutToCloud(workout, schemaKey) {
         date: workout.date,
         feedback: workout.feedback,
         notes: null,
-        sets
+        sets,
+        client_workout_id: workout.clientWorkoutId || null
       })
     });
     console.log('Workout saved to cloud:', res.id);
@@ -1757,6 +1728,28 @@ async function clearDraft(schemaKey) {
   await swRequest({ type: 'DRAFT_CLEAR', id });
 }
 
+// Reset in-memory workout state + clear feedback textarea.
+// Call AFTER clearDraft on save/exit so a fast restart of the same schema
+// doesn't show stale feedback while DB-clear async-completes.
+function resetWorkoutState() {
+  currentWorkout = {};
+  currentSwaps = {};
+  currentWorkoutStartedAt = null;
+  const fb = document.getElementById('workoutFeedback');
+  if (fb) fb.value = '';
+}
+
+// Generate a UUIDv4 (crypto.randomUUID with polyfill).
+// Used as client_workout_id for idempotent POST /api/workouts.
+function makeClientWorkoutId() {
+  if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 // Safety: flush draft when tab is hidden / page unloads
 document.addEventListener('visibilitychange', () => { if (document.hidden) flushDraft(); });
 window.addEventListener('pagehide', () => { flushDraft(); });
@@ -1769,23 +1762,34 @@ async function startWorkout(schema) {
   currentWorkoutStartedAt = Date.now();
   const s = getUserSchemas()[schema];
 
-  // Check for in-progress draft
+  // Check for in-progress draft.
+  // BUG-FIX (2026-05-16): previously clearDraft was only called when hasDraftData === true
+  // (i.e. sets had data). A draft with only feedback (no sets) would persist forever,
+  // resurfacing the old feedback in every subsequent session. Now: any draft without
+  // set-data is treated as an orphan and cleared.
   const draft = await loadDraft(schema);
   let hasDraftData = false;
-  if (draft && draft.sets) {
-    hasDraftData = Object.values(draft.sets).some(sets => Array.isArray(sets) && sets.some(x => x.kg || x.reps));
-    if (hasDraftData && confirm('Je had een workout in progress. Doorgaan waar je gebleven was?')) {
-      currentWorkout = draft.sets || {};
-      currentSwaps = draft.swaps || {};
-      currentWorkoutStartedAt = draft.startedAt || Date.now();
-    } else if (hasDraftData) {
+  if (draft) {
+    hasDraftData = !!(draft.sets && Object.values(draft.sets).some(
+      sets => Array.isArray(sets) && sets.some(x => x.kg || x.reps)
+    ));
+    if (hasDraftData) {
+      if (confirm('Je had een workout in progress. Doorgaan waar je gebleven was?')) {
+        currentWorkout = draft.sets || {};
+        currentSwaps = draft.swaps || {};
+        currentWorkoutStartedAt = draft.startedAt || Date.now();
+      } else {
+        await clearDraft(schema);
+        hasDraftData = false;
+      }
+    } else {
+      // Orphan draft (feedback/swaps but no sets) — always wipe it.
       await clearDraft(schema);
-      hasDraftData = false;
     }
   }
 
   document.getElementById('workoutTitle').textContent = s.name;
-  document.getElementById('workoutFeedback').value = (draft && hasDraftData && draft.feedback) || '';
+  document.getElementById('workoutFeedback').value = (hasDraftData && draft && draft.feedback) || '';
 
   let html = '';
   s.supersets.forEach(ss => {
@@ -1838,10 +1842,12 @@ function confirmExit() {
   if (hasData) {
     if (confirm('Workout afsluiten zonder opslaan?')) {
       if (currentSchema) clearDraft(currentSchema);
+      resetWorkoutState();
       showView('home');
     }
   } else {
     if (currentSchema) clearDraft(currentSchema);
+    resetWorkoutState();
     showView('home');
   }
 }
@@ -1885,7 +1891,11 @@ async function saveWorkout() {
     schema: currentSchema,
     schemaName: s.name,
     feedback: feedback || null,
-    exercises: exercises
+    exercises: exercises,
+    // Stable per-save UUID. Reaches the backend via saveWorkoutToCloud, and travels
+    // with the body when the SW-queue replays it offline \u2014 so retry POSTs hit the
+    // idempotent-replay branch in the backend instead of inserting duplicates.
+    clientWorkoutId: makeClientWorkoutId()
   };
 
   const workouts = getWorkouts();
@@ -1900,15 +1910,18 @@ async function saveWorkout() {
     showToast('Offline opgeslagen \u2014 synct automatisch');
     registerSync();
     await clearDraft(savedSchema);
+    resetWorkoutState();
     setTimeout(() => showView('home'), 1200);
   } else if (cloudResult && cloudResult.id) {
     showToast('Workout opgeslagen!');
     await clearDraft(savedSchema);
+    resetWorkoutState();
     showView('home');
     showWorkoutEvaluation(cloudResult.id, s.name);
   } else {
     showToast('Opgeslagen (lokaal)');
     await clearDraft(savedSchema);
+    resetWorkoutState();
     setTimeout(() => showView('home'), 800);
   }
 }
@@ -2486,7 +2499,26 @@ if ('serviceWorker' in navigator) {
         console.log('Workout queued for offline sync');
       }
     });
+    // Prompt user when a new SW version installs (critical for PWA — iOS otherwise
+    // sticks with stale cached index.html for days). Reloads when new SW takes control.
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      if (!nw) return;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          if (confirm('Nieuwe versie van de gym-app beschikbaar. Nu laden?')) {
+            nw.postMessage({ type: 'SKIP_WAITING' });
+          }
+        }
+      });
+    });
   }).catch(() => {});
+  let _reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_reloading) return;
+    _reloading = true;
+    location.reload();
+  });
 }
 
 // Migrate old single-user data to joost

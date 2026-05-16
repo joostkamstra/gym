@@ -72,6 +72,7 @@ class WorkoutCreateRequest(BaseModel):
     feedback: str | None = None
     notes: str | None = None
     sets: list[WorkoutSetInput]
+    client_workout_id: uuid.UUID | None = None  # client-generated UUID for idempotent retries
 
 
 class WorkoutSetResponse(BaseModel):
@@ -91,7 +92,8 @@ class TargetUpdate(BaseModel):
     new_kg: float
     old_reps: int
     new_reps: int
-    reason: str  # "weight_up", "reps_up", "kg_up", "no_change"
+    reason: str  # "weight_up", "reps_up", "kg_up", "no_change", "propagated"
+    propagated_to: list[str] | None = None  # schema keys where target was also bumped
 
 
 class WorkoutResponse(BaseModel):
@@ -103,6 +105,7 @@ class WorkoutResponse(BaseModel):
     notes: str | None
     sets: list[WorkoutSetResponse]
     target_updates: list[TargetUpdate] | None = None
+    client_workout_id: uuid.UUID | None = None
     created_at: datetime
 
 

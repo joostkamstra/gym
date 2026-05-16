@@ -408,6 +408,7 @@ def _build_workout_response(
             for s in sorted(session.sets, key=lambda s: (s.superset_key, s.set_number))
         ],
         target_updates=target_updates,
+        client_workout_id=session.client_workout_id,
         created_at=session.created_at,
     )
 
@@ -454,6 +455,21 @@ async def create_workout(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    # Idempotent replay: same client_workout_id from same user → return existing session.
+    # Prevents duplicate inserts from double-clicks, slow-response retries, and SW queue replays.
+    if req.client_workout_id:
+        existing = await db.execute(
+            select(WorkoutSession)
+            .options(selectinload(WorkoutSession.sets), selectinload(WorkoutSession.schema))
+            .where(
+                WorkoutSession.user_id == user.id,
+                WorkoutSession.client_workout_id == req.client_workout_id,
+            )
+        )
+        found = existing.scalar_one_or_none()
+        if found:
+            return _build_workout_response(found, target_updates=None)
+
     # Find schema
     result = await db.execute(
         select(Schema).where(Schema.user_id == user.id, Schema.key == req.schema_key)
@@ -474,6 +490,7 @@ async def create_workout(
         date=workout_date,
         feedback=req.feedback,
         notes=req.notes,
+        client_workout_id=req.client_workout_id,
     )
     db.add(session)
     await db.flush()

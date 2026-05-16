@@ -1,10 +1,11 @@
-// v5 - offline sync with IndexedDB queue
-const CACHE_NAME = 'gym-v5';
+// v7 - draft feedback-leak fix + idempotent POST (client_workout_id) + SKIP_WAITING update-flow
+const CACHE_NAME = 'gym-v7';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v5';
+const API_CACHE = 'gym-api-v7';
 const DB_NAME = 'gym-offline';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';
+const DRAFT_STORE = 'drafts';
 
 // === IndexedDB helpers ===
 function openDB() {
@@ -15,9 +16,43 @@ function openDB() {
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
       }
+      if (!db.objectStoreNames.contains(DRAFT_STORE)) {
+        // keyPath = `${username}|${schema_key}` so each user×schema has 1 active draft
+        db.createObjectStore(DRAFT_STORE, { keyPath: 'id' });
+      }
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
+  });
+}
+
+async function draftSave(draft) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DRAFT_STORE, 'readwrite');
+    tx.objectStore(DRAFT_STORE).put(draft);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function draftLoad(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DRAFT_STORE, 'readonly');
+    const req = tx.objectStore(DRAFT_STORE).get(id);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function draftClear(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(DRAFT_STORE, 'readwrite');
+    tx.objectStore(DRAFT_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
   });
 }
 
@@ -173,9 +208,34 @@ async function syncWorkouts() {
   }
 }
 
-// === Periodic check (fallback for browsers without Background Sync) ===
-self.addEventListener('message', e => {
-  if (e.data === 'SYNC_NOW') {
+// === Message handlers: draft persistence + sync trigger ===
+self.addEventListener('message', async e => {
+  const data = e.data;
+  if (data === 'SYNC_NOW') {
     syncWorkouts();
+    return;
+  }
+  if (!data || !data.type) return;
+
+  if (data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+    return;
+  }
+
+  const replyPort = e.ports && e.ports[0];
+
+  try {
+    if (data.type === 'DRAFT_SAVE' && data.draft) {
+      await draftSave({ ...data.draft, savedAt: Date.now() });
+      if (replyPort) replyPort.postMessage({ ok: true });
+    } else if (data.type === 'DRAFT_LOAD' && data.id) {
+      const draft = await draftLoad(data.id);
+      if (replyPort) replyPort.postMessage({ ok: true, draft });
+    } else if (data.type === 'DRAFT_CLEAR' && data.id) {
+      await draftClear(data.id);
+      if (replyPort) replyPort.postMessage({ ok: true });
+    }
+  } catch (err) {
+    if (replyPort) replyPort.postMessage({ ok: false, error: String(err) });
   }
 });
