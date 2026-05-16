@@ -1691,6 +1691,14 @@ function swRequest(payload, timeoutMs = 1500) {
 
 let _draftSaveTimer = null;
 let currentWorkoutStartedAt = null;
+// One UUID per workout-attempt, persisted in the draft. Survives across save retries,
+// resumes, double-clicks, AND user-initiated re-saves during slow connections —
+// every POST for the same workout carries the same key, so backend dedup absorbs them.
+// Cleared by resetWorkoutState() on save/discard so the NEXT workout gets a fresh UUID.
+let currentWorkoutClientId = null;
+// In-flight guard so a second save-click while the first is awaiting the API
+// doesn't trigger a second confirm() + POST. Pure UX — backend dedup is the safety net.
+let _saveInProgress = false;
 
 function scheduleDraftSave() {
   if (!currentSchema) return;
@@ -1707,6 +1715,9 @@ async function flushDraft() {
     swaps: currentSwaps,
     feedback: document.getElementById('workoutFeedback')?.value || '',
     startedAt: currentWorkoutStartedAt || Date.now(),
+    // Persist the per-workout idempotency key so a resumed/restored workout
+    // keeps the same UUID across save-retries and even after page reload.
+    clientWorkoutId: currentWorkoutClientId,
   };
   try { localStorage.setItem('gym_draft_' + draft.id, JSON.stringify(draft)); } catch(e){}
   await swRequest({ type: 'DRAFT_SAVE', draft });
@@ -1731,10 +1742,12 @@ async function clearDraft(schemaKey) {
 // Reset in-memory workout state + clear feedback textarea.
 // Call AFTER clearDraft on save/exit so a fast restart of the same schema
 // doesn't show stale feedback while DB-clear async-completes.
+// Also clears the persistent UUID so the NEXT workout starts fresh.
 function resetWorkoutState() {
   currentWorkout = {};
   currentSwaps = {};
   currentWorkoutStartedAt = null;
+  currentWorkoutClientId = null;
   const fb = document.getElementById('workoutFeedback');
   if (fb) fb.value = '';
 }
@@ -1778,14 +1791,21 @@ async function startWorkout(schema) {
         currentWorkout = draft.sets || {};
         currentSwaps = draft.swaps || {};
         currentWorkoutStartedAt = draft.startedAt || Date.now();
+        // Resumed workout reuses the same idempotency UUID — guarantees that any
+        // save-retry (today or after page reload) still hits the dedup branch.
+        currentWorkoutClientId = draft.clientWorkoutId || makeClientWorkoutId();
       } else {
         await clearDraft(schema);
         hasDraftData = false;
+        currentWorkoutClientId = makeClientWorkoutId();
       }
     } else {
       // Orphan draft (feedback/swaps but no sets) — always wipe it.
       await clearDraft(schema);
+      currentWorkoutClientId = makeClientWorkoutId();
     }
+  } else {
+    currentWorkoutClientId = makeClientWorkoutId();
   }
 
   document.getElementById('workoutTitle').textContent = s.name;
@@ -1853,6 +1873,10 @@ function confirmExit() {
 }
 
 async function saveWorkout() {
+  if (_saveInProgress) {
+    showToast('Bezig met opslaan…');
+    return;
+  }
   const s = getUserSchemas()[currentSchema];
   const exercises = [];
   let hasAny = false;
@@ -1884,45 +1908,52 @@ async function saveWorkout() {
 
   if (!confirm('Workout opslaan?')) return;
 
-  const feedback = document.getElementById('workoutFeedback').value.trim();
+  _saveInProgress = true;
+  try {
+    const feedback = document.getElementById('workoutFeedback').value.trim();
 
-  const workout = {
-    date: new Date().toISOString(),
-    schema: currentSchema,
-    schemaName: s.name,
-    feedback: feedback || null,
-    exercises: exercises,
-    // Stable per-save UUID. Reaches the backend via saveWorkoutToCloud, and travels
-    // with the body when the SW-queue replays it offline \u2014 so retry POSTs hit the
-    // idempotent-replay branch in the backend instead of inserting duplicates.
-    clientWorkoutId: makeClientWorkoutId()
-  };
+    const workout = {
+      date: new Date().toISOString(),
+      schema: currentSchema,
+      schemaName: s.name,
+      feedback: feedback || null,
+      exercises: exercises,
+      // Persistent UUID set at startWorkout() (or resumed from draft). Stays stable
+      // across ALL save attempts for this workout \u2014 double-clicks, user-initiated
+      // re-saves during slow connections, AND SW-queue replays all hit the same
+      // backend idempotency branch. Defensive fallback in case startWorkout wasn't
+      // called somehow.
+      clientWorkoutId: currentWorkoutClientId || makeClientWorkoutId()
+    };
 
-  const workouts = getWorkouts();
-  workouts.unshift(workout);
-  saveWorkouts(workouts);
+    const workouts = getWorkouts();
+    workouts.unshift(workout);
+    saveWorkouts(workouts);
 
-  // Save to cloud and show evaluation
-  const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
-  const savedSchema = currentSchema;
-  if (cloudResult && cloudResult.queued) {
-    // Offline: queued in service worker
-    showToast('Offline opgeslagen \u2014 synct automatisch');
-    registerSync();
-    await clearDraft(savedSchema);
-    resetWorkoutState();
-    setTimeout(() => showView('home'), 1200);
-  } else if (cloudResult && cloudResult.id) {
-    showToast('Workout opgeslagen!');
-    await clearDraft(savedSchema);
-    resetWorkoutState();
-    showView('home');
-    showWorkoutEvaluation(cloudResult.id, s.name);
-  } else {
-    showToast('Opgeslagen (lokaal)');
-    await clearDraft(savedSchema);
-    resetWorkoutState();
-    setTimeout(() => showView('home'), 800);
+    // Save to cloud and show evaluation
+    const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
+    const savedSchema = currentSchema;
+    if (cloudResult && cloudResult.queued) {
+      // Offline: queued in service worker
+      showToast('Offline opgeslagen \u2014 synct automatisch');
+      registerSync();
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      setTimeout(() => showView('home'), 1200);
+    } else if (cloudResult && cloudResult.id) {
+      showToast('Workout opgeslagen!');
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      showView('home');
+      showWorkoutEvaluation(cloudResult.id, s.name);
+    } else {
+      showToast('Opgeslagen (lokaal)');
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      setTimeout(() => showView('home'), 800);
+    }
+  } finally {
+    _saveInProgress = false;
   }
 }
 
