@@ -1,7 +1,7 @@
-// v10 - voeding fase 2-4: body measurements + smart targets + trends (SVG) + favorites
-const CACHE_NAME = 'gym-v10';
+// v11 - voeding: Fitdays-screenshot vision-parser + 9 extra body metrics
+const CACHE_NAME = 'gym-v11';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v10';
+const API_CACHE = 'gym-api-v11';
 const DB_NAME = 'gym-offline';
 const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';

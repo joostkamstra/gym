@@ -540,8 +540,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 
 <!-- BODY MEASUREMENT MODAL -->
 <div class="bm-modal" id="bmModal" onclick="if(event.target===this) closeBodyModal()">
-  <div class="bm-sheet">
+  <div class="bm-sheet" style="max-height:90vh;overflow-y:auto">
     <h2>Nieuwe lichaamsmeting</h2>
+
+    <!-- Photo upload (NEW) -->
+    <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
+      <label class="nutr-photo-btn" style="background:#0a84ff">
+        📷 Upload Fitdays-screenshot<input type="file" accept="image/*" capture="environment" style="display:none" id="bmPhotoFile" onchange="onBmPhotoSelected(event)">
+      </label>
+      <div style="font-size:11px;color:#8e8e93;margin-top:6px">Of vul hieronder handmatig in</div>
+      <img id="bmPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px">
+      <div id="bmParseStatus" style="font-size:12px;margin-top:6px"></div>
+    </div>
+
     <div class="bm-field">
       <label>Gewicht (kg) *</label>
       <input type="number" id="bmWeight" step="0.1" placeholder="80.2">
@@ -558,6 +569,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
       <label>Notities (optioneel)</label>
       <input type="text" id="bmNotes" placeholder="Bv. nuchter, schone meting...">
     </div>
+
+    <!-- Parsed extras preview (auto-saved bij Opslaan) -->
+    <div id="bmExtrasPreview" style="display:none;background:#1c1c1e;border-radius:8px;padding:10px;margin-top:10px">
+      <div style="font-size:11px;color:#8e8e93;text-transform:uppercase;margin-bottom:6px">Extra Fitdays-velden uit foto</div>
+      <div id="bmExtrasList" style="font-size:11px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px"></div>
+    </div>
+
     <div class="bm-row">
       <button class="btn btn-outline" onclick="closeBodyModal()">Annuleer</button>
       <button class="btn btn-green" onclick="saveBodyMeasurement()">Opslaan</button>
@@ -3017,28 +3035,128 @@ async function deleteIntake(id) {
 }
 
 // === FASE 2: Body measurements ===
+let bmParsedExtras = null;  // extra Fitdays-velden uit photo-parse (saved on Opslaan)
+let bmParseSource = 'manual';
+
 function openBodyModal() {
   document.getElementById('bmWeight').value = '';
   document.getElementById('bmBf').value = '';
   document.getElementById('bmBmr').value = '';
   document.getElementById('bmNotes').value = '';
+  document.getElementById('bmPhotoPreview').style.display = 'none';
+  document.getElementById('bmPhotoFile').value = '';
+  document.getElementById('bmParseStatus').textContent = '';
+  document.getElementById('bmExtrasPreview').style.display = 'none';
+  bmParsedExtras = null;
+  bmParseSource = 'manual';
   document.getElementById('bmModal').classList.add('open');
 }
 function closeBodyModal() { document.getElementById('bmModal').classList.remove('open'); }
+
+function onBmPhotoSelected(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = async () => {
+    // resize naar max 1024px (Fitdays-screenshots zijn vaak hoger)
+    const max = 1024;
+    let w = img.width, h = img.height;
+    if (w > h && w > max) { h = h * max / w; w = max; }
+    else if (h > max) { w = w * max / h; h = max; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    const b64 = dataUrl.split(',', 2)[1];
+
+    const preview = document.getElementById('bmPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+
+    const status = document.getElementById('bmParseStatus');
+    status.textContent = '🔍 Claude leest je screenshot...';
+    status.style.color = '#0a84ff';
+
+    try {
+      const res = await api('/api/nutrition/measurements/parse', {
+        method: 'POST',
+        body: JSON.stringify({image_b64: b64})
+      });
+      const p = res.parsed;
+      // Fill main form fields
+      if (p.weight_kg) document.getElementById('bmWeight').value = p.weight_kg;
+      if (p.body_fat_pct) document.getElementById('bmBf').value = p.body_fat_pct;
+      if (p.bmr) document.getElementById('bmBmr').value = p.bmr;
+      // Store extras for save
+      bmParsedExtras = p;
+      bmParseSource = 'fitdays-vision';
+      // Show extras preview
+      renderBmExtras(p);
+      status.textContent = '✓ Geparseerd (confidence: ' + res.confidence + ') — controleer + klik Opslaan';
+      status.style.color = '#30d158';
+    } catch (e) {
+      console.error('measurement parse failed', e);
+      status.textContent = '✗ Parsen mislukt: ' + (e.message || e);
+      status.style.color = '#ff453a';
+    }
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function renderBmExtras(p) {
+  const list = document.getElementById('bmExtrasList');
+  list.textContent = '';
+  const fields = [
+    ['Spiermassa',     p.spiermassa_kg,    'kg'],
+    ['Skeletspier',    p.skeletspier_pct,  '%'],
+    ['Spiersnelheid',  p.spiersnelheid_pct,'%'],
+    ['Eiwit',          p.eiwit_pct,        '%'],
+    ['Lichaamswater',  p.water_pct,        '%'],
+    ['Watergewicht',   p.watergewicht_kg,  'kg'],
+    ['Onderhuids vet', p.onderhuids_vet_pct,'%'],
+    ['Visceraal vet',  p.visceraal_vet,    ''],
+    ['BMI',            p.bmi,              ''],
+    ['Vetvrij',        p.lean_mass_kg,     'kg'],
+  ].filter(([n,v,u]) => v != null);
+  if (!fields.length) { document.getElementById('bmExtrasPreview').style.display = 'none'; return; }
+  fields.forEach(([name, val, unit]) => {
+    list.appendChild(_el('span', {style:'color:#8e8e93'}, name));
+    list.appendChild(_el('span', {}, val + (unit ? ' ' + unit : '')));
+  });
+  document.getElementById('bmExtrasPreview').style.display = 'block';
+}
+
 async function saveBodyMeasurement() {
   const w = parseFloat(document.getElementById('bmWeight').value);
   if (!w || w < 30 || w > 250) { showToast('Vul een geldig gewicht in'); return; }
   const bf = parseFloat(document.getElementById('bmBf').value) || null;
   const bmr = parseInt(document.getElementById('bmBmr').value) || null;
   const notes = document.getElementById('bmNotes').value.trim() || null;
+  // Merge user-form values with extras from photo-parse
+  const body = {
+    weight_kg: w,
+    body_fat_pct: bf,
+    bmr,
+    notes,
+    source: bmParseSource,
+    // extras (use form-overrides if user adjusted, else use parsed)
+    bmi: bmParsedExtras?.bmi ?? null,
+    spiermassa_kg: bmParsedExtras?.spiermassa_kg ?? null,
+    skeletspier_pct: bmParsedExtras?.skeletspier_pct ?? null,
+    spiersnelheid_pct: bmParsedExtras?.spiersnelheid_pct ?? null,
+    eiwit_pct: bmParsedExtras?.eiwit_pct ?? null,
+    water_pct: bmParsedExtras?.water_pct ?? null,
+    watergewicht_kg: bmParsedExtras?.watergewicht_kg ?? null,
+    onderhuids_vet_pct: bmParsedExtras?.onderhuids_vet_pct ?? null,
+    visceraal_vet: bmParsedExtras?.visceraal_vet ?? null,
+    lean_mass_kg: bmParsedExtras?.lean_mass_kg ?? null,
+  };
   try {
-    await api('/api/nutrition/measurements', {method: 'POST', body: JSON.stringify({
-      weight_kg: w, body_fat_pct: bf, bmr, notes, source: 'manual'
-    })});
+    await api('/api/nutrition/measurements', {method: 'POST', body: JSON.stringify(body)});
     showToast('Meting opgeslagen!');
     closeBodyModal();
-    await loadNutritionDashboard();   // refresh smart-target
-    await loadTrends(_currentTrendsDays); // refresh weight chart
+    await loadNutritionDashboard();
+    await loadTrends(_currentTrendsDays);
   } catch (e) {
     console.error('saveBodyMeasurement failed', e);
     showToast('Opslaan mislukt: ' + (e.message || e));

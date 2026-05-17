@@ -263,6 +263,15 @@ class BodyMeasurementCreate(BaseModel):
     body_fat_pct: float | None = None
     lean_mass_kg: float | None = None
     bmr: int | None = None
+    bmi: float | None = None
+    spiermassa_kg: float | None = None
+    skeletspier_pct: float | None = None
+    spiersnelheid_pct: float | None = None
+    eiwit_pct: float | None = None
+    water_pct: float | None = None
+    watergewicht_kg: float | None = None
+    onderhuids_vet_pct: float | None = None
+    visceraal_vet: float | None = None
     notes: str | None = None
     source: str = "manual"
 
@@ -274,6 +283,25 @@ class BodyMeasurementResponse(BaseModel):
     body_fat_pct: float | None
     lean_mass_kg: float | None
     bmr: int | None
+    bmi: float | None
+    spiermassa_kg: float | None
+    skeletspier_pct: float | None
+    spiersnelheid_pct: float | None
+    eiwit_pct: float | None
+    water_pct: float | None
+    watergewicht_kg: float | None
+    onderhuids_vet_pct: float | None
+    visceraal_vet: float | None
     notes: str | None
     source: str
     created_at: datetime
+
+
+class MeasurementParseRequest(BaseModel):
+    image_b64: str
+
+
+class MeasurementParseResponse(BaseModel):
+    parsed: BodyMeasurementCreate
+    confidence: str  # 'high', 'medium', 'low'
+    raw_extracted: dict | None = None  # debug: alle velden die Claude eruit haalde

@@ -151,7 +151,7 @@ class IntakeEntry(Base):
 
 
 class BodyMeasurement(Base):
-    """Body composition snapshot — drives smart-target calculation."""
+    """Body composition snapshot — drives smart-target calculation + record-tracking."""
     __tablename__ = "body_measurements"
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -161,8 +161,18 @@ class BodyMeasurement(Base):
     body_fat_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
     lean_mass_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
     bmr: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Extra Fitdays fields (optional, for richer trends + record-tracking)
+    bmi: Mapped[float | None] = mapped_column(Float, nullable=True)
+    spiermassa_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    skeletspier_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    spiersnelheid_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    eiwit_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    water_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    watergewicht_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    onderhuids_vet_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    visceraal_vet: Mapped[float | None] = mapped_column(Float, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    source: Mapped[str] = mapped_column(String(30), default="manual")  # manual / fitdays-import / etc.
+    source: Mapped[str] = mapped_column(String(30), default="manual")  # manual / fitdays-import / fitdays-vision
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 

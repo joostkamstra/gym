@@ -15,7 +15,7 @@ from app.config import get_settings
 from app.auth import get_current_user
 from app.database import get_db
 from app.models import BodyMeasurement, IntakeEntry, NutritionTarget, User
-from app.nutrition_ai import parse_intake
+from app.nutrition_ai import parse_intake, parse_measurement
 from app.schemas import (
     BodyMeasurementCreate,
     BodyMeasurementResponse,
@@ -23,6 +23,8 @@ from app.schemas import (
     IntakeCreateRequest,
     IntakeEntryResponse,
     MacroTotals,
+    MeasurementParseRequest,
+    MeasurementParseResponse,
     ParseRequest,
     ParseResponse,
     ParsedFoodItem,
@@ -350,6 +352,18 @@ async def dashboard(
 
 # === BODY MEASUREMENTS ===
 
+def _bm_response(m: BodyMeasurement) -> BodyMeasurementResponse:
+    return BodyMeasurementResponse(
+        id=m.id, date=m.date, weight_kg=m.weight_kg, body_fat_pct=m.body_fat_pct,
+        lean_mass_kg=m.lean_mass_kg, bmr=m.bmr, bmi=m.bmi,
+        spiermassa_kg=m.spiermassa_kg, skeletspier_pct=m.skeletspier_pct,
+        spiersnelheid_pct=m.spiersnelheid_pct, eiwit_pct=m.eiwit_pct,
+        water_pct=m.water_pct, watergewicht_kg=m.watergewicht_kg,
+        onderhuids_vet_pct=m.onderhuids_vet_pct, visceraal_vet=m.visceraal_vet,
+        notes=m.notes, source=m.source, created_at=m.created_at,
+    )
+
+
 @router.post("/measurements", response_model=BodyMeasurementResponse, status_code=status.HTTP_201_CREATED)
 async def create_measurement(
     req: BodyMeasurementCreate,
@@ -369,16 +383,42 @@ async def create_measurement(
         body_fat_pct=req.body_fat_pct,
         lean_mass_kg=lean,
         bmr=req.bmr,
+        bmi=req.bmi,
+        spiermassa_kg=req.spiermassa_kg,
+        skeletspier_pct=req.skeletspier_pct,
+        spiersnelheid_pct=req.spiersnelheid_pct,
+        eiwit_pct=req.eiwit_pct,
+        water_pct=req.water_pct,
+        watergewicht_kg=req.watergewicht_kg,
+        onderhuids_vet_pct=req.onderhuids_vet_pct,
+        visceraal_vet=req.visceraal_vet,
         notes=req.notes,
         source=req.source,
     )
     db.add(m)
     await db.flush()
-    return BodyMeasurementResponse(
-        id=m.id, date=m.date, weight_kg=m.weight_kg, body_fat_pct=m.body_fat_pct,
-        lean_mass_kg=m.lean_mass_kg, bmr=m.bmr, notes=m.notes, source=m.source,
-        created_at=m.created_at,
-    )
+    return _bm_response(m)
+
+
+@router.post("/measurements/parse", response_model=MeasurementParseResponse)
+async def parse_measurement_photo(
+    req: MeasurementParseRequest,
+    user: User = Depends(get_current_user),
+):
+    """Parse a Fitdays screenshot into a structured measurement. No DB write — frontend
+    previews, user reviews, then POSTs to /measurements to save."""
+    try:
+        raw = parse_measurement(req.image_b64)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI parse failed: {e}")
+
+    # Drop confidence from the BodyMeasurementCreate (it's not a column)
+    confidence = raw.pop("confidence", "medium")
+    # Map to BodyMeasurementCreate (auto-source = fitdays-vision)
+    parsed = BodyMeasurementCreate(source="fitdays-vision", **raw)
+    return MeasurementParseResponse(parsed=parsed, confidence=confidence, raw_extracted=raw)
 
 
 # === TRENDS ===
@@ -624,13 +664,7 @@ async def list_measurements(
         .where(BodyMeasurement.user_id == user.id, BodyMeasurement.date >= since)
         .order_by(desc(BodyMeasurement.date), desc(BodyMeasurement.created_at))
     )).scalars().all()
-    return [
-        BodyMeasurementResponse(
-            id=m.id, date=m.date, weight_kg=m.weight_kg, body_fat_pct=m.body_fat_pct,
-            lean_mass_kg=m.lean_mass_kg, bmr=m.bmr, notes=m.notes, source=m.source,
-            created_at=m.created_at,
-        ) for m in rows
-    ]
+    return [_bm_response(m) for m in rows]
 
 
 @router.get("/targets", response_model=list[TargetResponse])
