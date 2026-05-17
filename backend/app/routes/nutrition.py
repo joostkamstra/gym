@@ -1,12 +1,16 @@
-"""Nutrition tracker endpoints: parse, intake CRUD, targets, dashboard, trends, favorites, body measurements."""
+"""Nutrition tracker endpoints: parse, intake CRUD, targets, dashboard, trends, favorites, body measurements, reminders."""
 import base64
+import urllib.parse
+import urllib.request
 from collections import defaultdict
-from datetime import date as date_type, timedelta
-from datetime import datetime
+from datetime import date as date_type, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import select, delete, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.config import get_settings
 
 from app.auth import get_current_user
 from app.database import get_db
@@ -490,6 +494,120 @@ async def favorites(
         }
         for sig, g in top
     ]
+
+
+# === REMINDERS (Phase 5 — Telegram-based, HTTPS-free MVP) ===
+
+# Hour-based rules (CEST). Each (hour, condition_fn, message_fn) is checked once
+# per hour by the cron-trigger. condition_fn returns True if reminder should fire.
+def _reminder_rules():
+    return [
+        # hour, label, condition (entries, totals, target, hour), message-template
+        (10, "ontbijt-missing",
+         lambda entries, t, tgt: not any(e.meal_type == "ontbijt" for e in entries),
+         "🍽️ Vergeten ontbijt te loggen? Open de Voeding-tab om even bij te werken."),
+        (14, "lunch-missing",
+         lambda entries, t, tgt: not any(e.meal_type == "lunch" for e in entries),
+         "🥗 Lunch nog niet gelogd?"),
+        (19, "diner-missing",
+         lambda entries, t, tgt: not any(e.meal_type == "diner" for e in entries),
+         "🍝 Diner-tijd — vergeet niet te loggen."),
+        (21, "eiwit-deficit",
+         lambda entries, t, tgt: (tgt["protein_g"] - t["protein_g"]) > 40,
+         lambda entries, t, tgt: f"⚠️ Eiwit-target nog {round(tgt['protein_g'] - t['protein_g'])}g te gaan vandaag (gegeten: {round(t['protein_g'])}g / {tgt['protein_g']}g)."),
+    ]
+
+
+async def _send_telegram(chat_id: str, text: str) -> bool:
+    """Synchronous-ish via urllib (no aiohttp dep). Run in thread to avoid blocking."""
+    import asyncio
+    settings = get_settings()
+    if not settings.TELEGRAM_BOT_TOKEN or not chat_id:
+        return False
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+    data = urllib.parse.urlencode({"chat_id": chat_id, "text": text}).encode()
+
+    def _post():
+        try:
+            req = urllib.request.Request(url, data=data, method="POST")
+            with urllib.request.urlopen(req, timeout=8) as r:
+                return r.status == 200
+        except Exception:
+            return False
+    return await asyncio.get_event_loop().run_in_executor(None, _post)
+
+
+@router.post("/check-reminders")
+async def check_reminders(
+    hour: int | None = Query(None, ge=0, le=23, description="Force hour (testing). Default: now CEST"),
+    dry_run: bool = Query(False),
+    x_reminder_secret: str | None = Header(None),
+    db: AsyncSession = Depends(get_db),
+):
+    """Public endpoint called by cron (RemoteTrigger). Secret-protected so it can run
+    without JWT. For each registered user, evaluates today's state vs reminder rules
+    for the current hour and sends Telegram notifications. Idempotent per-hour by
+    design (cron runs once per hour, so each rule fires at most once)."""
+    settings = get_settings()
+    if not settings.REMINDER_SECRET or x_reminder_secret != settings.REMINDER_SECRET:
+        raise HTTPException(status_code=403, detail="Bad reminder secret")
+
+    # Determine current hour in CEST
+    now_cest = datetime.now(ZoneInfo("Europe/Amsterdam"))
+    current_hour = hour if hour is not None else now_cest.hour
+    today = now_cest.date()
+
+    # Hardcoded user-to-telegram mapping for MVP — Joost only
+    # (Future: user_settings.telegram_chat_id column)
+    from app.models import User
+    user_telegram: dict[str, str] = {}
+    if settings.TELEGRAM_CHAT_ID_JOOST:
+        joost_q = await db.execute(select(User).where(User.username == "joost"))
+        joost = joost_q.scalar_one_or_none()
+        if joost:
+            user_telegram[str(joost.id)] = settings.TELEGRAM_CHAT_ID_JOOST
+
+    results: list[dict] = []
+    rules = _reminder_rules()
+    for user_id, chat_id in user_telegram.items():
+        import uuid as _uuid
+        uid = _uuid.UUID(user_id)
+
+        # Today's state
+        dt = _detect_day_type(today)
+        m = await _latest_measurement(db, uid)
+        target = None
+        if m:
+            tgt, _ = _smart_target(m, dt)
+            target = tgt
+        else:
+            t = await _get_target_for(db, uid, today, dt)
+            target = {"kcal": t.kcal, "protein_g": t.protein_g, "carbs_g": t.carbs_g, "fat_g": t.fat_g} if t else {"kcal": 2000, "protein_g": 180, "carbs_g": 170, "fat_g": 65}
+
+        entries = (await db.execute(
+            select(IntakeEntry).where(IntakeEntry.user_id == uid, IntakeEntry.date == today)
+        )).scalars().all()
+        totals = {
+            "kcal": sum(e.total_kcal for e in entries),
+            "protein_g": sum(e.total_protein for e in entries),
+            "carbs_g": sum(e.total_carbs for e in entries),
+            "fat_g": sum(e.total_fat for e in entries),
+        }
+
+        for rule_hour, label, cond, msg in rules:
+            if rule_hour != current_hour:
+                continue
+            if cond(entries, totals, target):
+                text = msg(entries, totals, target) if callable(msg) else msg
+                sent = False
+                if not dry_run:
+                    sent = await _send_telegram(chat_id, text)
+                results.append({
+                    "user_id": user_id, "rule": label, "hour": rule_hour,
+                    "message": text, "sent": sent,
+                })
+
+    return {"checked_hour": current_hour, "today": str(today), "results": results}
 
 
 @router.get("/measurements", response_model=list[BodyMeasurementResponse])
