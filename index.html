@@ -320,6 +320,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .intake-entry-items{font-size:12px;color:#8e8e93;margin-top:4px}
 .intake-entry-actions{display:flex;gap:8px;margin-top:8px}
 .intake-entry-actions button{flex:1;padding:6px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
+/* Date navigation bar */
+.nutr-datebar{display:flex;align-items:center;gap:8px;margin-bottom:10px;position:relative}
+.nutr-date-arrow{flex:0 0 44px;height:44px;border:none;background:#1c1c1e;color:#fff;border-radius:10px;font-size:22px;font-weight:600;cursor:pointer}
+.nutr-date-arrow:active{background:#2c2c2e}
+.nutr-date-arrow:disabled{opacity:0.35;cursor:not-allowed}
+.nutr-date-label{flex:1;height:44px;border:none;background:#1c1c1e;color:#fff;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+.nutr-date-label.is-today{background:linear-gradient(135deg,#30d158,#0a84ff);color:#fff}
+.nutr-date-label:active{opacity:0.85}
 /* Item #43: respect prefers-reduced-motion (vestibular safety) */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
@@ -453,6 +461,14 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
     <!-- Item #26: refresh-icoon weg — PTR / view-switch herlaadt al -->
   </div>
 
+  <!-- Date navigation -->
+  <div class="nutr-datebar">
+    <button class="nutr-date-arrow" onclick="shiftNutrDate(-1)" aria-label="Vorige dag">‹</button>
+    <button class="nutr-date-label" onclick="openNutrDatePicker()" id="nutrDateLabel" aria-label="Kies datum">Vandaag</button>
+    <button class="nutr-date-arrow" onclick="shiftNutrDate(1)" aria-label="Volgende dag" id="nutrDateNext">›</button>
+    <input type="date" id="nutrDatePicker" style="position:absolute;opacity:0;pointer-events:none;left:0;top:0;width:1px;height:1px" onchange="onNutrDatePicked(event)">
+  </div>
+
   <!-- Day-type selector + body-meting + activity -->
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
     <div class="nutr-daytype" id="nutrDayType" style="flex:1 1 100%;margin-bottom:0">
@@ -531,8 +547,8 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
     </div>
   </div>
 
-  <!-- Today's entries -->
-  <div style="font-size:14px;color:#8e8e93;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px">Vandaag</div>
+  <!-- Day's entries (header gets updated by renderNutritionDashboard) -->
+  <div style="font-size:14px;color:#8e8e93;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px" id="nutrEntriesHeader">Vandaag</div>
   <div id="nutrEntries"><div class="nutr-empty">Nog niets gelogd vandaag. Begin met je ontbijt ↓</div></div>
 
   <!-- Trends -->
@@ -2877,7 +2893,90 @@ let nutrParseClientId = null;      // UUID per save-attempt (idempotent), reused
 let nutrSelectedMeal = null;       // user's chosen meal_type for current parse
 
 function _todayISO() {
-  return new Date().toISOString().slice(0,10);
+  // Local-date (niet UTC) zodat 'vandaag' rond middernacht in NL niet verspringt.
+  const d = new Date();
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0,10);
+}
+
+function _isoAddDays(iso, n) {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0,10);
+}
+
+function _fmtDateLabel(iso) {
+  const today = _todayISO();
+  if (iso === today) return 'Vandaag · ' + _fmtDateShort(iso);
+  if (iso === _isoAddDays(today, -1)) return 'Gisteren · ' + _fmtDateShort(iso);
+  if (iso === _isoAddDays(today, 1)) return 'Morgen · ' + _fmtDateShort(iso);
+  return _fmtDateLong(iso);
+}
+
+function _fmtDateShort(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const m = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  return d.getDate() + ' ' + m[d.getMonth()];
+}
+
+function _fmtDateLong(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const wd = ['zo','ma','di','wo','do','vr','za'];
+  return wd[d.getDay()] + ' ' + _fmtDateShort(iso);
+}
+
+function _updateDateBar() {
+  const lbl = document.getElementById('nutrDateLabel');
+  const nextBtn = document.getElementById('nutrDateNext');
+  if (!lbl || !nutrCurrentDate) return;
+  lbl.textContent = _fmtDateLabel(nutrCurrentDate);
+  const today = _todayISO();
+  lbl.classList.toggle('is-today', nutrCurrentDate === today);
+  // Sta 1 dag vooruit toe (planning), maar niet verder
+  const maxFuture = _isoAddDays(today, 1);
+  nextBtn.disabled = (nutrCurrentDate >= maxFuture);
+  // Update "VANDAAG" header naar gekozen dag
+  const hdr = document.getElementById('nutrEntriesHeader');
+  if (hdr) {
+    if (nutrCurrentDate === today) hdr.textContent = 'Vandaag';
+    else if (nutrCurrentDate === _isoAddDays(today, -1)) hdr.textContent = 'Gisteren';
+    else if (nutrCurrentDate === _isoAddDays(today, 1)) hdr.textContent = 'Morgen';
+    else hdr.textContent = _fmtDateLong(nutrCurrentDate);
+  }
+}
+
+function shiftNutrDate(delta) {
+  if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
+  const today = _todayISO();
+  const next = _isoAddDays(nutrCurrentDate, delta);
+  if (delta > 0 && next > _isoAddDays(today, 1)) return; // max 1 dag vooruit
+  nutrCurrentDate = next;
+  // dagtype auto-resetten naar baseline van die nieuwe dag (user kan overrulen)
+  nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  if (nutrParsePreview) cancelParse();
+  loadNutritionDashboard();
+}
+
+function openNutrDatePicker() {
+  const p = document.getElementById('nutrDatePicker');
+  if (!p) return;
+  p.value = nutrCurrentDate || _todayISO();
+  p.max = _isoAddDays(_todayISO(), 7);  // max 1 wk vooruit voor planning
+  // showPicker als browser het ondersteunt (iOS 16.4+, Chrome 99+)
+  if (typeof p.showPicker === 'function') {
+    try { p.showPicker(); return; } catch(_) {}
+  }
+  p.click();
+}
+
+function onNutrDatePicked(e) {
+  const v = e.target.value;
+  if (!v) return;
+  nutrCurrentDate = v;
+  nutrCurrentDayType = _detectDayType(v);
+  if (nutrParsePreview) cancelParse();
+  loadNutritionDashboard();
 }
 
 function _detectDayType(iso) {
@@ -2965,7 +3064,11 @@ function renderNutritionDashboard(d) {
   const list = document.getElementById('nutrEntries');
   list.textContent = '';
   if (!d.entries.length) {
-    list.appendChild(_el('div', {class:'nutr-empty'}, 'Nog niets gelogd vandaag. Begin met je ontbijt ↓'));
+    const today = _todayISO();
+    let emptyMsg = 'Nog niets gelogd vandaag. Begin met je ontbijt ↓';
+    if (nutrCurrentDate && nutrCurrentDate < today) emptyMsg = 'Geen logs op deze dag.';
+    else if (nutrCurrentDate && nutrCurrentDate > today) emptyMsg = 'Nog geen plan voor deze dag — log vooruit ↓';
+    list.appendChild(_el('div', {class:'nutr-empty'}, emptyMsg));
     return;
   }
   d.entries.forEach(e => {
@@ -3601,6 +3704,7 @@ const _origLoadDash = loadNutritionDashboard;
 loadNutritionDashboard = async function() {
   if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
   if (!nutrCurrentDayType) nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  _updateDateBar();
   document.querySelectorAll('#nutrDayType button').forEach(b => {
     b.classList.toggle('active', b.dataset.dt === nutrCurrentDayType);
   });
