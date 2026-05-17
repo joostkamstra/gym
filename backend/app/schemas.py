@@ -164,3 +164,91 @@ class BulkWorkoutInput(BaseModel):
     date: datetime
     feedback: str | None = None
     exercises: list[dict]  # raw format from localStorage
+
+
+# === NUTRITION ===
+from datetime import date as date_type
+
+
+class ParsedFoodItem(BaseModel):
+    name: str
+    quantity_g: float
+    kcal: float
+    protein_g: float
+    carbs_g: float
+    fat_g: float
+    confidence: str | None = None  # 'high', 'medium', 'low'
+    notes: str | None = None
+    food_id: uuid.UUID | None = None  # if matched to known food
+
+
+class ParseRequest(BaseModel):
+    text: str | None = None
+    image_b64: str | None = None  # JPEG/PNG base64 (no data: prefix)
+
+
+class MacroTotals(BaseModel):
+    kcal: float
+    protein_g: float
+    carbs_g: float
+    fat_g: float
+
+
+class ParseResponse(BaseModel):
+    items: list[ParsedFoodItem]
+    totals: MacroTotals
+    suggested_meal_type: str | None = None
+    overall_confidence: str = "medium"
+    raw_text: str | None = None  # echo back so frontend has source-of-truth
+
+
+class IntakeCreateRequest(BaseModel):
+    client_entry_id: uuid.UUID
+    date: date_type
+    meal_type: str | None = None
+    raw_input: str | None = None
+    photo_b64: str | None = None  # optional, will be stored as bytea
+    parsed_foods: list[ParsedFoodItem]
+    ai_confidence: str | None = None
+    user_corrected: bool = False
+
+
+class IntakeEntryResponse(BaseModel):
+    id: uuid.UUID
+    client_entry_id: uuid.UUID | None
+    date: date_type
+    meal_type: str | None
+    raw_input: str | None
+    has_photo: bool
+    parsed_foods: list[ParsedFoodItem]
+    totals: MacroTotals
+    ai_confidence: str | None
+    user_corrected: bool
+    created_at: datetime
+
+
+class TargetResponse(BaseModel):
+    day_type: str | None  # None = default
+    kcal: int
+    protein_g: int
+    carbs_g: int
+    fat_g: int
+    source: str | None
+
+
+class TargetUpsertRequest(BaseModel):
+    day_type: str | None = None  # None means default
+    kcal: int
+    protein_g: int
+    carbs_g: int
+    fat_g: int
+    source: str = "manual"
+
+
+class DayDashboardResponse(BaseModel):
+    date: date_type
+    day_type: str | None
+    target: TargetResponse
+    entries: list[IntakeEntryResponse]
+    totals: MacroTotals
+    delta: MacroTotals  # target - totals (positive = nog te eten)

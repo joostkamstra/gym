@@ -1,6 +1,6 @@
 import uuid
-from datetime import datetime, UTC
-from sqlalchemy import String, Integer, Float, Boolean, ForeignKey, Text, DateTime
+from datetime import datetime, UTC, date as date_type
+from sqlalchemy import String, Integer, Float, Boolean, ForeignKey, Text, DateTime, Date, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -105,3 +105,62 @@ class WorkoutSet(Base):
 
     session: Mapped[WorkoutSession] = relationship(back_populates="sets")
     exercise: Mapped[Exercise | None] = relationship(back_populates="workout_sets")
+
+
+# === NUTRITION TRACKER ===
+
+class Food(Base):
+    """Master food database. user_id NULL = shared/seed, else user-custom."""
+    __tablename__ = "foods"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    brand: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    source: Mapped[str] = mapped_column(String(30), nullable=False)  # 'manual', 'ai-estimated', 'open-food-facts'
+    source_ref: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    kcal_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
+    protein_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
+    carbs_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
+    fat_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
+    fiber_per_100g: Mapped[float | None] = mapped_column(Float, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    use_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class IntakeEntry(Base):
+    """One logged meal/snack. parsed_foods is the source of truth for macros."""
+    __tablename__ = "intake_entries"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    client_entry_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
+    date: Mapped[date_type] = mapped_column(Date, nullable=False)
+    meal_type: Mapped[str | None] = mapped_column(String(20), nullable=True)  # ontbijt/lunch/diner/snack
+    raw_input: Mapped[str | None] = mapped_column(Text, nullable=True)
+    photo_blob: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
+    parsed_foods: Mapped[list] = mapped_column(JSONB, nullable=False)
+    total_kcal: Mapped[float] = mapped_column(Float, nullable=False)
+    total_protein: Mapped[float] = mapped_column(Float, nullable=False)
+    total_carbs: Mapped[float] = mapped_column(Float, nullable=False)
+    total_fat: Mapped[float] = mapped_column(Float, nullable=False)
+    ai_confidence: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    user_corrected: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class NutritionTarget(Base):
+    """Daily macro target per user, per day-type. Latest effective_from wins."""
+    __tablename__ = "nutrition_targets"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    effective_from: Mapped[date_type] = mapped_column(Date, nullable=False)
+    day_type: Mapped[str | None] = mapped_column(String(20), nullable=True)  # training/rest/weekend/None=default
+    kcal: Mapped[int] = mapped_column(Integer, nullable=False)
+    protein_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    carbs_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    fat_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    source: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
-from app.routes import auth, schemas_routes, exercises, workouts
+from app.routes import auth, schemas_routes, exercises, workouts, nutrition
 
 settings = get_settings()
 STATIC_DIR = Path(__file__).parent.parent / "static"
@@ -43,6 +43,7 @@ app.include_router(auth.router)
 app.include_router(schemas_routes.router)
 app.include_router(exercises.router)
 app.include_router(workouts.router)
+app.include_router(nutrition.router)
 
 
 @app.get("/health")

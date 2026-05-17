@@ -1,7 +1,7 @@
-// v8 - persistent per-workout UUID + in-flight save guard (kills user-resubmit duplicates)
-const CACHE_NAME = 'gym-v8';
+// v9 - voeding tracker (Fase 1): AI-parse text/photo → macros, daily dashboard, idempotent intake
+const CACHE_NAME = 'gym-v9';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v8';
+const API_CACHE = 'gym-api-v9';
 const DB_NAME = 'gym-offline';
 const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     JWT_EXPIRE_DAYS: int = 90
     CORS_ORIGINS: str = "http://localhost:8001,https://gym.cloudwijk.nl"
     FORMSUBMIT_EMAIL: str = "kamstra@gmail.com"
+    ANTHROPIC_API_KEY: str = ""  # required for /api/nutrition/parse
 
     class Config:
         env_file = ".env"
