@@ -1,6 +1,7 @@
-"""Nutrition tracker endpoints: parse, intake CRUD, targets, dashboard."""
+"""Nutrition tracker endpoints: parse, intake CRUD, targets, dashboard, trends, favorites, body measurements."""
 import base64
-from datetime import date as date_type
+from collections import defaultdict
+from datetime import date as date_type, timedelta
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -9,9 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import IntakeEntry, NutritionTarget, User
+from app.models import BodyMeasurement, IntakeEntry, NutritionTarget, User
 from app.nutrition_ai import parse_intake
 from app.schemas import (
+    BodyMeasurementCreate,
+    BodyMeasurementResponse,
     DayDashboardResponse,
     IntakeCreateRequest,
     IntakeEntryResponse,
@@ -52,6 +55,74 @@ def _detect_day_type(d: date_type) -> str:
     if wd in (0, 3):  # ma + do = trainingsdagen volgens MACRO-TARGETS
         return "training"
     return "rest"
+
+
+async def _latest_measurement(db: AsyncSession, user_id) -> BodyMeasurement | None:
+    """Most recent body measurement for the user (None if never logged)."""
+    return (await db.execute(
+        select(BodyMeasurement)
+        .where(BodyMeasurement.user_id == user_id)
+        .order_by(desc(BodyMeasurement.date), desc(BodyMeasurement.created_at))
+        .limit(1)
+    )).scalar_one_or_none()
+
+
+def _smart_target(measurement: BodyMeasurement, day_type: str, cut_deficit_kcal: int = 400) -> tuple[dict, dict]:
+    """Compute daily macro target from latest measurement + dagtype.
+
+    Returns (target_dict, basis_dict). basis is opaque metadata for UI display.
+
+    Approach:
+    - BMR × 1.3 (light active baseline) = TDEE estimate
+    - Apply cut deficit (kcal/day average across week)
+    - Day-type adjustment: training +100 kcal, rest -100, weekend = base
+    - Eiwit: 2.3 g/kg body weight (training/rest), 2.2 (weekend) — matches MACRO-TARGETS.md
+    - Vet: 0.7 g/kg (training, hogere KH compenseert) of 0.8 g/kg (rest/weekend)
+    - KH: residual after eiwit + vet
+    """
+    bmr = measurement.bmr
+    weight = measurement.weight_kg
+    if not bmr:
+        # Mifflin-St Jeor fallback (men): BMR = 10*kg + 6.25*cm - 5*age + 5
+        # Use Joost's defaults: 183cm, 39y → easily 50% wrong for general use, so prefer measured BMR
+        bmr = round(10 * weight + 6.25 * 183 - 5 * 39 + 5)
+
+    tdee = round(bmr * 1.3)
+    base_kcal = tdee - cut_deficit_kcal  # weekly average
+
+    if day_type == "training":
+        kcal = base_kcal + 100
+        protein_per_kg = 2.3
+        fat_per_kg = 0.7
+    elif day_type == "rest":
+        kcal = base_kcal - 100
+        protein_per_kg = 2.3
+        fat_per_kg = 0.8
+    else:  # weekend (and any unknown)
+        kcal = base_kcal
+        protein_per_kg = 2.2
+        fat_per_kg = 0.8
+
+    protein_g = round(weight * protein_per_kg)
+    fat_g = round(weight * fat_per_kg)
+    p_kcal = protein_g * 4
+    f_kcal = fat_g * 9
+    carbs_g = max(0, round((kcal - p_kcal - f_kcal) / 4))
+
+    target = {"kcal": kcal, "protein_g": protein_g, "carbs_g": carbs_g, "fat_g": fat_g}
+    basis = {
+        "bmr": bmr,
+        "tdee": tdee,
+        "weight_kg": weight,
+        "body_fat_pct": measurement.body_fat_pct,
+        "lean_mass_kg": measurement.lean_mass_kg,
+        "measurement_date": str(measurement.date),
+        "cut_deficit_kcal": cut_deficit_kcal,
+        "activity_factor": 1.3,
+        "protein_per_kg": protein_per_kg,
+        "fat_per_kg": fat_per_kg,
+    }
+    return target, basis
 
 
 async def _get_target_for(db: AsyncSession, user_id, d: date_type, day_type: str) -> NutritionTarget | None:
@@ -212,22 +283,41 @@ async def delete_intake(
 async def dashboard(
     date: date_type = Query(...),
     day_type: str | None = Query(None, description="Override day-type detection"),
+    mode: str = Query("smart", description="'smart' = use latest body measurement, 'manual' = seeded targets"),
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Combined dashboard for a day: target + entries + totals + delta."""
+    """Combined dashboard for a day: target + entries + totals + delta.
+
+    Default: smart-target from latest body measurement. Falls back to manual seed
+    if no measurement exists, or if mode=manual is passed.
+    """
     dt = day_type or _detect_day_type(date)
-    target = await _get_target_for(db, user.id, date, dt)
-    if not target:
-        # No targets seeded yet — return sensible defaults so UI doesn't break
-        target_response = TargetResponse(day_type=dt, kcal=2000, protein_g=180, carbs_g=170, fat_g=65, source="default")
-    else:
-        target_response = TargetResponse(
-            day_type=target.day_type,
-            kcal=target.kcal, protein_g=target.protein_g,
-            carbs_g=target.carbs_g, fat_g=target.fat_g,
-            source=target.source,
-        )
+    target_basis = None
+    target_response: TargetResponse | None = None
+
+    if mode == "smart":
+        m = await _latest_measurement(db, user.id)
+        if m:
+            tgt, basis = _smart_target(m, dt)
+            target_response = TargetResponse(
+                day_type=dt, kcal=tgt["kcal"], protein_g=tgt["protein_g"],
+                carbs_g=tgt["carbs_g"], fat_g=tgt["fat_g"],
+                source="smart-bmr-{}-{}".format(basis["bmr"], basis["measurement_date"]),
+            )
+            target_basis = basis
+
+    if not target_response:
+        target = await _get_target_for(db, user.id, date, dt)
+        if not target:
+            target_response = TargetResponse(day_type=dt, kcal=2000, protein_g=180, carbs_g=170, fat_g=65, source="default")
+        else:
+            target_response = TargetResponse(
+                day_type=target.day_type,
+                kcal=target.kcal, protein_g=target.protein_g,
+                carbs_g=target.carbs_g, fat_g=target.fat_g,
+                source=target.source,
+            )
 
     rows = (await db.execute(
         select(IntakeEntry)
@@ -249,9 +339,180 @@ async def dashboard(
     )
     return DayDashboardResponse(
         date=date, day_type=dt,
-        target=target_response, entries=entries,
-        totals=totals, delta=delta,
+        target=target_response, target_basis=target_basis,
+        entries=entries, totals=totals, delta=delta,
     )
+
+
+# === BODY MEASUREMENTS ===
+
+@router.post("/measurements", response_model=BodyMeasurementResponse, status_code=status.HTTP_201_CREATED)
+async def create_measurement(
+    req: BodyMeasurementCreate,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Log a new body measurement. Drives smart-target calc on next dashboard load."""
+    from datetime import date as _date
+    # Auto-compute lean mass from weight + bf% if not provided
+    lean = req.lean_mass_kg
+    if lean is None and req.body_fat_pct is not None:
+        lean = round(req.weight_kg * (1 - req.body_fat_pct / 100), 1)
+    m = BodyMeasurement(
+        user_id=user.id,
+        date=req.date or _date.today(),
+        weight_kg=req.weight_kg,
+        body_fat_pct=req.body_fat_pct,
+        lean_mass_kg=lean,
+        bmr=req.bmr,
+        notes=req.notes,
+        source=req.source,
+    )
+    db.add(m)
+    await db.flush()
+    return BodyMeasurementResponse(
+        id=m.id, date=m.date, weight_kg=m.weight_kg, body_fat_pct=m.body_fat_pct,
+        lean_mass_kg=m.lean_mass_kg, bmr=m.bmr, notes=m.notes, source=m.source,
+        created_at=m.created_at,
+    )
+
+
+# === TRENDS ===
+
+@router.get("/trends")
+async def nutrition_trends(
+    days: int = Query(7, ge=1, le=90),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Daily macro totals for the last N days, plus compliance % vs smart target.
+
+    Returns: [{date, kcal, protein, carbs, fat, target_kcal, target_protein,
+               kcal_pct, protein_pct, entries_count}, ...] newest first.
+    """
+    from datetime import date as _date
+    since = _date.today() - timedelta(days=days - 1)
+    rows = (await db.execute(
+        select(IntakeEntry)
+        .where(IntakeEntry.user_id == user.id, IntakeEntry.date >= since)
+        .order_by(IntakeEntry.date)
+    )).scalars().all()
+
+    # Latest measurement drives target (snapshot in time would be more accurate
+    # but for short windows latest is good enough)
+    m = await _latest_measurement(db, user.id)
+
+    by_date: dict = defaultdict(lambda: {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0, "n": 0})
+    for e in rows:
+        d = by_date[e.date]
+        d["kcal"] += e.total_kcal
+        d["protein_g"] += e.total_protein
+        d["carbs_g"] += e.total_carbs
+        d["fat_g"] += e.total_fat
+        d["n"] += 1
+
+    out = []
+    for i in range(days):
+        d = _date.today() - timedelta(days=i)
+        bucket = by_date.get(d, {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0, "n": 0})
+        dt = _detect_day_type(d)
+        target = None
+        if m:
+            tgt, _ = _smart_target(m, dt)
+            target = tgt
+        else:
+            t = await _get_target_for(db, user.id, d, dt)
+            target = {"kcal": t.kcal, "protein_g": t.protein_g, "carbs_g": t.carbs_g, "fat_g": t.fat_g} if t else {"kcal": 2000, "protein_g": 180, "carbs_g": 170, "fat_g": 65}
+        out.append({
+            "date": str(d),
+            "day_type": dt,
+            "kcal": round(bucket["kcal"]),
+            "protein_g": round(bucket["protein_g"]),
+            "carbs_g": round(bucket["carbs_g"]),
+            "fat_g": round(bucket["fat_g"]),
+            "target_kcal": target["kcal"],
+            "target_protein_g": target["protein_g"],
+            "kcal_pct": round(bucket["kcal"] / target["kcal"] * 100, 1) if target["kcal"] else 0,
+            "protein_pct": round(bucket["protein_g"] / target["protein_g"] * 100, 1) if target["protein_g"] else 0,
+            "entries_count": bucket["n"],
+        })
+    return out  # newest-first because i=0 is today
+
+
+# === FAVORITES ===
+
+@router.get("/favorites")
+async def favorites(
+    days: int = Query(30, ge=1, le=180),
+    limit: int = Query(8, ge=1, le=30),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Most-frequent intake entries in last N days, deduplicated by item-name signature.
+
+    Useful for 1-click "log opnieuw" buttons. Returns top-N with use_count and a
+    representative recent entry's macro data.
+    """
+    from datetime import date as _date
+    since = _date.today() - timedelta(days=days)
+    rows = (await db.execute(
+        select(IntakeEntry)
+        .where(IntakeEntry.user_id == user.id, IntakeEntry.date >= since)
+        .order_by(desc(IntakeEntry.created_at))
+        .limit(300)
+    )).scalars().all()
+
+    by_sig: dict = {}
+    for e in rows:
+        names = tuple(sorted(((it.get("name", "") or "").lower().strip() for it in (e.parsed_foods or []))))
+        if not names:
+            continue
+        sig = "|".join(names)
+        if sig not in by_sig:
+            by_sig[sig] = {"count": 0, "latest": e}
+        by_sig[sig]["count"] += 1
+
+    top = sorted(by_sig.items(), key=lambda kv: (-kv[1]["count"], -kv[1]["latest"].created_at.timestamp()))[:limit]
+    return [
+        {
+            "signature": sig,
+            "use_count": g["count"],
+            "meal_type": g["latest"].meal_type,
+            "raw_input": g["latest"].raw_input,
+            "parsed_foods": g["latest"].parsed_foods,
+            "totals": {
+                "kcal": g["latest"].total_kcal,
+                "protein_g": g["latest"].total_protein,
+                "carbs_g": g["latest"].total_carbs,
+                "fat_g": g["latest"].total_fat,
+            },
+            "last_used": str(g["latest"].date),
+        }
+        for sig, g in top
+    ]
+
+
+@router.get("/measurements", response_model=list[BodyMeasurementResponse])
+async def list_measurements(
+    days: int = Query(60, ge=1, le=365),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Recent body measurements, newest first."""
+    from datetime import date as _date, timedelta
+    since = _date.today() - timedelta(days=days)
+    rows = (await db.execute(
+        select(BodyMeasurement)
+        .where(BodyMeasurement.user_id == user.id, BodyMeasurement.date >= since)
+        .order_by(desc(BodyMeasurement.date), desc(BodyMeasurement.created_at))
+    )).scalars().all()
+    return [
+        BodyMeasurementResponse(
+            id=m.id, date=m.date, weight_kg=m.weight_kg, body_fat_pct=m.body_fat_pct,
+            lean_mass_kg=m.lean_mass_kg, bmr=m.bmr, notes=m.notes, source=m.source,
+            created_at=m.created_at,
+        ) for m in rows
+    ]
 
 
 @router.get("/targets", response_model=list[TargetResponse])

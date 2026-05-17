@@ -150,6 +150,22 @@ class IntakeEntry(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+class BodyMeasurement(Base):
+    """Body composition snapshot — drives smart-target calculation."""
+    __tablename__ = "body_measurements"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    date: Mapped[date_type] = mapped_column(Date, nullable=False)
+    weight_kg: Mapped[float] = mapped_column(Float, nullable=False)
+    body_fat_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    lean_mass_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    bmr: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source: Mapped[str] = mapped_column(String(30), default="manual")  # manual / fitdays-import / etc.
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 class NutritionTarget(Base):
     """Daily macro target per user, per day-type. Latest effective_from wins."""
     __tablename__ = "nutrition_targets"

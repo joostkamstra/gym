@@ -249,6 +249,31 @@ class DayDashboardResponse(BaseModel):
     date: date_type
     day_type: str | None
     target: TargetResponse
+    target_basis: dict | None = None  # only set when smart target used
     entries: list[IntakeEntryResponse]
     totals: MacroTotals
     delta: MacroTotals  # target - totals (positive = nog te eten)
+
+
+# === BODY MEASUREMENTS ===
+
+class BodyMeasurementCreate(BaseModel):
+    date: date_type | None = None  # defaults to today
+    weight_kg: float
+    body_fat_pct: float | None = None
+    lean_mass_kg: float | None = None
+    bmr: int | None = None
+    notes: str | None = None
+    source: str = "manual"
+
+
+class BodyMeasurementResponse(BaseModel):
+    id: uuid.UUID
+    date: date_type
+    weight_kg: float
+    body_fat_pct: float | None
+    lean_mass_kg: float | None
+    bmr: int | None
+    notes: str | None
+    source: str
+    created_at: datetime

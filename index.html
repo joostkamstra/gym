@@ -317,6 +317,38 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .intake-entry-actions button{flex:1;padding:6px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
 .nutr-loading{text-align:center;padding:30px;color:#8e8e93}
 .nutr-empty{text-align:center;padding:30px;color:#8e8e93;font-size:14px}
+/* Smart-target badge + basis modal */
+.smart-badge{display:inline-block;padding:2px 8px;background:#0a3a5f;color:#0a84ff;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;margin-left:6px;text-transform:uppercase}
+.smart-badge.manual{background:#3a2a1a;color:#ffd60a}
+.body-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;margin-left:auto}
+/* Favorites */
+.nutr-fav-section{margin-bottom:14px}
+.nutr-fav-label{font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.nutr-fav-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.nutr-fav-card{flex:0 0 auto;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:10px;padding:10px 12px;min-width:140px;max-width:200px;cursor:pointer;transition:background .15s}
+.nutr-fav-card:active{background:#2c2c2e}
+.nutr-fav-name{font-size:12px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nutr-fav-macros{font-size:11px;color:#30d158}
+.nutr-fav-meta{font-size:10px;color:#8e8e93;margin-top:2px}
+/* Trends */
+.trends-section{background:#1c1c1e;border-radius:12px;padding:14px;margin-top:16px}
+.trends-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trends-title{font-size:14px;font-weight:600}
+.trends-tabs{display:flex;gap:4px}
+.trends-tabs button{padding:4px 10px;background:#2c2c2e;border:0;border-radius:5px;color:#fff;font-size:11px;cursor:pointer}
+.trends-tabs button.active{background:#0a84ff}
+.trends-chart{width:100%;height:120px;display:block;margin-top:6px}
+.trends-legend{font-size:10px;color:#8e8e93;margin-top:4px;text-align:center}
+/* Modal voor body meting */
+.bm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:flex-end;z-index:1000}
+.bm-modal.open{display:flex}
+.bm-sheet{background:#1c1c1e;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:600px;margin:0 auto}
+.bm-sheet h2{font-size:18px;margin-bottom:12px}
+.bm-field{margin-bottom:10px}
+.bm-field label{display:block;font-size:11px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px}
+.bm-field input{width:100%;background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:8px 10px;font-size:14px}
+.bm-row{display:flex;gap:8px;margin-top:12px}
+.bm-row button{flex:1}
 
 </style>
 </head>
@@ -409,11 +441,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <button class="header-action" onclick="loadNutritionDashboard()" title="Vernieuwen">↻</button>
   </div>
 
-  <!-- Day-type selector -->
-  <div class="nutr-daytype" id="nutrDayType">
-    <button data-dt="training" onclick="setDayType('training')">Training</button>
-    <button data-dt="rest"     onclick="setDayType('rest')">Rust</button>
-    <button data-dt="weekend"  onclick="setDayType('weekend')">Weekend</button>
+  <!-- Day-type selector + body-meting -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+    <div class="nutr-daytype" id="nutrDayType" style="flex:1;margin-bottom:0">
+      <button data-dt="training" onclick="setDayType('training')">Training</button>
+      <button data-dt="rest"     onclick="setDayType('rest')">Rust</button>
+      <button data-dt="weekend"  onclick="setDayType('weekend')">Weekend</button>
+    </div>
+    <button class="body-btn" onclick="openBodyModal()" title="Update lichaamsmeting">📊 Meting</button>
+  </div>
+
+  <!-- Favorites (top picks last 30d) -->
+  <div class="nutr-fav-section" id="nutrFavSection" style="display:none">
+    <div class="nutr-fav-label">⚡ Favorieten — 1-klik loggen</div>
+    <div class="nutr-fav-scroll" id="nutrFavScroll"></div>
   </div>
 
   <!-- Summary -->
@@ -478,6 +519,50 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   <!-- Today's entries -->
   <div style="font-size:14px;color:#8e8e93;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px">Vandaag</div>
   <div id="nutrEntries"><div class="nutr-empty">Nog niets gelogd vandaag.</div></div>
+
+  <!-- Trends -->
+  <div class="trends-section">
+    <div class="trends-head">
+      <div class="trends-title">📈 Trends</div>
+      <div class="trends-tabs">
+        <button id="trendsTab7" class="active" onclick="loadTrends(7)">7d</button>
+        <button id="trendsTab30" onclick="loadTrends(30)">30d</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#8e8e93;margin:8px 0 2px">Calorieën-naleving (% van target)</div>
+    <svg class="trends-chart" id="trendsKcalChart"></svg>
+    <div class="trends-legend" id="trendsKcalLegend"></div>
+    <div style="font-size:11px;color:#8e8e93;margin:12px 0 2px">Gewicht (kg)</div>
+    <svg class="trends-chart" id="trendsWeightChart" style="height:90px"></svg>
+    <div class="trends-legend" id="trendsWeightLegend"></div>
+  </div>
+</div>
+
+<!-- BODY MEASUREMENT MODAL -->
+<div class="bm-modal" id="bmModal" onclick="if(event.target===this) closeBodyModal()">
+  <div class="bm-sheet">
+    <h2>Nieuwe lichaamsmeting</h2>
+    <div class="bm-field">
+      <label>Gewicht (kg) *</label>
+      <input type="number" id="bmWeight" step="0.1" placeholder="80.2">
+    </div>
+    <div class="bm-field">
+      <label>Vet% (optioneel)</label>
+      <input type="number" id="bmBf" step="0.1" placeholder="12.1">
+    </div>
+    <div class="bm-field">
+      <label>BMR uit Fitdays (optioneel)</label>
+      <input type="number" id="bmBmr" step="1" placeholder="1892">
+    </div>
+    <div class="bm-field">
+      <label>Notities (optioneel)</label>
+      <input type="text" id="bmNotes" placeholder="Bv. nuchter, schone meting...">
+    </div>
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeBodyModal()">Annuleer</button>
+      <button class="btn btn-green" onclick="saveBodyMeasurement()">Opslaan</button>
+    </div>
+  </div>
 </div>
 
 <!-- EQUIPMENT VIEW -->
@@ -2930,6 +3015,236 @@ async function deleteIntake(id) {
     showToast('Verwijderen mislukt');
   }
 }
+
+// === FASE 2: Body measurements ===
+function openBodyModal() {
+  document.getElementById('bmWeight').value = '';
+  document.getElementById('bmBf').value = '';
+  document.getElementById('bmBmr').value = '';
+  document.getElementById('bmNotes').value = '';
+  document.getElementById('bmModal').classList.add('open');
+}
+function closeBodyModal() { document.getElementById('bmModal').classList.remove('open'); }
+async function saveBodyMeasurement() {
+  const w = parseFloat(document.getElementById('bmWeight').value);
+  if (!w || w < 30 || w > 250) { showToast('Vul een geldig gewicht in'); return; }
+  const bf = parseFloat(document.getElementById('bmBf').value) || null;
+  const bmr = parseInt(document.getElementById('bmBmr').value) || null;
+  const notes = document.getElementById('bmNotes').value.trim() || null;
+  try {
+    await api('/api/nutrition/measurements', {method: 'POST', body: JSON.stringify({
+      weight_kg: w, body_fat_pct: bf, bmr, notes, source: 'manual'
+    })});
+    showToast('Meting opgeslagen!');
+    closeBodyModal();
+    await loadNutritionDashboard();   // refresh smart-target
+    await loadTrends(_currentTrendsDays); // refresh weight chart
+  } catch (e) {
+    console.error('saveBodyMeasurement failed', e);
+    showToast('Opslaan mislukt: ' + (e.message || e));
+  }
+}
+
+// === FASE 4: Favorieten ===
+async function loadFavorites() {
+  try {
+    const favs = await api('/api/nutrition/favorites?days=30&limit=8');
+    const section = document.getElementById('nutrFavSection');
+    const scroll = document.getElementById('nutrFavScroll');
+    scroll.textContent = '';
+    if (!favs.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    favs.forEach(f => {
+      const names = (f.parsed_foods || []).map(it => it.name).join(' + ');
+      const card = _el('div', {class:'nutr-fav-card', onclick: () => useFavorite(f)},
+        _el('div', {class:'nutr-fav-name', title: names}, names || '(leeg)'),
+        _el('div', {class:'nutr-fav-macros'}, Math.round(f.totals.kcal) + 'k · E' + Math.round(f.totals.protein_g)),
+        _el('div', {class:'nutr-fav-meta'}, '×' + f.use_count + (f.meal_type ? ' · ' + f.meal_type : ''))
+      );
+      scroll.appendChild(card);
+    });
+  } catch (e) { console.warn('favorites load failed', e); }
+}
+async function useFavorite(fav) {
+  if (!confirm('Log "' + (fav.parsed_foods||[]).map(i=>i.name).join(' + ').slice(0,60) + '" opnieuw?')) return;
+  const body = {
+    client_entry_id: makeClientWorkoutId(),
+    date: nutrCurrentDate || _todayISO(),
+    meal_type: fav.meal_type,
+    raw_input: fav.raw_input,
+    parsed_foods: fav.parsed_foods,
+    ai_confidence: 'high',  // favorite reuse = user-confirmed
+    user_corrected: false
+  };
+  try {
+    await api('/api/nutrition/intake', {method: 'POST', body: JSON.stringify(body)});
+    showToast('Gelogd!');
+    await loadNutritionDashboard();
+    await loadFavorites();  // bump use_count
+  } catch (e) {
+    console.error('useFavorite failed', e);
+    showToast('Mislukt: ' + (e.message || e));
+  }
+}
+
+// === FASE 3: Trends + native SVG charts ===
+let _currentTrendsDays = 7;
+async function loadTrends(days) {
+  _currentTrendsDays = days;
+  document.getElementById('trendsTab7').classList.toggle('active', days === 7);
+  document.getElementById('trendsTab30').classList.toggle('active', days === 30);
+  try {
+    const [trends, meas] = await Promise.all([
+      api('/api/nutrition/trends?days=' + days),
+      api('/api/nutrition/measurements?days=' + Math.max(days, 30))
+    ]);
+    renderKcalChart(trends);
+    renderWeightChart(meas);
+  } catch (e) { console.warn('trends load failed', e); }
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function _svg(tag, attrs) {
+  const e = document.createElementNS(SVG_NS, tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k, v));
+  return e;
+}
+
+function renderKcalChart(trends) {
+  // trends: newest-first; reverse for left→right chronology
+  const data = [...trends].reverse();
+  const svg = document.getElementById('trendsKcalChart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const w = svg.clientWidth || 320, h = 120, pad = 18;
+  const cw = w - pad * 2;
+  const barW = cw / data.length;
+  // baseline at 100%
+  const baseY = pad + (h - pad*2) * 0;  // top axis = 200%
+  const scale = (h - pad*2) / 200;  // 0..200%
+  // 100% reference line
+  const line = _svg('line', {x1: pad, x2: w-pad, y1: pad + (200-100)*scale, y2: pad + (200-100)*scale, stroke:'#3a3a3c', 'stroke-dasharray':'2,3'});
+  svg.appendChild(line);
+  data.forEach((d, i) => {
+    const pct = Math.min(d.kcal_pct, 200);
+    const bh = pct * scale;
+    const x = pad + i * barW + 1;
+    const y = pad + (200 - pct) * scale;
+    const fill = d.kcal_pct >= 90 && d.kcal_pct <= 105 ? '#30d158' :
+                 d.kcal_pct > 105 ? '#ff453a' :
+                 d.entries_count === 0 ? '#48484a' : '#ffd60a';
+    const rect = _svg('rect', {x: x, y: y, width: barW - 2, height: Math.max(bh, 1), fill, rx: 2});
+    rect.appendChild(_svg('title', {})).textContent = `${d.date}: ${d.kcal}/${d.target_kcal}k (${d.kcal_pct}%) · ${d.entries_count} entries`;
+    svg.appendChild(rect);
+  });
+  // Date label start/end
+  if (data.length) {
+    const startLbl = _svg('text', {x: pad, y: h - 2, fill: '#8e8e93', 'font-size': 9});
+    startLbl.textContent = data[0].date.slice(5);
+    svg.appendChild(startLbl);
+    const endLbl = _svg('text', {x: w - pad - 30, y: h - 2, fill: '#8e8e93', 'font-size': 9});
+    endLbl.textContent = data[data.length-1].date.slice(5);
+    svg.appendChild(endLbl);
+  }
+  const ok = data.filter(d => d.entries_count > 0 && d.kcal_pct >= 90 && d.kcal_pct <= 105).length;
+  const logged = data.filter(d => d.entries_count > 0).length;
+  document.getElementById('trendsKcalLegend').textContent =
+    `${ok}/${logged} dagen op target (90-105%) · ${logged}/${data.length} dagen gelogd`;
+}
+
+function renderWeightChart(measurements) {
+  // measurements: newest-first; reverse for chronology
+  const data = [...measurements].reverse().filter(m => m.weight_kg);
+  const svg = document.getElementById('trendsWeightChart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  if (data.length < 1) {
+    const t = _svg('text', {x: '50%', y: '50%', fill:'#8e8e93', 'font-size':11, 'text-anchor':'middle'});
+    t.textContent = 'Nog geen metingen — klik 📊 om er een toe te voegen';
+    svg.appendChild(t);
+    document.getElementById('trendsWeightLegend').textContent = '';
+    return;
+  }
+  const w = svg.clientWidth || 320, h = 90, pad = 22;
+  const cw = w - pad * 2, ch = h - pad * 2;
+  const minW = Math.min(...data.map(m => m.weight_kg)) - 0.5;
+  const maxW = Math.max(...data.map(m => m.weight_kg)) + 0.5;
+  const range = maxW - minW || 1;
+  const xStep = data.length > 1 ? cw / (data.length - 1) : 0;
+  // path
+  let path = '';
+  data.forEach((m, i) => {
+    const x = pad + i * xStep;
+    const y = pad + ch - ((m.weight_kg - minW) / range) * ch;
+    path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+  });
+  const line = _svg('path', {d: path, fill:'none', stroke:'#0a84ff', 'stroke-width': 2});
+  svg.appendChild(line);
+  // dots
+  data.forEach((m, i) => {
+    const x = pad + i * xStep;
+    const y = pad + ch - ((m.weight_kg - minW) / range) * ch;
+    const c = _svg('circle', {cx: x, cy: y, r: 3, fill: '#0a84ff'});
+    c.appendChild(_svg('title', {})).textContent = `${m.date}: ${m.weight_kg}kg${m.body_fat_pct ? ` · ${m.body_fat_pct}%` : ''}`;
+    svg.appendChild(c);
+  });
+  // Y axis labels (min/max)
+  const yMaxLbl = _svg('text', {x: 2, y: pad+4, fill:'#8e8e93', 'font-size': 9});
+  yMaxLbl.textContent = maxW.toFixed(1);
+  svg.appendChild(yMaxLbl);
+  const yMinLbl = _svg('text', {x: 2, y: pad+ch+3, fill:'#8e8e93', 'font-size': 9});
+  yMinLbl.textContent = minW.toFixed(1);
+  svg.appendChild(yMinLbl);
+  // X labels
+  if (data.length >= 2) {
+    const xStart = _svg('text', {x: pad, y: h - 2, fill:'#8e8e93', 'font-size': 9});
+    xStart.textContent = data[0].date.slice(5);
+    svg.appendChild(xStart);
+    const xEnd = _svg('text', {x: w - pad - 30, y: h - 2, fill:'#8e8e93', 'font-size': 9});
+    xEnd.textContent = data[data.length-1].date.slice(5);
+    svg.appendChild(xEnd);
+  }
+  const first = data[0].weight_kg, last = data[data.length-1].weight_kg;
+  const delta = (last - first).toFixed(1);
+  document.getElementById('trendsWeightLegend').textContent =
+    `${data.length} meting(en) · ${delta > 0 ? '+' : ''}${delta} kg`;
+}
+
+// === smart-target badge in dashboard renderer ===
+function _renderTargetBadge(d) {
+  const elTarget = document.getElementById('nutrKcalTarget');
+  // remove old badge
+  const oldBadge = document.getElementById('nutrTargetBadge');
+  if (oldBadge) oldBadge.remove();
+  if (!elTarget) return;
+  const badge = _el('span', {id:'nutrTargetBadge', class: 'smart-badge' + (d.target_basis ? '' : ' manual')});
+  badge.textContent = d.target_basis ? 'smart' : 'manual';
+  badge.title = d.target_basis
+    ? `Op basis van: BMR ${d.target_basis.bmr} · ${d.target_basis.weight_kg}kg${d.target_basis.body_fat_pct ? ` · ${d.target_basis.body_fat_pct}%` : ''} (${d.target_basis.measurement_date})`
+    : 'Statisch target uit configuratie';
+  badge.onclick = () => alert(badge.title);
+  elTarget.parentNode.appendChild(badge);
+}
+
+// Patch loadNutritionDashboard to also load favorites + trends + badge
+const _origLoadDash = loadNutritionDashboard;
+loadNutritionDashboard = async function() {
+  if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
+  if (!nutrCurrentDayType) nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  document.querySelectorAll('#nutrDayType button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dt === nutrCurrentDayType);
+  });
+  try {
+    const url = '/api/nutrition/dashboard?date=' + nutrCurrentDate + '&day_type=' + nutrCurrentDayType;
+    const r = await api(url);
+    renderNutritionDashboard(r);
+    _renderTargetBadge(r);
+  } catch (e) {
+    console.error('Nutrition dashboard load failed', e);
+    showToast('Voeding-data niet geladen — offline?');
+  }
+  // sidecar loads (non-blocking)
+  loadFavorites();
+  loadTrends(_currentTrendsDays);
+};
 
 // === INIT ===
 if ('serviceWorker' in navigator) {

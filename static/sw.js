@@ -1,7 +1,7 @@
-// v9 - voeding tracker (Fase 1): AI-parse text/photo → macros, daily dashboard, idempotent intake
-const CACHE_NAME = 'gym-v9';
+// v10 - voeding fase 2-4: body measurements + smart targets + trends (SVG) + favorites
+const CACHE_NAME = 'gym-v10';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v9';
+const API_CACHE = 'gym-api-v10';
 const DB_NAME = 'gym-offline';
 const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';
