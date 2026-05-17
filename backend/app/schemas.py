@@ -305,3 +305,24 @@ class MeasurementParseResponse(BaseModel):
     parsed: BodyMeasurementCreate
     confidence: str  # 'high', 'medium', 'low'
     raw_extracted: dict | None = None  # debug: alle velden die Claude eruit haalde
+
+
+# === DAILY ACTIVITY CORRECTION ===
+
+class ActivityCorrectionRequest(BaseModel):
+    image_b64: str
+    date: date_type | None = None  # defaults today
+
+
+class ActivityCorrectionResponse(BaseModel):
+    date: date_type
+    active_kcal: int
+    exercise_min: int | None = None
+    standing_hours: float | None = None
+    bmr_used: int
+    deficit_used: int
+    baseline_target_kcal: int  # what smart-target would have been (activity-factor based)
+    adjusted_target_kcal: int  # new target = BMR + active_kcal - deficit
+    extra_kcal: int  # adjusted - baseline (positive = je mag meer eten)
+    target: TargetResponse  # full macro split met aangepaste KH
+    confidence: str

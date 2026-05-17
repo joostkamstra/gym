@@ -449,6 +449,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
       <button data-dt="weekend"  onclick="setDayType('weekend')">Weekend</button>
     </div>
     <button class="body-btn" onclick="openBodyModal()" title="Update lichaamsmeting">📊 Meting</button>
+    <button class="body-btn" onclick="openActivityModal()" title="Verbrandingscorrectie via Apple Conditie">🔥 Activiteit</button>
   </div>
 
   <!-- Favorites (top picks last 30d) -->
@@ -535,6 +536,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <div style="font-size:11px;color:#8e8e93;margin:12px 0 2px">Gewicht (kg)</div>
     <svg class="trends-chart" id="trendsWeightChart" style="height:90px"></svg>
     <div class="trends-legend" id="trendsWeightLegend"></div>
+  </div>
+</div>
+
+<!-- ACTIVITY CORRECTION MODAL -->
+<div class="bm-modal" id="actModal" onclick="if(event.target===this) closeActivityModal()">
+  <div class="bm-sheet" style="max-height:90vh;overflow-y:auto">
+    <h2>Verbrandingscorrectie</h2>
+    <div style="font-size:12px;color:#8e8e93;margin-bottom:12px">Upload je Apple Conditie / Activity screenshot — target wordt aangepast op basis van wat je vandaag écht hebt verbrand (deficit blijft hetzelfde).</div>
+
+    <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
+      <label class="nutr-photo-btn" style="background:#ff9500">
+        📷 Upload Apple Conditie<input type="file" accept="image/*" capture="environment" style="display:none" id="actPhotoFile" onchange="onActPhotoSelected(event)">
+      </label>
+      <img id="actPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px">
+      <div id="actParseStatus" style="font-size:12px;margin-top:6px"></div>
+    </div>
+
+    <div id="actResultBox" style="display:none;background:#1c1c1e;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Resultaat</div>
+      <div id="actResult"></div>
+    </div>
+
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeActivityModal()">Sluit</button>
+    </div>
   </div>
 </div>
 
@@ -3032,6 +3058,90 @@ async function deleteIntake(id) {
     console.error('delete failed', e);
     showToast('Verwijderen mislukt');
   }
+}
+
+// === Activity correction (Apple Conditie) ===
+function openActivityModal() {
+  document.getElementById('actPhotoPreview').style.display = 'none';
+  document.getElementById('actPhotoFile').value = '';
+  document.getElementById('actParseStatus').textContent = '';
+  document.getElementById('actResultBox').style.display = 'none';
+  document.getElementById('actModal').classList.add('open');
+}
+function closeActivityModal() { document.getElementById('actModal').classList.remove('open'); }
+
+function onActPhotoSelected(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = async () => {
+    const max = 1024;
+    let w = img.width, h = img.height;
+    if (w > h && w > max) { h = h * max / w; w = max; }
+    else if (h > max) { w = w * max / h; h = max; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    const b64 = dataUrl.split(',', 2)[1];
+
+    const preview = document.getElementById('actPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+    const status = document.getElementById('actParseStatus');
+    status.textContent = '🔍 Claude leest je Apple Conditie...';
+    status.style.color = '#ff9500';
+
+    try {
+      const r = await api('/api/nutrition/activity-correction', {
+        method: 'POST',
+        body: JSON.stringify({image_b64: b64})
+      });
+      status.textContent = '✓ Verwerkt (confidence: ' + r.confidence + ') · target aangepast en opgeslagen';
+      status.style.color = '#30d158';
+      renderActivityResult(r);
+      // refresh dashboard to show new target
+      await loadNutritionDashboard();
+    } catch (e) {
+      console.error('activity correction failed', e);
+      status.textContent = '✗ Mislukt: ' + (e.message || e);
+      status.style.color = '#ff453a';
+    }
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function renderActivityResult(r) {
+  const box = document.getElementById('actResult');
+  box.textContent = '';
+  const rows = [
+    ['📅 Datum', r.date],
+    ['🔥 Active kcal verbrand', r.active_kcal + ' kcal'],
+    ['🏃 Training tijd', r.exercise_min ? r.exercise_min + ' min' : '—'],
+    ['🚶 Staan', r.standing_hours ? r.standing_hours + ' uur' : '—'],
+    ['—', '—'],
+    ['BMR (basis)', r.bmr_used + ' kcal'],
+    ['Werkelijk TDEE', (r.bmr_used + r.active_kcal) + ' kcal'],
+    ['Cut-deficit', '-' + r.deficit_used + ' kcal'],
+    ['Baseline target was', r.baseline_target_kcal + ' kcal'],
+    ['Aangepast target', r.adjusted_target_kcal + ' kcal'],
+    [r.extra_kcal >= 0 ? '✨ Extra ruimte' : '⚠️ Minder ruimte', (r.extra_kcal >= 0 ? '+' : '') + r.extra_kcal + ' kcal'],
+    ['—', '—'],
+    ['Macro-split (aangepast)', `${r.target.kcal}k · E${r.target.protein_g} · KH${r.target.carbs_g} · V${r.target.fat_g}`],
+    [' ', '(eiwit + vet onveranderd, extra gaat naar koolhydraten)'],
+  ];
+  rows.forEach(([k, v]) => {
+    if (k === '—') {
+      box.appendChild(_el('div', {style:'border-top:1px solid #2c2c2e;margin:6px 0'}));
+      return;
+    }
+    const row = _el('div', {style:'display:flex;justify-content:space-between;padding:3px 0;font-size:12px'},
+      _el('span', {style:'color:#8e8e93'}, k),
+      _el('span', {style:'color:#fff;font-weight:600'}, String(v))
+    );
+    box.appendChild(row);
+  });
+  document.getElementById('actResultBox').style.display = 'block';
 }
 
 // === FASE 2: Body measurements ===

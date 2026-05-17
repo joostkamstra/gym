@@ -176,6 +176,25 @@ class BodyMeasurement(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 
+class DailyTargetOverride(Base):
+    """Per-day target override from Apple Activity correction. UNIQUE on (user, date)."""
+    __tablename__ = "daily_target_overrides"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    date: Mapped[date_type] = mapped_column(Date, nullable=False)
+    kcal: Mapped[int] = mapped_column(Integer, nullable=False)
+    protein_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    carbs_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    fat_g: Mapped[int] = mapped_column(Integer, nullable=False)
+    active_kcal: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    exercise_min: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    standing_hours: Mapped[float | None] = mapped_column(Float, nullable=True)
+    basis: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    source: Mapped[str] = mapped_column(String(30), default="apple-activity-vision")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 class NutritionTarget(Base):
     """Daily macro target per user, per day-type. Latest effective_from wins."""
     __tablename__ = "nutrition_targets"

@@ -14,9 +14,11 @@ from app.config import get_settings
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import BodyMeasurement, IntakeEntry, NutritionTarget, User
-from app.nutrition_ai import parse_intake, parse_measurement
+from app.models import BodyMeasurement, DailyTargetOverride, IntakeEntry, NutritionTarget, User
+from app.nutrition_ai import parse_activity, parse_intake, parse_measurement
 from app.schemas import (
+    ActivityCorrectionRequest,
+    ActivityCorrectionResponse,
     BodyMeasurementCreate,
     BodyMeasurementResponse,
     DayDashboardResponse,
@@ -302,7 +304,24 @@ async def dashboard(
     target_basis = None
     target_response: TargetResponse | None = None
 
+    # Priority 1: daily activity-correction override (specific date)
     if mode == "smart":
+        override = (await db.execute(
+            select(DailyTargetOverride)
+            .where(DailyTargetOverride.user_id == user.id, DailyTargetOverride.date == date)
+        )).scalar_one_or_none()
+        if override:
+            target_response = TargetResponse(
+                day_type=dt, kcal=override.kcal, protein_g=override.protein_g,
+                carbs_g=override.carbs_g, fat_g=override.fat_g,
+                source="activity-correction:" + str(override.active_kcal) + "kcal",
+            )
+            target_basis = dict(override.basis or {})
+            target_basis["override_source"] = "apple-activity"
+            target_basis["override_active_kcal"] = override.active_kcal
+
+    # Priority 2: smart target from latest body measurement
+    if mode == "smart" and not target_response:
         m = await _latest_measurement(db, user.id)
         if m:
             tgt, basis = _smart_target(m, dt)
@@ -398,6 +417,118 @@ async def create_measurement(
     db.add(m)
     await db.flush()
     return _bm_response(m)
+
+
+@router.post("/activity-correction", response_model=ActivityCorrectionResponse)
+async def activity_correction(
+    req: ActivityCorrectionRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Parse Apple Activity screenshot → recompute today's target from actual TDEE.
+
+    Math:
+      actual_TDEE = BMR + active_kcal (Apple's 'Bewegen' = active calories)
+      adjusted_target_kcal = actual_TDEE - same_cut_deficit_kcal (default 400)
+      extra_kcal goes to carbs (eiwit + vet stay same — cut-protocol)
+
+    Upserts daily_target_overrides for (user, date). Dashboard prefers this
+    over smart-target / seeded targets.
+    """
+    from datetime import date as _date
+    try:
+        parsed = parse_activity(req.image_b64)
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI parse failed: {e}")
+
+    confidence = parsed.get("confidence", "medium")
+    active_kcal = int(parsed.get("active_kcal", 0))
+    if active_kcal <= 0:
+        raise HTTPException(status_code=400, detail="Geen active_kcal gevonden in screenshot")
+
+    target_date = req.date or _date.today()
+    dt = _detect_day_type(target_date)
+
+    # Need a body measurement for BMR
+    m = await _latest_measurement(db, user.id)
+    if not m or not m.bmr:
+        raise HTTPException(status_code=400, detail="Geen body measurement met BMR — eerst /measurements POST")
+    bmr = m.bmr
+
+    # Compute baseline (smart) target voor vergelijking
+    baseline_tgt, _ = _smart_target(m, dt)
+    cut_deficit = 400  # match _smart_target default
+
+    # Adjusted: replace activity-factor with actual active_kcal
+    actual_tdee = bmr + active_kcal
+    adjusted_kcal = actual_tdee - cut_deficit
+
+    # Macros: eiwit + vet blijven gelijk aan baseline (cut-prioriteit), rest naar KH
+    protein_g = baseline_tgt["protein_g"]
+    fat_g = baseline_tgt["fat_g"]
+    p_kcal = protein_g * 4
+    f_kcal = fat_g * 9
+    carbs_g = max(0, round((adjusted_kcal - p_kcal - f_kcal) / 4))
+
+    basis = {
+        "bmr": bmr,
+        "actual_tdee": actual_tdee,
+        "active_kcal": active_kcal,
+        "exercise_min": parsed.get("exercise_min"),
+        "standing_hours": parsed.get("standing_hours"),
+        "cut_deficit_kcal": cut_deficit,
+        "baseline_kcal": baseline_tgt["kcal"],
+        "extra_vs_baseline": adjusted_kcal - baseline_tgt["kcal"],
+        "day_type": dt,
+        "source_image_confidence": confidence,
+    }
+
+    # Upsert
+    existing = (await db.execute(
+        select(DailyTargetOverride)
+        .where(DailyTargetOverride.user_id == user.id, DailyTargetOverride.date == target_date)
+    )).scalar_one_or_none()
+    if existing:
+        existing.kcal = adjusted_kcal
+        existing.protein_g = protein_g
+        existing.carbs_g = carbs_g
+        existing.fat_g = fat_g
+        existing.active_kcal = active_kcal
+        existing.exercise_min = parsed.get("exercise_min")
+        existing.standing_hours = parsed.get("standing_hours")
+        existing.basis = basis
+        existing.source = "apple-activity-vision"
+    else:
+        override = DailyTargetOverride(
+            user_id=user.id, date=target_date,
+            kcal=adjusted_kcal, protein_g=protein_g, carbs_g=carbs_g, fat_g=fat_g,
+            active_kcal=active_kcal,
+            exercise_min=parsed.get("exercise_min"),
+            standing_hours=parsed.get("standing_hours"),
+            basis=basis, source="apple-activity-vision",
+        )
+        db.add(override)
+    await db.flush()
+
+    return ActivityCorrectionResponse(
+        date=target_date,
+        active_kcal=active_kcal,
+        exercise_min=parsed.get("exercise_min"),
+        standing_hours=parsed.get("standing_hours"),
+        bmr_used=bmr,
+        deficit_used=cut_deficit,
+        baseline_target_kcal=baseline_tgt["kcal"],
+        adjusted_target_kcal=adjusted_kcal,
+        extra_kcal=adjusted_kcal - baseline_tgt["kcal"],
+        target=TargetResponse(
+            day_type=dt, kcal=adjusted_kcal, protein_g=protein_g,
+            carbs_g=carbs_g, fat_g=fat_g,
+            source="activity-correction:" + str(active_kcal) + "kcal",
+        ),
+        confidence=confidence,
+    )
 
 
 @router.post("/measurements/parse", response_model=MeasurementParseResponse)

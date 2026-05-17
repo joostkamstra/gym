@@ -195,6 +195,75 @@ def parse_measurement(image_b64: str) -> dict:
     raise RuntimeError(f"No log_measurement tool_use in response: {[b.type for b in response.content]}")
 
 
+LOG_ACTIVITY_TOOL = {
+    "name": "log_activity",
+    "description": "Registreer dag-activiteit uit Apple Conditie/Activity screenshot.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "active_kcal": {"type": "integer", "description": "Bewegen / Active kcal (NIET totaal kcal). Bv: '1340/670 kcal' → 1340"},
+            "exercise_min": {"type": "integer", "description": "Trainen / Exercise minuten. Bv: '129/30 min' → 129"},
+            "standing_hours": {"type": "number", "description": "Staan / Stand uren. Bv: '14/12 uur' → 14"},
+            "steps": {"type": "integer", "description": "Aantal stappen vandaag (optioneel)"},
+            "distance_km": {"type": "number", "description": "Afstand in km (optioneel)"},
+            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        },
+        "required": ["active_kcal", "confidence"],
+    },
+}
+
+
+ACTIVITY_SYSTEM = """Je leest screenshots van de Apple Conditie / Activity / Health app (Nederlands of Engels).
+
+Belangrijk: het 'Bewegen' / 'Move' getal is wat ik nodig heb — dit zijn de ACTIVE kcal
+(boven BMR), NIET de totale calorieën.
+
+Apple toont vaak '1340 / 670 kcal' — dat betekent 1340 kcal verbrand, 670 was het doel.
+Pak het EERSTE getal (verbrand), niet het doel.
+
+Voor 'Trainen' / 'Exercise': pak het verbrande aantal minuten (eerste getal).
+Voor 'Staan' / 'Stand': pak het aantal uren gestaan (eerste getal).
+
+Als waarden niet leesbaar zijn: laat veld weg.
+Confidence: high als hoofdwaarden (active_kcal) duidelijk leesbaar.
+
+Roep ALTIJD de log_activity tool aan.
+"""
+
+
+def parse_activity(image_b64: str) -> dict:
+    """Parse Apple Activity screenshot → {active_kcal, exercise_min, standing_hours, ...}."""
+    if not image_b64:
+        raise ValueError("parse_activity requires image_b64")
+    client = _get_client()
+    if image_b64.startswith("data:"):
+        image_b64 = image_b64.split(",", 1)[1]
+    raw = base64.b64decode(image_b64[:20] + "==")
+    mime = "image/jpeg"
+    if raw.startswith(b"\x89PNG"):
+        mime = "image/png"
+    elif raw.startswith(b"GIF"):
+        mime = "image/gif"
+    elif raw.startswith(b"RIFF") and b"WEBP" in raw:
+        mime = "image/webp"
+
+    response = client.messages.create(
+        model=MODEL,
+        max_tokens=512,
+        system=[{"type": "text", "text": ACTIVITY_SYSTEM, "cache_control": {"type": "ephemeral"}}],
+        tools=[LOG_ACTIVITY_TOOL],
+        tool_choice={"type": "tool", "name": "log_activity"},
+        messages=[{"role": "user", "content": [
+            {"type": "image", "source": {"type": "base64", "media_type": mime, "data": image_b64}},
+            {"type": "text", "text": "Lees deze Apple Conditie-screenshot uit en roep log_activity aan."},
+        ]}],
+    )
+    for block in response.content:
+        if block.type == "tool_use" and block.name == "log_activity":
+            return block.input
+    raise RuntimeError(f"No log_activity tool_use in response: {[b.type for b in response.content]}")
+
+
 def parse_intake(text: str | None = None, image_b64: str | None = None) -> dict:
     """Parse text and/or photo into structured macro items.
 

@@ -1,7 +1,7 @@
-// v11 - voeding: Fitdays-screenshot vision-parser + 9 extra body metrics
-const CACHE_NAME = 'gym-v11';
+// v12 - voeding: verbrandingscorrectie via Apple Conditie screenshot
+const CACHE_NAME = 'gym-v12';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v11';
+const API_CACHE = 'gym-api-v12';
 const DB_NAME = 'gym-offline';
 const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';
