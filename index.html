@@ -6,8 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fitness">
 <link rel="manifest" href="manifest.json">
-<title>Gym Tracker</title>
+<title>Fitness Hub</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background:#000;color:#fff;
@@ -364,7 +369,7 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
 <div id="login" class="view active">
   <div class="login-wrap">
     <div class="login-icon">🏋️</div>
-    <div class="login-title">Gym Tracker</div>
+    <div class="login-title">Fitness Hub</div>
     <div class="login-subtitle">Kies je profiel en voer je PIN in</div>
     <div class="login-users" id="loginUsers"></div>
     <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
@@ -380,7 +385,7 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
 <div id="home" class="view">
   <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
-    <h1 id="homeTitle">Gym Tracker</h1>
+    <h1 id="homeTitle">Fitness Hub</h1>
     <button class="header-action" onclick="doRefresh()" aria-label="Vernieuwen">↻</button>
     <button class="header-action" onclick="logout()" title="Uitloggen" aria-label="Uitloggen">⏻</button>
   </div>
@@ -1646,7 +1651,7 @@ function getTodaySchema(dayOfWeek) {
 
 function renderHome() {
   const schemas = getUserSchemas();
-  document.getElementById('homeTitle').textContent = 'Gym Tracker';
+  document.getElementById('homeTitle').textContent = 'Fitness Hub';
   const container = document.getElementById('homeCards');
   container.textContent = '';
 
