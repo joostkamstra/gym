@@ -1,11 +1,14 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
+from app.database import get_db
 from app.routes import auth, schemas_routes, exercises, workouts, nutrition
 
 settings = get_settings()
@@ -29,13 +32,14 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# CORS
+# CORS (item #6 + #7: strip-trim + explicit methods)
+_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS.split(","),
+    allow_origins=_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Reminder-Secret"],
 )
 
 # Routes
@@ -47,8 +51,13 @@ app.include_router(nutrition.router)
 
 
 @app.get("/health")
-async def health():
-    return {"status": "ok"}
+async def health(db: AsyncSession = Depends(get_db)):
+    """Item #9: DB-ping zodat container niet 'healthy' staat als Postgres dood is."""
+    try:
+        await db.execute(text("SELECT 1"))
+        return {"status": "ok", "db": "ok"}
+    except Exception as e:
+        return {"status": "degraded", "db": "fail", "error": str(e)[:100]}
 
 
 # Serve frontend static files (index.html, sw.js, manifest.json)

@@ -1,5 +1,5 @@
 // v13 - voeding review-aanpassingen: Mifflin BMR + dynamic deficit + refeed + carb-cycling ±250 + hydration
-const CACHE_NAME = 'gym-v13';
+const CACHE_NAME = 'gym-v14';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
 const API_CACHE = 'gym-api-v13';
 const DB_NAME = 'gym-offline';
@@ -233,6 +233,14 @@ self.addEventListener('message', async e => {
       if (replyPort) replyPort.postMessage({ ok: true, draft });
     } else if (data.type === 'DRAFT_CLEAR' && data.id) {
       await draftClear(data.id);
+      if (replyPort) replyPort.postMessage({ ok: true });
+    } else if (data.type === 'CLEAR_QUEUE') {
+      // Item #22: bij logout alle drafts + offline-queue wissen
+      try {
+        const db = await openDB();
+        const tx = db.transaction(DRAFT_STORE, 'readwrite');
+        tx.objectStore(DRAFT_STORE).clear();
+      } catch(_) {}
       if (replyPort) replyPort.postMessage({ ok: true });
     }
   } catch (err) {

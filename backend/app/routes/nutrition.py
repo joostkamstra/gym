@@ -1,7 +1,9 @@
 """Nutrition tracker endpoints: parse, intake CRUD, targets, dashboard, trends, favorites, body measurements, reminders."""
+import asyncio
 import base64
 import urllib.parse
 import urllib.request
+import uuid as uuid_mod
 from collections import defaultdict
 from datetime import date as date_type, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -9,6 +11,9 @@ from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy import select, delete, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# Item #5: max decoded image size (5MB).
+MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 from app.config import get_settings
 
@@ -227,13 +232,20 @@ async def parse(
 ):
     """Parse text/photo input into structured macros. No DB write."""
     if not req.text and not req.image_b64:
-        raise HTTPException(status_code=400, detail="Provide text or image_b64")
+        raise HTTPException(status_code=400, detail="Geef tekst of foto mee")
+    # Item #5: image size cap
+    if req.image_b64:
+        b64 = req.image_b64.split(",", 1)[1] if req.image_b64.startswith("data:") else req.image_b64
+        if len(b64) * 3 // 4 > MAX_IMAGE_BYTES:
+            raise HTTPException(status_code=413, detail="Foto te groot (max 5MB)")
     try:
-        result = parse_intake(text=req.text, image_b64=req.image_b64)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"AI parse failed: {e}")
+        # Item #2: async wrapping zodat event-loop niet 2-8s blokt
+        result = await asyncio.to_thread(parse_intake, req.text, req.image_b64)
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
+    except Exception:
+        # Item #36: generic message ipv raw exception
+        raise HTTPException(status_code=502, detail="AI-analyse mislukt — probeer opnieuw")
 
     items = [ParsedFoodItem(**it) for it in result.get("items", [])]
     totals = _sum_totals(items)
@@ -309,7 +321,7 @@ async def list_intake(
 
 @router.delete("/intake/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_intake(
-    entry_id,
+    entry_id: uuid_mod.UUID,  # Item #8: typed UUID i.p.v. raw str (anders 500 op invalide UUID)
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -472,12 +484,19 @@ async def activity_correction(
     over smart-target / seeded targets.
     """
     from datetime import date as _date
+    # Item #5: image size cap
+    if req.image_b64:
+        b64 = req.image_b64.split(",", 1)[1] if req.image_b64.startswith("data:") else req.image_b64
+        if len(b64) * 3 // 4 > MAX_IMAGE_BYTES:
+            raise HTTPException(status_code=413, detail="Foto te groot (max 5MB)")
     try:
-        parsed = parse_activity(req.image_b64)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"AI parse failed: {e}")
+        # Item #2: async wrapping
+        parsed = await asyncio.to_thread(parse_activity, req.image_b64)
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
+    except Exception:
+        # Item #13 + #36: generic 4xx i.p.v. raw 500
+        raise HTTPException(status_code=422, detail="Kon screenshot niet uitlezen — controleer foto en probeer opnieuw")
 
     confidence = parsed.get("confidence", "medium")
     active_kcal = int(parsed.get("active_kcal", 0))
@@ -577,12 +596,19 @@ async def parse_measurement_photo(
 ):
     """Parse a Fitdays screenshot into a structured measurement. No DB write — frontend
     previews, user reviews, then POSTs to /measurements to save."""
+    # Item #5: image size cap
+    if req.image_b64:
+        b64 = req.image_b64.split(",", 1)[1] if req.image_b64.startswith("data:") else req.image_b64
+        if len(b64) * 3 // 4 > MAX_IMAGE_BYTES:
+            raise HTTPException(status_code=413, detail="Foto te groot (max 5MB)")
     try:
-        raw = parse_measurement(req.image_b64)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"AI parse failed: {e}")
+        # Item #2: async wrapping
+        raw = await asyncio.to_thread(parse_measurement, req.image_b64)
+    except RuntimeError:
+        raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
+    except Exception:
+        # Item #13 + #36: generic 4xx i.p.v. raw 500
+        raise HTTPException(status_code=422, detail="Geen Fitdays-screenshot herkend — controleer foto en probeer opnieuw")
 
     # Drop confidence from the BodyMeasurementCreate (it's not a column)
     confidence = raw.pop("confidence", "medium")
@@ -632,7 +658,7 @@ async def nutrition_trends(
         dt = _detect_day_type(d)
         target = None
         if m:
-            tgt, _ = _smart_target(m, dt)
+            tgt, _ = _smart_target(m, dt, user=user)  # Item #15: was zonder user → mifflin-default fallback
             target = tgt
         else:
             t = await _get_target_for(db, user.id, d, dt)
@@ -831,12 +857,13 @@ async def check_reminders(
         import uuid as _uuid
         uid = _uuid.UUID(user_id)
 
-        # Today's state
+        # Today's state — Item #15: load User voor correct Mifflin (age/height/gender)
+        u = (await db.execute(select(User).where(User.id == uid))).scalar_one_or_none()
         dt = _detect_day_type(today)
         m = await _latest_measurement(db, uid)
         target = None
         if m:
-            tgt, _ = _smart_target(m, dt)
+            tgt, _ = _smart_target(m, dt, user=u)
             target = tgt
         else:
             t = await _get_target_for(db, uid, today, dt)
@@ -866,6 +893,38 @@ async def check_reminders(
                 })
 
     return {"checked_hour": current_hour, "today": str(today), "results": results}
+
+
+@router.delete("/measurements/{m_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_measurement(
+    m_id: uuid_mod.UUID,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Item: feature-test bug #3 — DELETE-endpoint voor body_measurements (was 405)."""
+    m = (await db.execute(
+        select(BodyMeasurement).where(BodyMeasurement.id == m_id, BodyMeasurement.user_id == user.id)
+    )).scalar_one_or_none()
+    if not m:
+        raise HTTPException(status_code=404, detail="Meting niet gevonden")
+    await db.delete(m)
+    await db.flush()
+
+
+@router.delete("/hydration", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_hydration(
+    date: date_type = Query(...),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Item: feature-test bug #5 — DELETE-endpoint voor hydration (was 405)."""
+    h = (await db.execute(
+        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == date)
+    )).scalar_one_or_none()
+    if not h:
+        raise HTTPException(status_code=404, detail="Geen hydratie-log gevonden voor die datum")
+    await db.delete(h)
+    await db.flush()
 
 
 @router.get("/measurements", response_model=list[BodyMeasurementResponse])

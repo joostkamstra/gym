@@ -315,6 +315,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .intake-entry-items{font-size:12px;color:#8e8e93;margin-top:4px}
 .intake-entry-actions{display:flex;gap:8px;margin-top:8px}
 .intake-entry-actions button{flex:1;padding:6px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
+/* Item #43: respect prefers-reduced-motion (vestibular safety) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+/* Item #46: visible focus voor keyboard-users */
+button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 2px solid #0a84ff; outline-offset: 2px; border-radius: 4px; }
 .nutr-loading{text-align:center;padding:30px;color:#8e8e93}
 .nutr-empty{text-align:center;padding:30px;color:#8e8e93;font-size:14px}
 /* Smart-target badge + basis modal */
@@ -362,7 +368,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <div class="login-subtitle">Kies je profiel en voer je PIN in</div>
     <div class="login-users" id="loginUsers"></div>
     <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
-      class="login-input" id="loginPin" placeholder="PIN code"
+      class="login-input" id="loginPin" placeholder="PIN-code"
+      autocomplete="off" autocorrect="off"
       onkeydown="if(event.key==='Enter')doLogin()">
     <div class="login-error" id="loginError"></div>
     <button class="btn btn-green" style="max-width:280px" onclick="doLogin()">Inloggen</button>
@@ -374,8 +381,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
   <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
     <h1 id="homeTitle">Gym Tracker</h1>
-    <button class="header-action" onclick="doRefresh()">↻</button>
-    <button class="header-action" onclick="logout()" title="Uitloggen">⏻</button>
+    <button class="header-action" onclick="doRefresh()" aria-label="Vernieuwen">↻</button>
+    <button class="header-action" onclick="logout()" title="Uitloggen" aria-label="Uitloggen">⏻</button>
   </div>
   <div class="stats-bar" id="statsBar">
     <div><div class="stat-val" id="statWorkouts">0</div><div class="stat-label">workouts</div></div>
@@ -389,7 +396,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- WORKOUT VIEW -->
 <div id="workout" class="view">
   <div class="header">
-    <button class="back-btn" onclick="confirmExit()">‹</button>
+    <button class="back-btn" onclick="confirmExit()" aria-label="Terug">‹</button>
     <h1 id="workoutTitle"></h1>
   </div>
   <div id="workoutExercises"></div>
@@ -403,7 +410,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- HISTORY VIEW -->
 <div id="history" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('home')">‹</button>
+    <button class="back-btn" onclick="showView('home')" aria-label="Terug">‹</button>
     <h1>Geschiedenis</h1>
   </div>
   <div id="historyList"></div>
@@ -412,7 +419,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- DETAIL VIEW -->
 <div id="detail" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('history')">‹</button>
+    <button class="back-btn" onclick="showView('history')" aria-label="Terug">‹</button>
     <h1 id="detailTitle"></h1>
     <button class="header-action" onclick="shareWorkout()">Deel</button>
   </div>
@@ -425,7 +432,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- SHARE VIEW -->
 <div id="share" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('detail')">‹</button>
+    <button class="back-btn" onclick="showView('detail')" aria-label="Terug">‹</button>
     <h1>Deel resultaten</h1>
   </div>
   <p style="color:#8e8e93;font-size:14px;margin-bottom:8px">Kopieer en plak in de Claude chat:</p>
@@ -436,22 +443,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- VOEDING VIEW -->
 <div id="voeding" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('home')">&#8249;</button>
+    <button class="back-btn" onclick="showView('home')" aria-label="Terug">‹</button>
     <h1>Voeding</h1>
-    <button class="header-action" onclick="loadNutritionDashboard()" title="Vernieuwen">↻</button>
+    <!-- Item #26: refresh-icoon weg — PTR / view-switch herlaadt al -->
   </div>
 
   <!-- Day-type selector + body-meting + activity -->
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
     <div class="nutr-daytype" id="nutrDayType" style="flex:1 1 100%;margin-bottom:0">
-      <button data-dt="training" onclick="setDayType('training')">Training</button>
-      <button data-dt="rest"     onclick="setDayType('rest')">Rust</button>
-      <button data-dt="weekend"  onclick="setDayType('weekend')">Weekend</button>
+      <button data-dt="training" onclick="setDayType('training')">💪 Training</button>
+      <button data-dt="rest"     onclick="setDayType('rest')">😴 Rust</button>
+      <button data-dt="weekend"  onclick="setDayType('weekend')">🍷 Weekend</button>
       <button data-dt="refeed"   onclick="setDayType('refeed')" title="1x/wk: TDEE kcal, KH-heavy — voor leptine/T3-behoud in cut">🍝 Refeed</button>
     </div>
-    <button class="body-btn" onclick="openBodyModal()" title="Update lichaamsmeting">📊 Meting</button>
-    <button class="body-btn" onclick="openActivityModal()" title="Verbrandingscorrectie via Apple Conditie">🔥 Activiteit</button>
-    <button class="body-btn" onclick="openHydrationModal()" title="Water + natrium loggen">💧 Hydratie</button>
+    <button class="body-btn" onclick="openBodyModal()" aria-label="Update lichaamsmeting" title="Update lichaamsmeting">📊 Meting</button>
+    <button class="body-btn" onclick="openActivityModal()" aria-label="Verbrandingscorrectie via Apple Conditie" title="Verbrandingscorrectie via Apple Conditie">🔥 Activiteit</button>
+    <button class="body-btn" onclick="openHydrationModal()" aria-label="Water en natrium loggen" title="Water + natrium loggen">💧 Hydratie</button>
   </div>
 
   <!-- Favorites (top picks last 30d) -->
@@ -500,12 +507,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     </div>
     <div id="nutrInputPhoto" style="display:none">
       <label class="nutr-photo-btn">
-        📷 Kies foto<input type="file" accept="image/*" capture="environment" style="display:none" id="nutrPhotoFile" onchange="onPhotoSelected(event)">
+        📷 Kies foto<input type="file" accept="image/*"  style="display:none" id="nutrPhotoFile" onchange="onPhotoSelected(event)">
       </label>
-      <img id="nutrPhotoPreview" class="nutr-photo-preview" style="display:none">
+      <img id="nutrPhotoPreview" class="nutr-photo-preview" style="display:none" alt="">
       <textarea class="nutr-textarea" id="nutrPhotoText" placeholder="Optionele toelichting bij de foto..." style="min-height:40px"></textarea>
     </div>
-    <button class="btn btn-blue" style="margin-top:10px" onclick="parseNutritionInput()" id="nutrParseBtn">Parseren</button>
+    <button class="btn btn-blue" style="margin-top:10px" onclick="parseNutritionInput()" id="nutrParseBtn">Analyseren</button>
   </div>
 
   <!-- Parse preview -->
@@ -521,7 +528,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 
   <!-- Today's entries -->
   <div style="font-size:14px;color:#8e8e93;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px">Vandaag</div>
-  <div id="nutrEntries"><div class="nutr-empty">Nog niets gelogd vandaag.</div></div>
+  <div id="nutrEntries"><div class="nutr-empty">Nog niets gelogd vandaag. Begin met je ontbijt ↓</div></div>
 
   <!-- Trends -->
   <div class="trends-section">
@@ -556,7 +563,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     </div>
     <div class="bm-field">
       <label>Notities</label>
-      <input type="text" id="hydNotes" placeholder="Bv. zoute snack avond, weinig water ochtend">
+      <input type="text" id="hydNotes" placeholder="Bijv. zoute snack avond, weinig water ochtend">
     </div>
     <div class="bm-row">
       <button class="btn btn-outline" onclick="closeHydrationModal()">Annuleer</button>
@@ -573,9 +580,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 
     <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
       <label class="nutr-photo-btn" style="background:#ff9500">
-        📷 Upload Apple Conditie<input type="file" accept="image/*" capture="environment" style="display:none" id="actPhotoFile" onchange="onActPhotoSelected(event)">
+        📷 Upload Apple Conditie<input type="file" accept="image/*"  style="display:none" id="actPhotoFile" onchange="onActPhotoSelected(event)">
       </label>
-      <img id="actPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px">
+      <img id="actPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px" alt="">
       <div id="actParseStatus" style="font-size:12px;margin-top:6px"></div>
     </div>
 
@@ -598,10 +605,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <!-- Photo upload (NEW) -->
     <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
       <label class="nutr-photo-btn" style="background:#0a84ff">
-        📷 Upload Fitdays-screenshot<input type="file" accept="image/*" capture="environment" style="display:none" id="bmPhotoFile" onchange="onBmPhotoSelected(event)">
+        📷 Upload Fitdays-screenshot<input type="file" accept="image/*"  style="display:none" id="bmPhotoFile" onchange="onBmPhotoSelected(event)">
       </label>
-      <div style="font-size:11px;color:#8e8e93;margin-top:6px">Of vul hieronder handmatig in</div>
-      <img id="bmPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px">
+      <div style="font-size:11px;color:#8e8e93;margin:8px 0;text-align:center;border-top:1px solid #2c2c2e;padding-top:8px">── of vul hieronder handmatig in ──</div>
+      <img id="bmPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px" alt="">
       <div id="bmParseStatus" style="font-size:12px;margin-top:6px"></div>
     </div>
 
@@ -619,7 +626,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     </div>
     <div class="bm-field">
       <label>Notities (optioneel)</label>
-      <input type="text" id="bmNotes" placeholder="Bv. nuchter, schone meting...">
+      <input type="text" id="bmNotes" placeholder="Bijv. nuchter, schone meting...">
     </div>
 
     <!-- Parsed extras preview (auto-saved bij Opslaan) -->
@@ -1482,9 +1489,27 @@ async function api(path, opts = {}) {
   }
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-  const res = await fetch(API_BASE + path, { ...opts, headers });
-  if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  // Item #11: AbortController met 15s timeout (anders hangt save oneindig op slecht netwerk)
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), 15000);
+  let res;
+  try {
+    res = await fetch(API_BASE + path, { ...opts, headers, signal: ctrl.signal });
+  } finally {
+    clearTimeout(tid);
+  }
+  if (res.status === 401) {
+    // Item #19: toast vóór logout zodat user weet wat er gebeurt
+    if (typeof showToast === 'function') showToast('Sessie verlopen — log opnieuw in');
+    logout();
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) {
+    // Item #12: extract backend-detail i.p.v. alleen status
+    let detail = '';
+    try { const body = await res.json(); detail = body.detail || ''; } catch(_) {}
+    throw new Error(detail || `API ${res.status}`);
+  }
   if (res.status === 204) return null;
   return res.json();
 }
@@ -1493,6 +1518,13 @@ function logout() {
   authToken = null; authUser = null; cloudSchemas = null; cloudMode = false;
   localStorage.removeItem('gym_token');
   localStorage.removeItem('gym_auth_user');
+  // Item #22: flush drafts + IDB-queue (cross-user JWT-leak + draft-confusie fix)
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('gym_draft_')).forEach(k => localStorage.removeItem(k));
+  } catch(_) {}
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    try { navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_QUEUE' }); } catch(_) {}
+  }
   showView('login');
   renderLoginUsers();
 }
@@ -2012,13 +2044,31 @@ async function flushDraft() {
   await swRequest({ type: 'DRAFT_SAVE', draft });
 }
 
+// Item #23: TTL for localStorage drafts (7d). Older drafts get dropped — vermijdt
+// dat een orphan-draft uit de oude bug-period nog opduikt na 3 maanden.
+const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 async function loadDraft(schemaKey) {
   const id = _draftId(schemaKey);
   const swRes = await swRequest({ type: 'DRAFT_LOAD', id });
-  if (swRes && swRes.draft) return swRes.draft;
+  if (swRes && swRes.draft) {
+    const ts = swRes.draft.startedAt || swRes.draft.savedAt;
+    if (ts && (Date.now() - ts) > DRAFT_TTL_MS) {
+      await clearDraft(schemaKey);
+      return null;
+    }
+    return swRes.draft;
+  }
   try {
     const raw = localStorage.getItem('gym_draft_' + id);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    const ts = d.startedAt || d.savedAt;
+    if (ts && (Date.now() - ts) > DRAFT_TTL_MS) {
+      localStorage.removeItem('gym_draft_' + id);
+      return null;
+    }
+    return d;
   } catch { return null; }
 }
 
@@ -2234,12 +2284,14 @@ async function saveWorkout() {
       await clearDraft(savedSchema);
       resetWorkoutState();
       showView('home');
+      // Item #28: refresh stats-bar zodat "Vandaag" / "Deze week" direct kloppen.
+      try { await updateStats(); } catch(_) {}
       showWorkoutEvaluation(cloudResult.id, s.name);
     } else {
       showToast('Opgeslagen (lokaal)');
       await clearDraft(savedSchema);
       resetWorkoutState();
-      setTimeout(() => showView('home'), 800);
+      setTimeout(() => { showView('home'); updateStats(); }, 800);
     }
   } finally {
     _saveInProgress = false;
@@ -2416,7 +2468,7 @@ function showDetail(index, workouts) {
 
 // === DELETE ===
 async function deleteWorkout() {
-  if (!confirm('Workout verwijderen?')) return;
+  if (!confirm('Workout permanent verwijderen?')) return;
   if (cloudMode && viewingWorkout && viewingWorkout._cloudId) {
     try {
       await api('/api/workouts/' + viewingWorkout._cloudId, { method: 'DELETE' });
@@ -2758,11 +2810,15 @@ function copyToClipboard() {
 }
 
 // === TOAST ===
-function showToast(msg) {
+// Item #30: dynamic timeout. Default 2000ms; longer for long messages,
+// caller can override. Min 1500ms / max 5000ms.
+function showToast(msg, ms) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  const len = (msg || '').length;
+  const dynamic = Math.max(1500, Math.min(5000, 1500 + Math.floor(len * 50)));
+  setTimeout(() => t.classList.remove('show'), ms || dynamic);
 }
 
 // === REFRESH ===
@@ -2830,6 +2886,8 @@ function _detectDayType(iso) {
 
 function setDayType(dt) {
   nutrCurrentDayType = dt;
+  // Item #24: parse-preview heeft stale meal-context bij wissel — clear hem
+  if (typeof nutrParsePreview !== 'undefined' && nutrParsePreview) cancelParse();
   document.querySelectorAll('#nutrDayType button').forEach(b => {
     b.classList.toggle('active', b.dataset.dt === dt);
   });
@@ -2848,7 +2906,7 @@ async function loadNutritionDashboard() {
     renderNutritionDashboard(r);
   } catch (e) {
     console.error('Nutrition dashboard load failed', e);
-    showToast('Voeding-data niet geladen — offline?');
+    showToast('Voeding kon niet laden — ben je offline?');
   }
 }
 
@@ -2902,7 +2960,7 @@ function renderNutritionDashboard(d) {
   const list = document.getElementById('nutrEntries');
   list.textContent = '';
   if (!d.entries.length) {
-    list.appendChild(_el('div', {class:'nutr-empty'}, 'Nog niets gelogd vandaag.'));
+    list.appendChild(_el('div', {class:'nutr-empty'}, 'Nog niets gelogd vandaag. Begin met je ontbijt ↓'));
     return;
   }
   d.entries.forEach(e => {
@@ -2938,6 +2996,9 @@ function switchNutrInput(mode) {
 function onPhotoSelected(ev) {
   const file = ev.target.files[0];
   if (!file) return;
+  // Item #21: file size + MIME pre-check (geen 50MB HEIC die UI bevriest)
+  if (!file.type.startsWith('image/')) { showToast('Geen geldige afbeelding'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('Bestand te groot (max 10MB)'); return; }
   const img = new Image();
   img.onload = () => {
     const max = 640;
@@ -2952,6 +3013,7 @@ function onPhotoSelected(ev) {
     const preview = document.getElementById('nutrPhotoPreview');
     preview.src = dataUrl;
     preview.style.display = 'block';
+    URL.revokeObjectURL(img.src);  // Item #13: memory-leak fix
   };
   img.src = URL.createObjectURL(file);
 }
@@ -2961,14 +3023,14 @@ async function parseNutritionInput() {
   let image_b64 = null;
   if (nutrInputMode === 'text') {
     text = document.getElementById('nutrText').value.trim();
-    if (!text) { showToast('Vul iets in om te parsen'); return; }
+    if (!text) { showToast('Vul iets in om te analyseren'); return; }
   } else {
     if (!nutrPhotoB64) { showToast('Kies eerst een foto'); return; }
     image_b64 = nutrPhotoB64;
     text = document.getElementById('nutrPhotoText').value.trim();
   }
   const btn = document.getElementById('nutrParseBtn');
-  btn.disabled = true; btn.textContent = 'Bezig met parsen…';
+  btn.disabled = true; btn.textContent = 'Bezig met analyseren…';
   try {
     const result = await api('/api/nutrition/parse', {
       method: 'POST',
@@ -2980,16 +3042,18 @@ async function parseNutritionInput() {
     renderParsePreview(result);
   } catch (e) {
     console.error('parse failed', e);
-    showToast('Parsen mislukt: ' + (e.message || e));
+    console.error('parse error', e); showToast('Analyse mislukt — probeer opnieuw');
   } finally {
-    btn.disabled = false; btn.textContent = 'Parseren';
+    btn.disabled = false; btn.textContent = 'Analyseren';
   }
 }
 
 function renderParsePreview(p) {
   const box = document.getElementById('nutrParseResult');
   box.style.display = 'block';
-  document.getElementById('nutrParseConf').textContent = '(' + p.overall_confidence + ')';
+  // Item #9: confidence NL-map (was "(high/medium/low)" Engels)
+  const _confNL = {high: 'hoog', medium: 'middel', low: 'laag'};
+  document.getElementById('nutrParseConf').textContent = '(' + (_confNL[p.overall_confidence] || p.overall_confidence) + ')';
   // Items — safe DOM
   const items = document.getElementById('nutrParseItems');
   items.textContent = '';
@@ -3004,7 +3068,7 @@ function renderParsePreview(p) {
         Math.round(it.kcal) + 'k E' + Math.round(it.protein_g) +
         ' KH' + Math.round(it.carbs_g) + ' V' + Math.round(it.fat_g)),
       _el('span', {class:'parse-item-conf ' + (it.confidence || 'medium')},
-        (it.confidence || 'med').slice(0,3)),
+        ({high:'H', medium:'M', low:'L'}[it.confidence] || 'M')),
       _el('button', {class:'parse-item-del', title:'Verwijder', onclick: () => removeParseItem(i)}, '✕')
     );
     items.appendChild(row);
@@ -3071,7 +3135,7 @@ async function saveIntake() {
     await loadNutritionDashboard();
   } catch (e) {
     console.error('save intake failed', e);
-    showToast('Opslaan mislukt: ' + (e.message || e));
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
   }
 }
 
@@ -3117,7 +3181,7 @@ async function saveHydration() {
     closeHydrationModal();
   } catch (e) {
     console.error('saveHydration failed', e);
-    showToast('Opslaan mislukt: ' + (e.message || e));
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
   }
 }
 
@@ -3149,8 +3213,9 @@ function onActPhotoSelected(ev) {
     const preview = document.getElementById('actPhotoPreview');
     preview.src = dataUrl;
     preview.style.display = 'block';
+    URL.revokeObjectURL(img.src);  // Item #13
     const status = document.getElementById('actParseStatus');
-    status.textContent = '🔍 Claude leest je Apple Conditie...';
+    status.textContent = '🔍 Foto wordt geanalyseerd…';
     status.style.color = '#ff9500';
 
     try {
@@ -3158,14 +3223,15 @@ function onActPhotoSelected(ev) {
         method: 'POST',
         body: JSON.stringify({image_b64: b64})
       });
-      status.textContent = '✓ Verwerkt (confidence: ' + r.confidence + ') · target aangepast en opgeslagen';
+      // Item #14: NL confidence-label i.p.v. "(high)"
+      const _conf = {high:'hoog', medium:'middel', low:'laag'}[r.confidence] || r.confidence;
+      status.textContent = '✓ Klaar (betrouwbaarheid: ' + _conf + ') — doel aangepast';
       status.style.color = '#30d158';
       renderActivityResult(r);
-      // refresh dashboard to show new target
       await loadNutritionDashboard();
     } catch (e) {
       console.error('activity correction failed', e);
-      status.textContent = '✗ Mislukt: ' + (e.message || e);
+      status.textContent = '✗ Lukt niet — controleer de foto en probeer opnieuw';
       status.style.color = '#ff453a';
     }
   };
@@ -3222,11 +3288,19 @@ function openBodyModal() {
   bmParseSource = 'manual';
   document.getElementById('bmModal').classList.add('open');
 }
-function closeBodyModal() { document.getElementById('bmModal').classList.remove('open'); }
+function closeBodyModal() {
+  document.getElementById('bmModal').classList.remove('open');
+  // Item #19: reset state op close (anders lekt naar volgende open)
+  bmParsedExtras = null;
+  bmParseSource = 'manual';
+}
 
 function onBmPhotoSelected(ev) {
   const file = ev.target.files[0];
   if (!file) return;
+  // Item #21: file size + MIME pre-check
+  if (!file.type.startsWith('image/')) { showToast('Geen geldige afbeelding'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('Bestand te groot (max 10MB)'); return; }
   const img = new Image();
   img.onload = async () => {
     // resize naar max 1024px (Fitdays-screenshots zijn vaak hoger)
@@ -3238,6 +3312,7 @@ function onBmPhotoSelected(ev) {
     c.width = w; c.height = h;
     c.getContext('2d').drawImage(img, 0, 0, w, h);
     const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    URL.revokeObjectURL(img.src);  // Item #13
     const b64 = dataUrl.split(',', 2)[1];
 
     const preview = document.getElementById('bmPhotoPreview');
@@ -3245,7 +3320,7 @@ function onBmPhotoSelected(ev) {
     preview.style.display = 'block';
 
     const status = document.getElementById('bmParseStatus');
-    status.textContent = '🔍 Claude leest je screenshot...';
+    status.textContent = '🔍 Foto wordt geanalyseerd…';
     status.style.color = '#0a84ff';
 
     try {
@@ -3263,11 +3338,12 @@ function onBmPhotoSelected(ev) {
       bmParseSource = 'fitdays-vision';
       // Show extras preview
       renderBmExtras(p);
-      status.textContent = '✓ Geparseerd (confidence: ' + res.confidence + ') — controleer + klik Opslaan';
+      const _conf = {high:'hoog', medium:'middel', low:'laag'}[res.confidence] || res.confidence;
+      status.textContent = '✓ Uitgelezen (betrouwbaarheid: ' + _conf + ') — controleer en klik Opslaan';
       status.style.color = '#30d158';
     } catch (e) {
       console.error('measurement parse failed', e);
-      status.textContent = '✗ Parsen mislukt: ' + (e.message || e);
+      status.textContent = '✗ ' + (e.message || 'Analyse mislukt — probeer opnieuw');
       status.style.color = '#ff453a';
     }
   };
@@ -3277,6 +3353,8 @@ function onBmPhotoSelected(ev) {
 function renderBmExtras(p) {
   const list = document.getElementById('bmExtrasList');
   list.textContent = '';
+  // Item #20: hide preview vóór early-return (anders blijft oude inhoud zichtbaar)
+  document.getElementById('bmExtrasPreview').style.display = 'none';
   const fields = [
     ['Spiermassa',     p.spiermassa_kg,    'kg'],
     ['Skeletspier',    p.skeletspier_pct,  '%'],
@@ -3330,7 +3408,7 @@ async function saveBodyMeasurement() {
     await loadTrends(_currentTrendsDays);
   } catch (e) {
     console.error('saveBodyMeasurement failed', e);
-    showToast('Opslaan mislukt: ' + (e.message || e));
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
   }
 }
 
@@ -3372,7 +3450,7 @@ async function useFavorite(fav) {
     await loadFavorites();  // bump use_count
   } catch (e) {
     console.error('useFavorite failed', e);
-    showToast('Mislukt: ' + (e.message || e));
+    console.error('error', e); showToast('Actie mislukt — probeer opnieuw');
   }
 }
 
@@ -3528,7 +3606,7 @@ loadNutritionDashboard = async function() {
     _renderTargetBadge(r);
   } catch (e) {
     console.error('Nutrition dashboard load failed', e);
-    showToast('Voeding-data niet geladen — offline?');
+    showToast('Voeding kon niet laden — ben je offline?');
   }
   // sidecar loads (non-blocking)
   loadFavorites();
