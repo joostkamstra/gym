@@ -314,6 +314,20 @@ class ActivityCorrectionRequest(BaseModel):
     date: date_type | None = None  # defaults today
 
 
+class HydrationUpsertRequest(BaseModel):
+    date: date_type | None = None  # default today
+    water_ml: int | None = None
+    sodium_g: float | None = None
+    notes: str | None = None
+
+
+class HydrationResponse(BaseModel):
+    date: date_type
+    water_ml: int | None
+    sodium_g: float | None
+    notes: str | None
+
+
 class ActivityCorrectionResponse(BaseModel):
     date: date_type
     active_kcal: int

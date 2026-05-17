@@ -19,6 +19,11 @@ class User(Base):
     display_name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=True)
     pin_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Demographics (for Mifflin-St Jeor BMR calc)
+    age: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    height_cm: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    gender: Mapped[str | None] = mapped_column(String(1), nullable=True)  # 'M' / 'F'
+    bmr_source: Mapped[str] = mapped_column(String(20), default="mifflin")  # 'mifflin' | 'measurement'
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     schemas: Mapped[list["Schema"]] = relationship(back_populates="user", cascade="all, delete-orphan")
@@ -173,6 +178,19 @@ class BodyMeasurement(Base):
     visceraal_vet: Mapped[float | None] = mapped_column(Float, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     source: Mapped[str] = mapped_column(String(30), default="manual")  # manual / fitdays-import / fitdays-vision
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class DailyHydration(Base):
+    """Water + natrium tracking per dag (UNIQUE per user×date, upsert)."""
+    __tablename__ = "daily_hydration"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    date: Mapped[date_type] = mapped_column(Date, nullable=False)
+    water_ml: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    sodium_g: Mapped[float | None] = mapped_column(Float, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
 

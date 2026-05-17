@@ -14,7 +14,7 @@ from app.config import get_settings
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import BodyMeasurement, DailyTargetOverride, IntakeEntry, NutritionTarget, User
+from app.models import BodyMeasurement, DailyHydration, DailyTargetOverride, IntakeEntry, NutritionTarget, User
 from app.nutrition_ai import parse_activity, parse_intake, parse_measurement
 from app.schemas import (
     ActivityCorrectionRequest,
@@ -22,6 +22,8 @@ from app.schemas import (
     BodyMeasurementCreate,
     BodyMeasurementResponse,
     DayDashboardResponse,
+    HydrationResponse,
+    HydrationUpsertRequest,
     IntakeCreateRequest,
     IntakeEntryResponse,
     MacroTotals,
@@ -75,38 +77,70 @@ async def _latest_measurement(db: AsyncSession, user_id) -> BodyMeasurement | No
     )).scalar_one_or_none()
 
 
-def _smart_target(measurement: BodyMeasurement, day_type: str, cut_deficit_kcal: int = 400) -> tuple[dict, dict]:
-    """Compute daily macro target from latest measurement + dagtype.
+def _mifflin_bmr(weight_kg: float, height_cm: int, age: int, gender: str) -> int:
+    """Mifflin-St Jeor — gevalideerd ±5%, beter dan BIA-BMR."""
+    base = 10 * weight_kg + 6.25 * height_cm - 5 * age
+    return round(base + (5 if (gender or "M").upper() == "M" else -161))
 
-    Returns (target_dict, basis_dict). basis is opaque metadata for UI display.
 
-    Approach:
-    - BMR × 1.3 (light active baseline) = TDEE estimate
-    - Apply cut deficit (kcal/day average across week)
-    - Day-type adjustment: training +100 kcal, rest -100, weekend = base
-    - Eiwit: 2.3 g/kg body weight (training/rest), 2.2 (weekend) — matches MACRO-TARGETS.md
-    - Vet: 0.7 g/kg (training, hogere KH compenseert) of 0.8 g/kg (rest/weekend)
-    - KH: residual after eiwit + vet
+def _smart_target(
+    measurement: BodyMeasurement, day_type: str,
+    user: User | None = None,
+    activity_factor: float = 1.45,
+    deficit_pct: float = 0.15,
+    max_deficit_kcal: int = 500,
+) -> tuple[dict, dict]:
+    """Compute daily macro target.
+
+    Post-review (17 mei) updates:
+    - Activity factor 1.3 → 1.45 (Joost = kantoor + 10k+ stappen + 2x kracht)
+    - BMR-anker = Mifflin-St Jeor by default (BIA-BMR is ±7% off — Hannan 2024)
+      Tenzij user.bmr_source == 'measurement' EN measurement.bmr aanwezig
+    - Deficit dynamic = min(deficit_pct × TDEE, max_deficit_kcal)
+      Lost het "vaste 400 op alle TDEEs" inconsistentie-probleem op
+    - Carb-cycling ±250 (was ±100 = cosmetisch)
+    - Refeed day-type: kcal = TDEE (geen deficit), vet 0.5 g/kg, KH absorbeert rest
     """
-    bmr = measurement.bmr
     weight = measurement.weight_kg
-    if not bmr:
-        # Mifflin-St Jeor fallback (men): BMR = 10*kg + 6.25*cm - 5*age + 5
-        # Use Joost's defaults: 183cm, 39y → easily 50% wrong for general use, so prefer measured BMR
-        bmr = round(10 * weight + 6.25 * 183 - 5 * 39 + 5)
 
-    tdee = round(bmr * 1.3)
-    base_kcal = tdee - cut_deficit_kcal  # weekly average
+    # BMR-anker bepalen
+    use_mifflin = True
+    if user and user.bmr_source == "measurement" and measurement.bmr:
+        bmr = measurement.bmr
+        bmr_source = "measurement"
+        use_mifflin = False
+    elif user and user.age and user.height_cm:
+        bmr = _mifflin_bmr(weight, user.height_cm, user.age, user.gender or "M")
+        bmr_source = "mifflin"
+    elif measurement.bmr:
+        bmr = measurement.bmr
+        bmr_source = "measurement-fallback"
+    else:
+        # Last resort: hardcoded defaults for Joost
+        bmr = _mifflin_bmr(weight, 183, 39, "M")
+        bmr_source = "mifflin-default"
+
+    tdee = round(bmr * activity_factor)
+    # Dynamic deficit (refeed = no deficit)
+    if day_type == "refeed":
+        deficit = 0
+    else:
+        deficit = min(round(deficit_pct * tdee), max_deficit_kcal)
+    base_kcal = tdee - deficit
 
     if day_type == "training":
-        kcal = base_kcal + 100
+        kcal = base_kcal + 250            # was +100 — meaningful cycling
         protein_per_kg = 2.3
         fat_per_kg = 0.7
     elif day_type == "rest":
-        kcal = base_kcal - 100
+        kcal = base_kcal - 250            # was -100
         protein_per_kg = 2.3
         fat_per_kg = 0.8
-    else:  # weekend (and any unknown)
+    elif day_type == "refeed":
+        kcal = base_kcal                  # = TDEE, geen deficit
+        protein_per_kg = 2.2              # houdt eiwit gelijk aan weekend
+        fat_per_kg = 0.5                  # minimum hormonaal — laat KH alle ruimte
+    else:  # weekend / unknown
         kcal = base_kcal
         protein_per_kg = 2.2
         fat_per_kg = 0.8
@@ -120,13 +154,15 @@ def _smart_target(measurement: BodyMeasurement, day_type: str, cut_deficit_kcal:
     target = {"kcal": kcal, "protein_g": protein_g, "carbs_g": carbs_g, "fat_g": fat_g}
     basis = {
         "bmr": bmr,
+        "bmr_source": bmr_source,
         "tdee": tdee,
         "weight_kg": weight,
         "body_fat_pct": measurement.body_fat_pct,
         "lean_mass_kg": measurement.lean_mass_kg,
         "measurement_date": str(measurement.date),
-        "cut_deficit_kcal": cut_deficit_kcal,
-        "activity_factor": 1.3,
+        "deficit_kcal": deficit,
+        "deficit_pct": round(deficit / tdee * 100, 1) if tdee else 0,
+        "activity_factor": activity_factor,
         "protein_per_kg": protein_per_kg,
         "fat_per_kg": fat_per_kg,
     }
@@ -324,7 +360,7 @@ async def dashboard(
     if mode == "smart" and not target_response:
         m = await _latest_measurement(db, user.id)
         if m:
-            tgt, basis = _smart_target(m, dt)
+            tgt, basis = _smart_target(m, dt, user=user)
             target_response = TargetResponse(
                 day_type=dt, kcal=tgt["kcal"], protein_g=tgt["protein_g"],
                 carbs_g=tgt["carbs_g"], fat_g=tgt["fat_g"],
@@ -451,18 +487,19 @@ async def activity_correction(
     target_date = req.date or _date.today()
     dt = _detect_day_type(target_date)
 
-    # Need a body measurement for BMR
+    # Need a body measurement (BMR optioneel — Mifflin werkt zonder)
     m = await _latest_measurement(db, user.id)
-    if not m or not m.bmr:
-        raise HTTPException(status_code=400, detail="Geen body measurement met BMR — eerst /measurements POST")
-    bmr = m.bmr
+    if not m:
+        raise HTTPException(status_code=400, detail="Geen body measurement — eerst /measurements POST")
 
-    # Compute baseline (smart) target voor vergelijking
-    baseline_tgt, _ = _smart_target(m, dt)
-    cut_deficit = 400  # match _smart_target default
+    # Compute baseline (smart) target voor vergelijking — same logic as dashboard
+    baseline_tgt, baseline_basis = _smart_target(m, dt, user=user)
+    bmr = baseline_basis["bmr"]
 
     # Adjusted: replace activity-factor with actual active_kcal
     actual_tdee = bmr + active_kcal
+    # Dynamic deficit — same pct als baseline, capped (consistent met _smart_target)
+    cut_deficit = min(round(0.15 * actual_tdee), 500)
     adjusted_kcal = actual_tdee - cut_deficit
 
     # Macros: eiwit + vet blijven gelijk aan baseline (cut-prioriteit), rest naar KH
@@ -474,11 +511,13 @@ async def activity_correction(
 
     basis = {
         "bmr": bmr,
+        "bmr_source": baseline_basis.get("bmr_source", "?"),
         "actual_tdee": actual_tdee,
         "active_kcal": active_kcal,
         "exercise_min": parsed.get("exercise_min"),
         "standing_hours": parsed.get("standing_hours"),
         "cut_deficit_kcal": cut_deficit,
+        "deficit_pct": round(cut_deficit / actual_tdee * 100, 1),
         "baseline_kcal": baseline_tgt["kcal"],
         "extra_vs_baseline": adjusted_kcal - baseline_tgt["kcal"],
         "day_type": dt,
@@ -667,6 +706,49 @@ async def favorites(
     ]
 
 
+# === HYDRATION (water + natrium) ===
+
+@router.put("/hydration", response_model=HydrationResponse)
+async def upsert_hydration(
+    req: HydrationUpsertRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Upsert water + natrium voor een specifieke dag (uniek per user×date)."""
+    from datetime import date as _date
+    target_date = req.date or _date.today()
+    existing = (await db.execute(
+        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == target_date)
+    )).scalar_one_or_none()
+    if existing:
+        if req.water_ml is not None: existing.water_ml = req.water_ml
+        if req.sodium_g is not None: existing.sodium_g = req.sodium_g
+        if req.notes is not None: existing.notes = req.notes
+        h = existing
+    else:
+        h = DailyHydration(
+            user_id=user.id, date=target_date,
+            water_ml=req.water_ml, sodium_g=req.sodium_g, notes=req.notes,
+        )
+        db.add(h)
+    await db.flush()
+    return HydrationResponse(date=h.date, water_ml=h.water_ml, sodium_g=h.sodium_g, notes=h.notes)
+
+
+@router.get("/hydration", response_model=HydrationResponse | None)
+async def get_hydration(
+    date: date_type = Query(...),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    h = (await db.execute(
+        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == date)
+    )).scalar_one_or_none()
+    if not h:
+        return None
+    return HydrationResponse(date=h.date, water_ml=h.water_ml, sodium_g=h.sodium_g, notes=h.notes)
+
+
 # === REMINDERS (Phase 5 — Telegram-based, HTTPS-free MVP) ===
 
 # Hour-based rules (CEST). Each (hour, condition_fn, message_fn) is checked once
@@ -683,8 +765,13 @@ def _reminder_rules():
         (19, "diner-missing",
          lambda entries, t, tgt: not any(e.meal_type == "diner" for e in entries),
          "🍝 Diner-tijd — vergeet niet te loggen."),
+        # Vroege waarschuwing 16:00 (Aragon-Schoenfeld: ≥4 MPS-doses van ~32g)
+        (16, "eiwit-early-warning",
+         lambda entries, t, tgt: (tgt["protein_g"] - t["protein_g"]) > 60,
+         lambda entries, t, tgt: f"⏰ Eiwit-status 16:00 — nog {round(tgt['protein_g'] - t['protein_g'])}g te gaan (gegeten: {round(t['protein_g'])}g / {tgt['protein_g']}g). Plan eiwit-rijke maaltijden."),
+        # Avond-alert 21:00 — 25g = 1 MPS-pulse weg (was 40g = 1.5 pulse, agent: te ruim)
         (21, "eiwit-deficit",
-         lambda entries, t, tgt: (tgt["protein_g"] - t["protein_g"]) > 40,
+         lambda entries, t, tgt: (tgt["protein_g"] - t["protein_g"]) > 25,
          lambda entries, t, tgt: f"⚠️ Eiwit-target nog {round(tgt['protein_g'] - t['protein_g'])}g te gaan vandaag (gegeten: {round(t['protein_g'])}g / {tgt['protein_g']}g)."),
     ]
 

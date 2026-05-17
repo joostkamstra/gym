@@ -441,15 +441,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <button class="header-action" onclick="loadNutritionDashboard()" title="Vernieuwen">↻</button>
   </div>
 
-  <!-- Day-type selector + body-meting -->
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-    <div class="nutr-daytype" id="nutrDayType" style="flex:1;margin-bottom:0">
+  <!-- Day-type selector + body-meting + activity -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+    <div class="nutr-daytype" id="nutrDayType" style="flex:1 1 100%;margin-bottom:0">
       <button data-dt="training" onclick="setDayType('training')">Training</button>
       <button data-dt="rest"     onclick="setDayType('rest')">Rust</button>
       <button data-dt="weekend"  onclick="setDayType('weekend')">Weekend</button>
+      <button data-dt="refeed"   onclick="setDayType('refeed')" title="1x/wk: TDEE kcal, KH-heavy — voor leptine/T3-behoud in cut">🍝 Refeed</button>
     </div>
     <button class="body-btn" onclick="openBodyModal()" title="Update lichaamsmeting">📊 Meting</button>
     <button class="body-btn" onclick="openActivityModal()" title="Verbrandingscorrectie via Apple Conditie">🔥 Activiteit</button>
+    <button class="body-btn" onclick="openHydrationModal()" title="Water + natrium loggen">💧 Hydratie</button>
   </div>
 
   <!-- Favorites (top picks last 30d) -->
@@ -536,6 +538,30 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
     <div style="font-size:11px;color:#8e8e93;margin:12px 0 2px">Gewicht (kg)</div>
     <svg class="trends-chart" id="trendsWeightChart" style="height:90px"></svg>
     <div class="trends-legend" id="trendsWeightLegend"></div>
+  </div>
+</div>
+
+<!-- HYDRATION MODAL -->
+<div class="bm-modal" id="hydModal" onclick="if(event.target===this) closeHydrationModal()">
+  <div class="bm-sheet">
+    <h2>💧 Hydratie vandaag</h2>
+    <div style="font-size:12px;color:#8e8e93;margin-bottom:12px">Belangrijk in cut-eindfase — natrium/water-fluctuaties verstoren de BIA-meting. Doel: 3-3,5 L water · 4-5g natrium.</div>
+    <div class="bm-field">
+      <label>Water (ml)</label>
+      <input type="number" id="hydWater" step="50" placeholder="3000">
+    </div>
+    <div class="bm-field">
+      <label>Natrium (g)</label>
+      <input type="number" id="hydSodium" step="0.1" placeholder="4.5">
+    </div>
+    <div class="bm-field">
+      <label>Notities</label>
+      <input type="text" id="hydNotes" placeholder="Bv. zoute snack avond, weinig water ochtend">
+    </div>
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeHydrationModal()">Annuleer</button>
+      <button class="btn btn-green" onclick="saveHydration()">Opslaan</button>
+    </div>
   </div>
 </div>
 
@@ -2794,6 +2820,7 @@ function _todayISO() {
 }
 
 function _detectDayType(iso) {
+  // Auto-detect baseline; user kan altijd handmatig refeed/other kiezen
   const d = new Date(iso + 'T00:00:00');
   const wd = d.getDay();
   if (wd === 0 || wd === 6) return 'weekend';
@@ -3057,6 +3084,40 @@ async function deleteIntake(id) {
   } catch (e) {
     console.error('delete failed', e);
     showToast('Verwijderen mislukt');
+  }
+}
+
+// === Hydration (water + natrium) ===
+async function openHydrationModal() {
+  document.getElementById('hydWater').value = '';
+  document.getElementById('hydSodium').value = '';
+  document.getElementById('hydNotes').value = '';
+  document.getElementById('hydModal').classList.add('open');
+  // Pre-fill if already logged today
+  try {
+    const h = await api('/api/nutrition/hydration?date=' + (nutrCurrentDate || _todayISO()));
+    if (h) {
+      if (h.water_ml) document.getElementById('hydWater').value = h.water_ml;
+      if (h.sodium_g) document.getElementById('hydSodium').value = h.sodium_g;
+      if (h.notes) document.getElementById('hydNotes').value = h.notes;
+    }
+  } catch (e) { /* nieuwe dag of geen entry, prima */ }
+}
+function closeHydrationModal() { document.getElementById('hydModal').classList.remove('open'); }
+async function saveHydration() {
+  const w = parseInt(document.getElementById('hydWater').value) || null;
+  const na = parseFloat(document.getElementById('hydSodium').value) || null;
+  const notes = document.getElementById('hydNotes').value.trim() || null;
+  if (!w && !na && !notes) { showToast('Vul iets in'); return; }
+  try {
+    await api('/api/nutrition/hydration', {method: 'PUT', body: JSON.stringify({
+      date: nutrCurrentDate || _todayISO(), water_ml: w, sodium_g: na, notes,
+    })});
+    showToast('💧 Opgeslagen!');
+    closeHydrationModal();
+  } catch (e) {
+    console.error('saveHydration failed', e);
+    showToast('Opslaan mislukt: ' + (e.message || e));
   }
 }
 

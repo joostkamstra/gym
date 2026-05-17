@@ -1,7 +1,7 @@
-// v12 - voeding: verbrandingscorrectie via Apple Conditie screenshot
-const CACHE_NAME = 'gym-v12';
+// v13 - voeding review-aanpassingen: Mifflin BMR + dynamic deficit + refeed + carb-cycling ±250 + hydration
+const CACHE_NAME = 'gym-v13';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
-const API_CACHE = 'gym-api-v12';
+const API_CACHE = 'gym-api-v13';
 const DB_NAME = 'gym-offline';
 const DB_VERSION = 2;
 const STORE_NAME = 'workout-queue';
