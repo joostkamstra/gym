@@ -6,8 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#000">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fitness">
 <link rel="manifest" href="manifest.json">
-<title>Gym Tracker</title>
+<title>Fitness Hub</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background:#000;color:#fff;
@@ -268,6 +273,102 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .eval-change.stable{color:#636366}
 .eval-change.new{color:#0a84ff}
 
+/* === VOEDING === */
+.nutr-summary{background:#1c1c1e;border-radius:12px;padding:16px;margin-bottom:16px}
+.nutr-kcal{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.nutr-kcal-big{font-size:28px;font-weight:700}
+.nutr-kcal-target{font-size:14px;color:#8e8e93}
+.macro-bar{height:8px;background:#2c2c2e;border-radius:4px;overflow:hidden;margin:4px 0 12px}
+.macro-bar-fill{height:100%;background:#30d158;transition:width .3s}
+.macro-bar-fill.over{background:#ff453a}
+.macro-bar-fill.near{background:#ffd60a}
+.nutr-macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.nutr-macro{background:#2c2c2e;border-radius:8px;padding:8px 10px}
+.nutr-macro-label{font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.5px}
+.nutr-macro-val{font-size:15px;font-weight:600;margin-top:2px}
+.nutr-macro-target{font-size:11px;color:#8e8e93}
+.nutr-daytype{display:flex;gap:6px;margin-bottom:14px}
+.nutr-daytype button{flex:1;padding:8px;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:8px;color:#fff;font-size:13px;cursor:pointer}
+.nutr-daytype button.active{background:#0a84ff;border-color:#0a84ff}
+.nutr-input-card{background:#1c1c1e;border-radius:12px;padding:16px;margin-bottom:16px}
+.nutr-input-tabs{display:flex;gap:6px;margin-bottom:10px}
+.nutr-input-tabs button{padding:6px 12px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:13px;cursor:pointer}
+.nutr-input-tabs button.active{background:#0a84ff}
+.nutr-textarea{width:100%;background:#000;border:1px solid #2c2c2e;border-radius:8px;color:#fff;padding:10px;font-size:14px;font-family:inherit;min-height:60px;resize:vertical}
+.nutr-photo-btn{display:inline-block;padding:10px 16px;background:#2c2c2e;color:#fff;border-radius:8px;cursor:pointer;font-size:14px;margin-bottom:8px}
+.nutr-photo-preview{max-width:200px;border-radius:8px;margin:8px 0;display:block}
+.nutr-parse-result{background:#1c1c1e;border-radius:12px;padding:16px;margin-bottom:16px;border-left:4px solid #0a84ff}
+.nutr-parse-result h3{font-size:14px;margin-bottom:10px;color:#8e8e93}
+.parse-item{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #2c2c2e}
+.parse-item:last-child{border-bottom:0}
+.parse-item input{background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:4px 6px;font-size:12px;width:60px;text-align:right}
+.parse-item-name{flex:1;font-size:13px}
+.parse-item-macros{font-size:11px;color:#8e8e93;white-space:nowrap}
+.parse-item-conf{font-size:10px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.parse-item-conf.high{background:#1a3a1f;color:#30d158}
+.parse-item-conf.medium{background:#3a2e1a;color:#ffd60a}
+.parse-item-conf.low{background:#3a1a1a;color:#ff453a}
+.parse-item-del{background:transparent;border:0;color:#ff453a;font-size:18px;cursor:pointer;padding:0 4px}
+.nutr-meal-select{display:flex;gap:6px;margin:10px 0}
+.nutr-meal-select button{flex:1;padding:6px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
+.nutr-meal-select button.active{background:#0a84ff}
+.intake-entry{background:#1c1c1e;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.intake-entry-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.intake-entry-time{font-size:13px;font-weight:600}
+.intake-entry-meal{font-size:11px;color:#8e8e93;text-transform:uppercase}
+.intake-entry-totals{font-size:12px;color:#30d158;margin-top:4px}
+.intake-entry-items{font-size:12px;color:#8e8e93;margin-top:4px}
+.intake-entry-actions{display:flex;gap:8px;margin-top:8px}
+.intake-entry-actions button{flex:1;padding:6px;background:#2c2c2e;border:0;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
+/* Date navigation bar */
+.nutr-datebar{display:flex;align-items:center;gap:8px;margin-bottom:10px;position:relative}
+.nutr-date-arrow{flex:0 0 44px;height:44px;border:none;background:#1c1c1e;color:#fff;border-radius:10px;font-size:22px;font-weight:600;cursor:pointer}
+.nutr-date-arrow:active{background:#2c2c2e}
+.nutr-date-arrow:disabled{opacity:0.35;cursor:not-allowed}
+.nutr-date-label{flex:1;height:44px;border:none;background:#1c1c1e;color:#fff;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer}
+.nutr-date-label.is-today{background:linear-gradient(135deg,#30d158,#0a84ff);color:#fff}
+.nutr-date-label:active{opacity:0.85}
+/* Item #43: respect prefers-reduced-motion (vestibular safety) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+/* Item #46: visible focus voor keyboard-users */
+button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 2px solid #0a84ff; outline-offset: 2px; border-radius: 4px; }
+.nutr-loading{text-align:center;padding:30px;color:#8e8e93}
+.nutr-empty{text-align:center;padding:30px;color:#8e8e93;font-size:14px}
+/* Smart-target badge + basis modal */
+.smart-badge{display:inline-block;padding:2px 8px;background:#0a3a5f;color:#0a84ff;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;margin-left:6px;text-transform:uppercase}
+.smart-badge.manual{background:#3a2a1a;color:#ffd60a}
+.body-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:6px;color:#fff;font-size:12px;cursor:pointer;margin-left:auto}
+/* Favorites */
+.nutr-fav-section{margin-bottom:14px}
+.nutr-fav-label{font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.nutr-fav-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.nutr-fav-card{flex:0 0 auto;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:10px;padding:10px 12px;min-width:140px;max-width:200px;cursor:pointer;transition:background .15s}
+.nutr-fav-card:active{background:#2c2c2e}
+.nutr-fav-name{font-size:12px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nutr-fav-macros{font-size:11px;color:#30d158}
+.nutr-fav-meta{font-size:10px;color:#8e8e93;margin-top:2px}
+/* Trends */
+.trends-section{background:#1c1c1e;border-radius:12px;padding:14px;margin-top:16px}
+.trends-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trends-title{font-size:14px;font-weight:600}
+.trends-tabs{display:flex;gap:4px}
+.trends-tabs button{padding:4px 10px;background:#2c2c2e;border:0;border-radius:5px;color:#fff;font-size:11px;cursor:pointer}
+.trends-tabs button.active{background:#0a84ff}
+.trends-chart{width:100%;height:120px;display:block;margin-top:6px}
+.trends-legend{font-size:10px;color:#8e8e93;margin-top:4px;text-align:center}
+/* Modal voor body meting */
+.bm-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);display:none;align-items:flex-end;z-index:1000}
+.bm-modal.open{display:flex}
+.bm-sheet{background:#1c1c1e;border-radius:16px 16px 0 0;padding:20px;width:100%;max-width:600px;margin:0 auto}
+.bm-sheet h2{font-size:18px;margin-bottom:12px}
+.bm-field{margin-bottom:10px}
+.bm-field label{display:block;font-size:11px;color:#8e8e93;text-transform:uppercase;margin-bottom:4px}
+.bm-field input{width:100%;background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:8px 10px;font-size:14px}
+.bm-row{display:flex;gap:8px;margin-top:12px}
+.bm-row button{flex:1}
+
 </style>
 </head>
 <body>
@@ -276,11 +377,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <div id="login" class="view active">
   <div class="login-wrap">
     <div class="login-icon">🏋️</div>
-    <div class="login-title">Gym Tracker</div>
+    <div class="login-title">Fitness Hub</div>
     <div class="login-subtitle">Kies je profiel en voer je PIN in</div>
     <div class="login-users" id="loginUsers"></div>
     <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6"
-      class="login-input" id="loginPin" placeholder="PIN code"
+      class="login-input" id="loginPin" placeholder="PIN-code"
+      autocomplete="off" autocorrect="off"
       onkeydown="if(event.key==='Enter')doLogin()">
     <div class="login-error" id="loginError"></div>
     <button class="btn btn-green" style="max-width:280px" onclick="doLogin()">Inloggen</button>
@@ -291,9 +393,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <div id="home" class="view">
   <div class="ptr" id="ptr">↓ Pull to refresh</div>
   <div class="header">
-    <h1 id="homeTitle">Gym Tracker</h1>
-    <button class="header-action" onclick="doRefresh()">↻</button>
-    <button class="header-action" onclick="logout()" title="Uitloggen">⏻</button>
+    <h1 id="homeTitle">Fitness Hub</h1>
+    <button class="header-action" onclick="doRefresh()" aria-label="Vernieuwen">↻</button>
+    <button class="header-action" onclick="logout()" title="Uitloggen" aria-label="Uitloggen">⏻</button>
   </div>
   <div class="stats-bar" id="statsBar">
     <div><div class="stat-val" id="statWorkouts">0</div><div class="stat-label">workouts</div></div>
@@ -307,7 +409,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- WORKOUT VIEW -->
 <div id="workout" class="view">
   <div class="header">
-    <button class="back-btn" onclick="confirmExit()">‹</button>
+    <button class="back-btn" onclick="confirmExit()" aria-label="Terug">‹</button>
     <h1 id="workoutTitle"></h1>
   </div>
   <div id="workoutExercises"></div>
@@ -321,7 +423,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- HISTORY VIEW -->
 <div id="history" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('home')">‹</button>
+    <button class="back-btn" onclick="showView('home')" aria-label="Terug">‹</button>
     <h1>Geschiedenis</h1>
   </div>
   <div id="historyList"></div>
@@ -330,7 +432,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- DETAIL VIEW -->
 <div id="detail" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('history')">‹</button>
+    <button class="back-btn" onclick="showView('history')" aria-label="Terug">‹</button>
     <h1 id="detailTitle"></h1>
     <button class="header-action" onclick="shareWorkout()">Deel</button>
   </div>
@@ -343,12 +445,222 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 <!-- SHARE VIEW -->
 <div id="share" class="view">
   <div class="header">
-    <button class="back-btn" onclick="showView('detail')">‹</button>
+    <button class="back-btn" onclick="showView('detail')" aria-label="Terug">‹</button>
     <h1>Deel resultaten</h1>
   </div>
   <p style="color:#8e8e93;font-size:14px;margin-bottom:8px">Kopieer en plak in de Claude chat:</p>
   <div class="share-preview" id="sharePreview"></div>
   <button class="btn btn-blue" onclick="copyToClipboard()">Kopieer naar klembord</button>
+</div>
+
+<!-- VOEDING VIEW -->
+<div id="voeding" class="view">
+  <div class="header">
+    <button class="back-btn" onclick="showView('home')" aria-label="Terug">‹</button>
+    <h1>Voeding</h1>
+    <!-- Item #26: refresh-icoon weg — PTR / view-switch herlaadt al -->
+  </div>
+
+  <!-- Date navigation -->
+  <div class="nutr-datebar">
+    <button class="nutr-date-arrow" onclick="shiftNutrDate(-1)" aria-label="Vorige dag">‹</button>
+    <button class="nutr-date-label" onclick="openNutrDatePicker()" id="nutrDateLabel" aria-label="Kies datum">Vandaag</button>
+    <button class="nutr-date-arrow" onclick="shiftNutrDate(1)" aria-label="Volgende dag" id="nutrDateNext">›</button>
+    <input type="date" id="nutrDatePicker" style="position:absolute;opacity:0;pointer-events:none;left:0;top:0;width:1px;height:1px" onchange="onNutrDatePicked(event)">
+  </div>
+
+  <!-- Day-type selector + body-meting + activity -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+    <div class="nutr-daytype" id="nutrDayType" style="flex:1 1 100%;margin-bottom:0">
+      <button data-dt="training" onclick="setDayType('training')">💪 Training</button>
+      <button data-dt="rest"     onclick="setDayType('rest')">😴 Rust</button>
+      <button data-dt="weekend"  onclick="setDayType('weekend')">🍷 Weekend</button>
+      <button data-dt="refeed"   onclick="setDayType('refeed')" title="1x/wk: TDEE kcal, KH-heavy — voor leptine/T3-behoud in cut">🍝 Refeed</button>
+    </div>
+    <button class="body-btn" onclick="openBodyModal()" aria-label="Update lichaamsmeting" title="Update lichaamsmeting">📊 Meting</button>
+    <button class="body-btn" onclick="openActivityModal()" aria-label="Verbrandingscorrectie via Apple Conditie" title="Verbrandingscorrectie via Apple Conditie">🔥 Activiteit</button>
+    <button class="body-btn" onclick="openHydrationModal()" aria-label="Water en natrium loggen" title="Water + natrium loggen">💧 Hydratie</button>
+  </div>
+
+  <!-- Favorites (top picks last 30d) -->
+  <div class="nutr-fav-section" id="nutrFavSection" style="display:none">
+    <div class="nutr-fav-label">⚡ Favorieten — 1-klik loggen</div>
+    <div class="nutr-fav-scroll" id="nutrFavScroll"></div>
+  </div>
+
+  <!-- Summary -->
+  <div class="nutr-summary" id="nutrSummary">
+    <div class="nutr-kcal">
+      <div><span class="nutr-kcal-big" id="nutrKcalNow">0</span> <span class="nutr-kcal-target" id="nutrKcalTarget">/ 2000 kcal</span></div>
+      <div class="nutr-kcal-target" id="nutrKcalDelta">— te gaan</div>
+    </div>
+    <div class="macro-bar"><div class="macro-bar-fill" id="nutrKcalBar" style="width:0%"></div></div>
+    <div class="nutr-macros">
+      <div class="nutr-macro">
+        <div class="nutr-macro-label">Eiwit</div>
+        <div class="nutr-macro-val"><span id="nutrPNow">0</span>g</div>
+        <div class="nutr-macro-target">van <span id="nutrPTarget">180</span>g</div>
+        <div class="macro-bar"><div class="macro-bar-fill" id="nutrPBar" style="width:0%"></div></div>
+      </div>
+      <div class="nutr-macro">
+        <div class="nutr-macro-label">KH</div>
+        <div class="nutr-macro-val"><span id="nutrCNow">0</span>g</div>
+        <div class="nutr-macro-target">van <span id="nutrCTarget">170</span>g</div>
+        <div class="macro-bar"><div class="macro-bar-fill" id="nutrCBar" style="width:0%"></div></div>
+      </div>
+      <div class="nutr-macro">
+        <div class="nutr-macro-label">Vet</div>
+        <div class="nutr-macro-val"><span id="nutrFNow">0</span>g</div>
+        <div class="nutr-macro-target">van <span id="nutrFTarget">65</span>g</div>
+        <div class="macro-bar"><div class="macro-bar-fill" id="nutrFBar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick input -->
+  <div class="nutr-input-card">
+    <div class="nutr-input-tabs">
+      <button class="active" id="nutrTabText"  onclick="switchNutrInput('text')">✏️ Tekst</button>
+      <button id="nutrTabPhoto" onclick="switchNutrInput('photo')">📷 Foto</button>
+    </div>
+    <div id="nutrInputText">
+      <textarea class="nutr-textarea" id="nutrText" placeholder="Wat heb je gegeten/gedronken? Bv: '200g magere kwark met whey en 1 banaan'"></textarea>
+    </div>
+    <div id="nutrInputPhoto" style="display:none">
+      <label class="nutr-photo-btn">
+        📷 Kies foto<input type="file" accept="image/*"  style="display:none" id="nutrPhotoFile" onchange="onPhotoSelected(event)">
+      </label>
+      <img id="nutrPhotoPreview" class="nutr-photo-preview" style="display:none" alt="">
+      <textarea class="nutr-textarea" id="nutrPhotoText" placeholder="Optionele toelichting bij de foto..." style="min-height:40px"></textarea>
+    </div>
+    <button class="btn btn-blue" style="margin-top:10px" onclick="parseNutritionInput()" id="nutrParseBtn">Analyseren</button>
+  </div>
+
+  <!-- Parse preview -->
+  <div class="nutr-parse-result" id="nutrParseResult" style="display:none">
+    <h3>Voorstel <span id="nutrParseConf"></span></h3>
+    <div id="nutrParseItems"></div>
+    <div class="nutr-meal-select" id="nutrMealSelect"></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-outline" onclick="cancelParse()">Annuleer</button>
+      <button class="btn btn-green" onclick="saveIntake()">Opslaan</button>
+    </div>
+  </div>
+
+  <!-- Day's entries (header gets updated by renderNutritionDashboard) -->
+  <div style="font-size:14px;color:#8e8e93;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px" id="nutrEntriesHeader">Vandaag</div>
+  <div id="nutrEntries"><div class="nutr-empty">Nog niets gelogd vandaag. Begin met je ontbijt ↓</div></div>
+
+  <!-- Trends -->
+  <div class="trends-section">
+    <div class="trends-head">
+      <div class="trends-title">📈 Trends</div>
+      <div class="trends-tabs">
+        <button id="trendsTab7" class="active" onclick="loadTrends(7)">7d</button>
+        <button id="trendsTab30" onclick="loadTrends(30)">30d</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#8e8e93;margin:8px 0 2px">Calorieën-naleving (% van target)</div>
+    <svg class="trends-chart" id="trendsKcalChart"></svg>
+    <div class="trends-legend" id="trendsKcalLegend"></div>
+    <div style="font-size:11px;color:#8e8e93;margin:12px 0 2px">Gewicht (kg)</div>
+    <svg class="trends-chart" id="trendsWeightChart" style="height:90px"></svg>
+    <div class="trends-legend" id="trendsWeightLegend"></div>
+  </div>
+</div>
+
+<!-- HYDRATION MODAL -->
+<div class="bm-modal" id="hydModal" onclick="if(event.target===this) closeHydrationModal()">
+  <div class="bm-sheet">
+    <h2>💧 Hydratie vandaag</h2>
+    <div style="font-size:12px;color:#8e8e93;margin-bottom:12px">Belangrijk in cut-eindfase — natrium/water-fluctuaties verstoren de BIA-meting. Doel: 3-3,5 L water · 4-5g natrium.</div>
+    <div class="bm-field">
+      <label>Water (ml)</label>
+      <input type="number" id="hydWater" step="50" placeholder="3000">
+    </div>
+    <div class="bm-field">
+      <label>Natrium (g)</label>
+      <input type="number" id="hydSodium" step="0.1" placeholder="4.5">
+    </div>
+    <div class="bm-field">
+      <label>Notities</label>
+      <input type="text" id="hydNotes" placeholder="Bijv. zoute snack avond, weinig water ochtend">
+    </div>
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeHydrationModal()">Annuleer</button>
+      <button class="btn btn-green" onclick="saveHydration()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVITY CORRECTION MODAL -->
+<div class="bm-modal" id="actModal" onclick="if(event.target===this) closeActivityModal()">
+  <div class="bm-sheet" style="max-height:90vh;overflow-y:auto">
+    <h2>Verbrandingscorrectie</h2>
+    <div style="font-size:12px;color:#8e8e93;margin-bottom:12px">Upload je Apple Conditie / Activity screenshot — target wordt aangepast op basis van wat je vandaag écht hebt verbrand (deficit blijft hetzelfde).</div>
+
+    <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
+      <label class="nutr-photo-btn" style="background:#ff9500">
+        📷 Upload Apple Conditie<input type="file" accept="image/*"  style="display:none" id="actPhotoFile" onchange="onActPhotoSelected(event)">
+      </label>
+      <img id="actPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px" alt="">
+      <div id="actParseStatus" style="font-size:12px;margin-top:6px"></div>
+    </div>
+
+    <div id="actResultBox" style="display:none;background:#1c1c1e;border-radius:10px;padding:14px;margin-bottom:12px">
+      <div style="font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Resultaat</div>
+      <div id="actResult"></div>
+    </div>
+
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeActivityModal()">Sluit</button>
+    </div>
+  </div>
+</div>
+
+<!-- BODY MEASUREMENT MODAL -->
+<div class="bm-modal" id="bmModal" onclick="if(event.target===this) closeBodyModal()">
+  <div class="bm-sheet" style="max-height:90vh;overflow-y:auto">
+    <h2>Nieuwe lichaamsmeting</h2>
+
+    <!-- Photo upload (NEW) -->
+    <div style="background:#000;border:1px dashed #2c2c2e;border-radius:10px;padding:14px;margin-bottom:14px">
+      <label class="nutr-photo-btn" style="background:#0a84ff">
+        📷 Upload Fitdays-screenshot<input type="file" accept="image/*"  style="display:none" id="bmPhotoFile" onchange="onBmPhotoSelected(event)">
+      </label>
+      <div style="font-size:11px;color:#8e8e93;margin:8px 0;text-align:center;border-top:1px solid #2c2c2e;padding-top:8px">── of vul hieronder handmatig in ──</div>
+      <img id="bmPhotoPreview" class="nutr-photo-preview" style="display:none;max-height:140px" alt="">
+      <div id="bmParseStatus" style="font-size:12px;margin-top:6px"></div>
+    </div>
+
+    <div class="bm-field">
+      <label>Gewicht (kg) *</label>
+      <input type="number" id="bmWeight" step="0.1" placeholder="80.2">
+    </div>
+    <div class="bm-field">
+      <label>Vet% (optioneel)</label>
+      <input type="number" id="bmBf" step="0.1" placeholder="12.1">
+    </div>
+    <div class="bm-field">
+      <label>BMR uit Fitdays (optioneel)</label>
+      <input type="number" id="bmBmr" step="1" placeholder="1892">
+    </div>
+    <div class="bm-field">
+      <label>Notities (optioneel)</label>
+      <input type="text" id="bmNotes" placeholder="Bijv. nuchter, schone meting...">
+    </div>
+
+    <!-- Parsed extras preview (auto-saved bij Opslaan) -->
+    <div id="bmExtrasPreview" style="display:none;background:#1c1c1e;border-radius:8px;padding:10px;margin-top:10px">
+      <div style="font-size:11px;color:#8e8e93;text-transform:uppercase;margin-bottom:6px">Extra Fitdays-velden uit foto</div>
+      <div id="bmExtrasList" style="font-size:11px;color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px"></div>
+    </div>
+
+    <div class="bm-row">
+      <button class="btn btn-outline" onclick="closeBodyModal()">Annuleer</button>
+      <button class="btn btn-green" onclick="saveBodyMeasurement()">Opslaan</button>
+    </div>
+  </div>
 </div>
 
 <!-- EQUIPMENT VIEW -->
@@ -399,11 +711,6 @@ const EXERCISE_INFO = {
     dos: ['Voeten schouderbreedte, tenen licht naar buiten', 'Daal tot minstens 90° kniehoek', 'Borst omhoog, rug neutraal houden', 'Knieën in lijn met tenen duwen (track over 2e/3e teen)'],
     donts: ['Knieën niet naar binnen laten vallen', 'Niet op je tenen leunen', 'Geen bouncing onderaan']
   },
-  'Pull-ups': {
-    muscles: 'Lats, biceps, middenrug',
-    dos: ['Volledige ROM: hang tot kin boven stang', 'Schouderbladen naar beneden trekken bij start', 'Gecontroleerd laten zakken (negatief)'],
-    donts: ['Niet kip-achtig swingen/kippen', 'Niet halverwege stoppen', 'Geen overmatig momentum gebruiken']
-  },
   'Flat Bench Press': {
     muscles: 'Borst, triceps, voorste schouder',
     dos: ['Schouderbladen samenknijpen en naar beneden', 'Stang naar midden borst laten zakken', 'Voeten plat op de grond voor stabiliteit'],
@@ -426,7 +733,7 @@ const EXERCISE_INFO = {
   },
   'Cable Crunch': {
     muscles: 'Rectus abdominis (sixpack)',
-    dos: ['Heupen gefixeerd houden, alleen buigen vanuit de buik', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het crunchen'],
+    dos: ['2 katrollen setup (crossover): één rope-attachment aan elke kant op hoge pulley, zo blijft het gewicht gebalanceerd tijdens crunch', 'Heupen gefixeerd houden, alleen buigen vanuit de buik', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het crunchen'],
     donts: ['Niet met je armen/heupen trekken', 'Niet te snel of ongecontroleerd bewegen', 'Nek niet forceren']
   },
   'Leg Raise': {
@@ -434,25 +741,20 @@ const EXERCISE_INFO = {
     dos: ['Benen gestrekt of licht gebogen omhoog brengen', 'Bekken kantelen aan de top voor maximale activatie', 'Langzaam laten zakken (controle)'],
     donts: ['Niet swingen voor momentum', 'Lichaam niet heen en weer laten slingeren', 'Niet halverwege stoppen (volle ROM)']
   },
-  'Preacher Curl': {
-    muscles: 'Biceps (korte kop), brachialis',
-    dos: ['Bovenarmen volledig op het pad laten rusten', 'Gecontroleerde beweging omhoog en omlaag', 'Volledige ROM: bijna gestrekt tot volledig gebogen'],
-    donts: ['Niet achterover leunen om te helpen', 'Ellebogen niet van het pad tillen', 'Geen swingbeweging gebruiken']
-  },
-  'Dips': {
-    muscles: 'Triceps, borst, voorste schouder',
-    dos: ['Bovenlichaam licht voorover voor borst-accent, recht voor triceps', 'Daal tot 90° ellebooghoek', 'Schouders naar beneden houden', 'Gebruik de assisted dip machine als bodyweight te zwaar is'],
-    donts: ['Niet te diep zakken (schouder stress)', 'Niet met je benen trappen voor momentum', 'Schouders niet naar je oren trekken']
-  },
   'Sled Leg Press': {
     muscles: 'Quadriceps, glutes',
-    dos: ['Voeten schouderbreedte, laag op platform voor meer quads', 'Volle ROM: laat de slee zakken tot 90\u00b0 kniehoek', 'Duw vanuit je hielen, niet je tenen', 'Rug plat tegen het pad houden'],
+    dos: ['Voeten schouderbreedte, laag op platform voor meer quads', '45\u00b0 hoek-platform \u2014 meer pure quad-druk dan Horizontal (Schema D MAIN), minder hamstring-rek', 'Volle ROM: laat de slee zakken tot 90\u00b0 kniehoek', 'Duw vanuit je hielen, niet je tenen', 'Rug plat tegen het pad houden'],
     donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet te diep gaan (onderrug mag niet van het pad komen)', 'Niet met halve reps werken', 'Knie\u00ebn niet op slot gooien bovenin']
   },
-  'V-Squat': {
+  'Horizontal Leg Press': {
+    muscles: 'Quadriceps, glutes, hamstrings (secondary)',
+    dos: ['Voeten op heupbreedte, mid-platform', 'Volle ROM: knie\u00ebn naar borst tot 90-100\u00b0', 'Duw gelijk via beide hielen', 'Rug + heup tegen het pad — niet heffen bij diep zakken', 'Andere hoek dan Sled: meer hamstring-rek'],
+    donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet half-rep (verlies van quad-stretch)', 'Knie\u00ebn niet op slot gooien bovenin', 'Niet bouncen uit de bottom']
+  },
+  'Panatta Power Squat': {
     muscles: 'Quadriceps, glutes, hamstrings',
-    dos: ['Voeten op schouderbreedte, hoog op het platform voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen', 'Inward looking (gezicht naar machine) = meer hamstring/glute activatie'],
-    donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen']
+    dos: ['Voeten ongeveer schouderbreedte, lichte buitenwaartse stand', 'Verticale romp, schouders stevig tegen de pads', 'Diep zakken — minstens dijen parallel aan de grond', 'Druk vanuit hielen omhoog', 'Knieën in lijn met tenen sturen'],
+    donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen', 'Niet bouncen uit de bottom']
   },
   'Lat Pulldown': {
     muscles: 'Lats, biceps, middenrug',
@@ -464,11 +766,6 @@ const EXERCISE_INFO = {
     dos: ['Bank op 30-45° incline', 'Dumbbells op schouderlijn laten zakken', 'Schouderbladen samenknijpen tegen de bank'],
     donts: ['Niet te steil instellen (>45° = teveel schouder)', 'Ellebogen niet te wijd (90°+) openen', 'Gewicht niet laten bouncen']
   },
-  'Leg Curl': {
-    muscles: 'Hamstrings',
-    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam terugbrengen (excentrisch)'],
-    donts: ['Heupen niet van de bank tillen', 'Niet met je onderrug compenseren', 'Stop bij pijn aan buitenkant knie (lateraal)']
-  },
   'DB Lateral Raise': {
     muscles: 'Zijschouder (mediale deltoid)',
     dos: ['Lichte vooroverbuiging, ellebogen iets gebogen', 'Til tot schouderhoogte, niet hoger', 'Houd je handen neutraal of duimen licht naar voren'],
@@ -476,8 +773,8 @@ const EXERCISE_INFO = {
   },
   'Plate-loaded Row': {
     muscles: 'Lats, middenrug, biceps',
-    dos: ['Neutraal grip + lifting straps (tenniselleboog)', 'Borst tegen het pad drukken', 'Trek naar je navel/onderborst', 'Schouderbladen samenknijpen bovenin'],
-    donts: ['Niet achterover leunen van het pad af', 'Niet met je onderrug trekken', 'Schouders niet optrekken naar je oren']
+    dos: ['Neutraal grip (handpalmen naar elkaar) — elleboogvriendelijk', 'Lifting straps OPTIONEEL: Schema A/D = met straps (zware sets), Schema B = zonder straps (grip-training)', 'Borst tegen het pad drukken', 'Trek naar je navel/onderborst', 'Schouderbladen samenknijpen bovenin'],
+    donts: ['Niet achterover leunen van het pad af', 'Niet met je onderrug trekken', 'Schouders niet optrekken naar je oren', 'Bij Schema B (zonder straps): laat gewicht zakken als grip faalt, ga niet door op rug-uithoudingsvermogen']
   },
   'Ab Machine': {
     muscles: 'Rectus abdominis (sixpack)',
@@ -506,7 +803,7 @@ const EXERCISE_INFO = {
   },
   'OH Tricep Extension': {
     muscles: 'Triceps (lange kop)',
-    dos: ['Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
+    dos: ['Kabel-variant (Joost gebruikt deze): rope-attachment aan lage of hoge pulley, naar achteren stappen voor strakke kabel, constante spanning door volle ROM', 'Ellebogen naast je hoofd, wijzend naar voren', 'Volledige strekking bovenin voor piek-contractie', 'Gecontroleerd laten zakken achter je hoofd'],
     donts: ['Ellebogen niet naar buiten laten wijken', 'Niet met je rug compenseren', 'Niet te snel of ongecontroleerd bewegen']
   },
   'Leg Curl (seated)': {
@@ -564,35 +861,15 @@ const EXERCISE_INFO = {
     dos: ['Rug stevig tegen het pad drukken', 'Handgrepen op borsthoogte instellen', 'Gecontroleerd duwen en terugbrengen', 'Schouderbladen samenknijpen'],
     donts: ['Schouders niet optrekken naar je oren', 'Niet bouncen uit de onderste positie', 'Ellebogen niet op slot gooien']
   },
-  'Leg Extension': {
-    muscles: 'Quadriceps',
-    dos: ['Rug stevig tegen rugpad houden', 'Volle ROM: van 90\u00b0 tot volledige strekking', 'Langzaam excentrisch terugbrengen', 'Knieën in lijn met draaipunt machine'],
-    donts: ['Niet met momentum omhoog zwaaien', 'Niet halverwege stoppen', 'Niet te zwaar gaan ten koste van techniek']
-  },
-  'Dead Bug': {
-    muscles: 'Core (TVA, rectus abdominis)',
-    dos: ['Rug plat op de grond houden (geen ruimte tussen onderrug en vloer)', 'Tegenovergestelde arm en been tegelijk strekken', 'Langzaam en gecontroleerd bewegen', 'Uitademen bij het strekken'],
-    donts: ['Onderrug niet van de grond laten komen', 'Niet te snel bewegen', 'Niet de adem inhouden']
-  },
   'Lying Leg Curl': {
     muscles: 'Hamstrings',
     dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
     donts: ['Heupen niet van de bank tillen', 'Niet met momentum omhoog zwaaien', 'Stop bij pijn aan buitenkant knie (lateraal)']
   },
-  'Plank': {
-    muscles: 'Core (rectus abdominis, obliques, TVA)',
-    dos: ['Lichaam in rechte lijn van hoofd tot hielen', 'Buik aanspannen, navel naar wervelkolom', 'Billen niet te hoog of te laag', 'Regelmatig ademhalen'],
-    donts: ['Niet door laten zakken in de onderrug', 'Hoofd niet laten hangen', 'Niet op adem inhouden']
-  },
   'Bulgarian Split Squat': {
     muscles: 'Quadriceps, glutes, core (stabilisatie)',
-    dos: ['Achterbeen op bank, voorvoet stevig op de grond', 'Torso rechtop houden, core aanspannen', 'Voorste knie in lijn met tenen (niet voorbij)', 'Volledige diepte: achterknie richting grond'],
-    donts: ['Voorste knie niet naar binnen laten vallen', 'Niet te ver voorover leunen', 'Niet te snel (balans!)']
-  },
-  'Arnold Press': {
-    muscles: 'Schouders (alle hoofden), triceps',
-    dos: ['Start met palmen naar je toe (curled positie)', 'Roteer tijdens het persen naar palmen vooruit', 'Zittend met rug tegen pad voor stabiliteit', 'Gecontroleerd tempo, focus op rotatie'],
-    donts: ['Niet te zwaar gaan (rotatie vraagt controle)', 'Niet met momentum omhoog gooien', 'Stop bij elleboogpijn (tenniselleboog — wissel naar Cable Lateral Raise)']
+    dos: ['Achterbeen op bank, voorvoet stevig op de grond', 'Smith machine-variant (Schema C): stang op trapezius, voorvoet 30-40cm verder naar voren dan bij DB-versie (vanwege verticale stang-baan)', 'Torso rechtop houden, core aanspannen', 'Voorste knie in lijn met tenen (niet voorbij)', 'Volledige diepte: achterknie richting grond'],
+    donts: ['Voorste knie niet naar binnen laten vallen', 'Niet te ver voorover leunen', 'Niet te snel (balans!)', 'Bij Smith-variant: niet voorvoet te dicht onder lichaam — stang dwingt verticaal, je knie schiet dan voorbij tenen']
   },
   'Hip Thrust Machine': {
     muscles: 'Glutes (primair), hamstrings',
@@ -609,10 +886,35 @@ const EXERCISE_INFO = {
     dos: ['Machine-geleide variant van dips (Panatta Dual System)', 'Volle ROM: van 90\u00b0 tot volledige extensie', 'Schouders naar beneden houden', 'Gecontroleerd tempo'],
     donts: ['Niet te diep zakken (schouderstress)', 'Schouders niet naar je oren trekken', 'Ellebogen niet naar buiten laten wijken']
   },
-  'Straight-arm Pulldown': {
-    muscles: 'Lats, teres major',
-    dos: ['Lichte vooroverbuiging, armen gestrekt houden', 'Trek stang/rope naar je bovenbenen', 'Lifting straps voor grip (tenniselleboog)', 'Focus op lat-squeeze onderaan'],
-    donts: ['Ellebogen niet buigen (armen gestrekt)', 'Niet met momentum swingen', 'Niet te zwaar (isolatie-oefening)']
+  'Seated Calf Raise': {
+    muscles: 'Soleus (primair), gastrocnemius (secondary)',
+    dos: ['Volle ROM: diepe stretch onderin (hiel zakken), peak squeeze bovenin', 'Pauze 1 sec bovenin', '2 sec negatieve fase', 'Knieën 90° gebogen — schakelt gastrocnemius grotendeels uit, soleus doet het werk', 'Plates correct op de knie-pad plaatsen'],
+    donts: ['Geen momentum / bouncen', 'Niet half-rep (soleus vereist volle stretch)', 'Niet rechtop gaan staan tijdens de set (wordt dan standing)', 'Pad te ver naar voren = knie-stress, niet calf-stimulus']
+  },
+  'Chin-ups': {
+    muscles: 'Lats, biceps, rhomboids, achterste deltoid',
+    dos: ['Neutral grip (handpalmen naar elkaar toe) — elleboog-vriendelijk', 'Zonder straps — bouw grip op vanaf bodyweight', 'Volledige strekking onderaan, kin boven de stang bovenaan', 'Rustige controle op de daling (2 sec)', 'Reps-progressie 6→10 voordat je gewicht toevoegt', 'Warmup: polsextensie 3x15 + Tyler Twist 3x15 eerst'],
+    donts: ['Geen supinated of pronated grip (neutraal is doelgrip)', 'Niet swingen of kip-beweging', 'Bij brandend/zeurend gevoel in elleboog: direct stoppen en Assisted-variant pakken', 'Niet te zwaar starten — eerst reps-progressie, dan pas weight']
+  },
+  'Assisted Chin-up': {
+    muscles: 'Lats, biceps, rhomboids, achterste deltoid',
+    dos: ['Nautilus-machine met counter-weight (gewicht = assist, dus hoger = lichter)', 'Neutral grip (handpalmen naar elkaar) — zelfde grip als Chin-ups', 'Volledige strekking onderaan, kin boven de stang bovenaan', 'Rustige controle op de daling (2 sec)', 'Bouw counter-weight gestaag af naarmate reps op bodyweight Chin-ups stijgen'],
+    donts: ['Geen supinated of pronated grip (neutraal is doelgrip)', 'Niet swingen of kip-beweging', 'Bij brandend/zeurend gevoel in elleboog: stop en pak Lat Pulldown V-grip als alternatief', 'Niet te veel counter-weight gebruiken (anders te makkelijk, geen progressie)']
+  },
+  'Leg Curl (lying)': {
+    muscles: 'Hamstrings',
+    dos: ['Heupen plat op de bank houden', 'Volle ROM: bijna gestrekt tot volledig gebogen', 'Langzaam excentrisch terugbrengen', 'Enkels in neutrale positie (niet naar binnen/buiten draaien)'],
+    donts: ['Heupen niet van de bank tillen', 'Niet met momentum omhoog zwaaien', 'LET OP: kniepijn links — stop direct bij pijn aan buitenkant linker knie (lateraal), wissel naar Leg Curl (seated)', 'Niet te zwaar gaan ten koste van techniek']
+  },
+  'Smith Calf Raise': {
+    muscles: 'Gastrocnemius (primair bij gestrekte knie), soleus (secondary bij gebogen knie)',
+    dos: ['Stang van Smith machine op de bovenkant van je rug (high-bar squat positie)', 'Voeten op een board/plate voor extra ROM', 'Gebogen knie ~20° houden — schakelt soleus mee in (rebalance-variant voor Seated Calf)', 'Volle ROM: diepe stretch onderin (hiel zakken), peak squeeze bovenin', 'Pauze 1 sec bovenin, 2 sec negatieve fase'],
+    donts: ['Geen momentum / bouncen', 'Niet half-rep', 'Knieën niet helemaal strekken (anders alleen gastrocnemius)', 'Pas op met balans bij hoge gewichten — Smith stang geleidt verticaal, geen probleem mits voet-positie strak']
+  },
+  'Torso Rotation': {
+    muscles: 'Obliques, core (rotatie), serratus anterior',
+    dos: ['Panatta machine: zittend, heupen gefixeerd door pads', 'Rotatie vanuit de torso, niet vanuit de armen', 'Volle ROM: van volledig geroteerd naar één kant tot midden', 'Gecontroleerd tempo in beide richtingen', '12-15 reps per kant — eerst de ene zijde, dan switchen'],
+    donts: ['Niet met armen/schouders trekken', 'Heupen niet laten meedraaien (anders verlies je oblique-focus)', 'Niet te zwaar starten — rotatie-spieren zijn klein, blessurerisico bij overload', 'Niet bouncing of momentum-gestuurd']
   },
   'Cable Fly': {
     muscles: 'Borst (stretch + squeeze focus)',
@@ -636,7 +938,7 @@ const EXERCISE_INFO = {
   },
   'Incline Barbell Bench Press': {
     muscles: 'Bovenborst, schouders, triceps',
-    dos: ['Schouderbladen samenknijpen tegen het pad', 'Laat stang zakken naar bovenborst (sleutelbeen)', 'Voeten plat op de grond', 'Gecontroleerd tempo, niet bouncen'],
+    dos: ['Panatta-variant (Schema B): vaste bank-hoek (~30°), barbell geleidt — meer focus op pure pers, minder stabilisatie', 'Schouderbladen samenknijpen tegen het pad', 'Laat stang zakken naar bovenborst (sleutelbeen)', 'Voeten plat op de grond', 'Gecontroleerd tempo, niet bouncen'],
     donts: ['Niet te breed grijpen (schouder stress)', 'Stang niet op de nek laten zakken', 'Billen niet van de bank tillen']
   },
   'Cable Bicep Curl': {
@@ -659,16 +961,16 @@ const USERS = {
         supersets: [
           {
             name: 'A: Squat + Lat Pulldown V-grip', sets: 4, rest: '2 min', color: 'green',
-            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Squat: 1x10 @bar, 1x8 @50kg, 1x5 @70kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Squat: 1x10 @bar, 1x8 @50kg, 1x5 @70kg. Pulldown: 1x10 @35kg, 1x6 @50kg, 1x4 @65kg',
             exercises: [
               { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps \u2022 volle diepte', target_kg: 90,
                 target_sets: [{kg:90,reps:7},{kg:90,reps:7},{kg:90,reps:7},{kg:90,reps:7}],
-                alt: { name: 'V-Squat', detail: '6-8 reps', target_kg: 130,
-                  target_sets: [{kg:120,reps:8},{kg:130,reps:6},{kg:130,reps:6},{kg:130,reps:6}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '6-10 reps \u2022 V-grip/neutraal + straps', target_kg: 80,
-                target_sets: [{kg:65,reps:10},{kg:70,reps:8},{kg:75,reps:8},{kg:80,reps:7}],
-                alt: { name: 'Straight-arm Pulldown', detail: '10-12 reps \u2022 kabel + straps', target_kg: 30,
-                  target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}] } }
+                alt: { name: 'Panatta Power Squat', detail: '6-8 reps', target_kg: 110,
+                  target_sets: [{kg:90,reps:8},{kg:100,reps:7},{kg:110,reps:6},{kg:110,reps:6}] } },
+              { id: 'a2', name: 'Lat Pulldown', detail: '6-10 reps \u2022 V-grip/neutraal + straps \u2022 3 sets (rebalance 20 apr)', target_kg: 80,
+                target_sets: [{kg:70,reps:8},{kg:75,reps:8},{kg:80,reps:7}],
+                alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight (Nautilus)', target_kg: 0,
+                  target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8}] } }
             ]
           },
           {
@@ -688,8 +990,8 @@ const USERS = {
           {
             name: 'C: Shoulder Press + Decline Crunch', sets: 3, rest: '75s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 25, target_label: '2x25 kg',
-                target_sets: [{kg:25,reps:8},{kg:25,reps:8},{kg:25,reps:8}],
+              { id: 'c1', name: 'DB Shoulder Press', detail: '8-10 reps \u2022 bank ~80\u00b0, tot oorhoogte', target_kg: 22.5, target_label: '2x22.5 kg',
+                target_sets: [{kg:22.5,reps:8},{kg:22.5,reps:8},{kg:22.5,reps:8}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:40,reps:10},{kg:40,reps:10},{kg:40,reps:10}] } },
               { id: 'c2', name: 'Decline Crunch', detail: '12-15 reps \u2022 schijf op borst', target_kg: 10,
@@ -717,40 +1019,40 @@ const USERS = {
       B: {
         name: 'Schema B — Donderdag',
         subtitle: 'Volume Focus',
-        desc: '32 sets \u2022 ~90 min',
+        desc: '38 sets \u2022 ~100 min',
         supersets: [
           {
             name: 'A: Leg Press + Pulldown', sets: 4, rest: '90s', color: 'green',
-            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Leg Press: 1x10 @80kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Sled Leg Press: 1x10 @100kg, 1x8 @130kg, 1x5 @160kg. Lat Pulldown: 1x10 @35kg, 1x6 @55kg',
             exercises: [
               { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 185,
                 target_sets: [{kg:145,reps:12},{kg:165,reps:12},{kg:185,reps:12},{kg:185,reps:12}],
-                alt: { name: 'V-Squat', detail: '10-12 reps \u2022 inward looking', target_kg: 130,
-                  target_sets: [{kg:100,reps:12},{kg:120,reps:10},{kg:130,reps:10},{kg:130,reps:10}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps', target_kg: 75,
-                target_sets: [{kg:65,reps:12},{kg:70,reps:12},{kg:75,reps:12},{kg:75,reps:12}],
+                alt: { name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 100,
+                  target_sets: [{kg:80,reps:12},{kg:90,reps:10},{kg:100,reps:10},{kg:100,reps:10}] } },
+              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps \u2022 3 sets (rebalance 20 apr)', target_kg: 75,
+                target_sets: [{kg:70,reps:12},{kg:75,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 70,
-                  target_sets: [{kg:65,reps:10},{kg:70,reps:10},{kg:70,reps:10},{kg:70,reps:10}] } }
+                  target_sets: [{kg:70,reps:10},{kg:70,reps:10},{kg:70,reps:10}] } }
             ]
           },
           {
-            name: 'B: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'blue',
+            name: 'B: Leg Curl + Lateral Raise', sets: 4, rest: '75s', color: 'blue',
             exercises: [
               { id: 'b1', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 75,
-                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:75,reps:12}],
+                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:75,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Leg Curl (lying)', detail: '12-15 reps \u2022 LET OP: kniepijn links', target_kg: 40,
-                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
+                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12},{kg:40,reps:12}] } },
               { id: 'b2', name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
-                target_sets: [{kg:12,reps:12},{kg:12,reps:12},{kg:12,reps:12}],
+                target_sets: [{kg:12,reps:12},{kg:12,reps:12},{kg:12,reps:12},{kg:12,reps:12}],
                 alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 10,
-                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } }
+                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } }
             ]
           },
           {
             name: 'C: Incline Press + Row', sets: 3, rest: '90s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
-                target_sets: [{kg:27.5,reps:12},{kg:27.5,reps:12},{kg:27.5,reps:12}],
+              { id: 'c1', name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
+                target_sets: [{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
                 alt: { name: 'Incline Barbell Bench Press', detail: '10-12 reps \u2022 Panatta, vaste hoek', target_kg: 50,
                   target_sets: [{kg:40,reps:12},{kg:45,reps:10},{kg:50,reps:10}] } },
               { id: 'c2', name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta, neutraal grip (zonder straps)', target_kg: 40, target_label: '40 kg/kant',
@@ -773,12 +1075,16 @@ const USERS = {
             ]
           },
           {
-            name: 'E: Triceps', sets: 2, rest: '45s', color: 'red',
+            name: 'E: Arms (Tricep + Hammer Curl)', sets: 3, rest: '45s', color: 'red',
             exercises: [
               { id: 'e1', name: 'Tricep Pushdown', detail: '10-12 reps \u2022 rope, neutraal grip', target_kg: 65,
-                target_sets: [{kg:60,reps:12},{kg:65,reps:12}],
+                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:65,reps:12}],
                 alt: { name: 'OH Tricep Extension', detail: '10-12 reps \u2022 kabel', target_kg: 30,
-                  target_sets: [{kg:25,reps:15},{kg:30,reps:12}] } }
+                  target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } },
+              { id: 'e2', name: 'DB Hammer Curl', detail: '10-12 reps \u2022 neutraal grip (duimen omhoog)', target_kg: 12.5, target_label: '2x12.5 kg',
+                target_sets: [{kg:12.5,reps:12},{kg:12.5,reps:10},{kg:12.5,reps:10}],
+                alt: { name: 'Cable Bicep Curl', detail: '10-12 reps \u2022 1 arm, neutraal/licht', target_kg: 25,
+                  target_sets: [{kg:20,reps:12},{kg:25,reps:10},{kg:25,reps:10}] } }
             ]
           }
         ]
@@ -786,28 +1092,28 @@ const USERS = {
       C: {
         name: 'Schema C — Maandag',
         subtitle: 'Strength Variation',
-        desc: '26 sets \u2022 ~82 min',
+        desc: '32 sets \u2022 ~90 min',
         supersets: [
           {
-            name: 'A: BSS (Smith) + Straight-arm Pulldown', sets: 4, rest: '2 min', color: 'green',
-            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Straight-arm: 1x12 @20kg',
+            name: 'A: BSS (Smith) + Chin-ups', sets: 4, rest: '2 min', color: 'green',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. BSS: 1x8/been @bar, 1x6/been @20kg. Chin-ups: 1x3 strict, 1x5 op 60% effort',
             exercises: [
               { id: 'a1', name: 'Bulgarian Split Squat', detail: '8-10 reps per been \u2022 Smith machine, achterbeen op bank', target_kg: 40,
                 target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:40,reps:8},{kg:40,reps:8}],
                 alt: { name: 'Hack Squat', detail: '8-10 reps', target_kg: 100,
                   target_sets: [{kg:80,reps:10},{kg:90,reps:10},{kg:100,reps:8},{kg:100,reps:8}] } },
-              { id: 'a2', name: 'Straight-arm Cable Pulldown', detail: '10-12 reps \u2022 kabel + straight bar + straps. Armen gestrekt, trek naar heupen.', target_kg: 30,
-                target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10},{kg:30,reps:10}],
-                alt: { name: 'Lat Pulldown', detail: '8-10 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
-                  target_sets: [{kg:60,reps:10},{kg:65,reps:10},{kg:70,reps:8},{kg:70,reps:8}] } }
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutral grip, zonder straps, reps-progressie 6\u219210', target_kg: 0,
+                target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}],
+                alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight, of Lat Pulldown V-grip (8-10 @70kg)', target_kg: 0,
+                  target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8},{kg:0,reps:8}] } }
             ]
           },
           {
             name: 'B: Machine Chest + Cable Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: '1x10 Vertical Chest Press @35kg',
+            warmup: '1x10 Vertical Chest Press @35kg, 1x6 @50kg',
             exercises: [
-              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 65,
-                target_sets: [{kg:55,reps:10},{kg:60,reps:10},{kg:65,reps:8}],
+              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps \u2022 Panatta', target_kg: 80,
+                target_sets: [{kg:70,reps:10},{kg:75,reps:10},{kg:80,reps:10}],
                 alt: { name: 'DB Flat Bench Press', detail: '8-10 reps', target_kg: 27.5, target_label: '2x27.5 kg',
                   target_sets: [{kg:25,reps:10},{kg:27.5,reps:8},{kg:27.5,reps:8}] } },
               { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps \u2022 V-grip + straps', target_kg: 75,
@@ -818,6 +1124,7 @@ const USERS = {
           },
           {
             name: 'C: Hip Thrust + Ab Machine', sets: 3, rest: '75s', color: 'purple',
+            warmup: 'Hip Thrust: 1x10 @60kg, 1x8 @80kg',
             exercises: [
               { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps \u2022 squeeze glutes bovenin', target_kg: 100,
                 target_sets: [{kg:80,reps:12},{kg:100,reps:10},{kg:100,reps:10}],
@@ -825,21 +1132,35 @@ const USERS = {
                   target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}] } },
               { id: 'c2', name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
                 target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}],
-                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 70,
-                  target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}] } }
+                alt: { name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 80,
+                  target_sets: [{kg:70,reps:15},{kg:75,reps:12},{kg:80,reps:10}] } }
             ]
           },
           {
             name: 'D: Shoulder Press + Lower Back', sets: 3, rest: '45s', color: 'orange',
+            warmup: 'Smith Shoulder Press: 1x8 @20kg',
             exercises: [
-              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad (gewicht excl. stang ~20kg)', target_kg: 45,
-                target_sets: [{kg:35,reps:10},{kg:40,reps:10},{kg:45,reps:8}],
+              { id: 'd1', name: 'Smith Shoulder Press', detail: '8-10 reps \u2022 zittend, rug tegen pad (gewicht excl. stang ~20kg)', target_kg: 35,
+                target_sets: [{kg:30,reps:10},{kg:35,reps:10},{kg:35,reps:10}],
                 alt: { name: 'Shoulder Press Machine', detail: '10-12 reps', target_kg: 40,
                   target_sets: [{kg:35,reps:12},{kg:40,reps:10},{kg:40,reps:10}] } },
-              { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 55,
-                target_sets: [{kg:45,reps:15},{kg:50,reps:15},{kg:55,reps:12}],
+              { id: 'd2', name: 'Lower Back Machine', detail: '12-15 reps \u2022 gecontroleerd, niet hyperextenderen', target_kg: 65,
+                target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}],
                 alt: { name: 'GHD Back Extension', detail: '12-15 reps \u2022 Nautilus, bodyweight', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:12}] } }
+            ]
+          },
+          {
+            name: 'E: Seated Calf Raise + Cable Fly (finisher)', sets: 3, rest: '60s', color: 'red',
+            exercises: [
+              { id: 'e1', name: 'Seated Calf Raise', detail: '12-15 reps \u2022 plate-loaded, primary soleus (rebalance 20 apr, was Leg Curl)', target_kg: 50,
+                target_sets: [{kg:40,reps:15},{kg:45,reps:15},{kg:50,reps:15}],
+                alt: { name: 'Smith Calf Raise', detail: '12-15 reps \u2022 plates op rug, gebogen knie', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } },
+              { id: 'e2', name: 'Cable Fly', detail: '12-15 reps \u2022 beide kabels, lichte buiging', target_kg: 25, target_label: '25 kg per katrol',
+                target_sets: [{kg:20,reps:15},{kg:25,reps:12},{kg:25,reps:12}],
+                alt: { name: 'DB Flat Bench Press', detail: '10-12 reps', target_kg: 27.5, target_label: '2x27.5 kg',
+                  target_sets: [{kg:25,reps:12},{kg:27.5,reps:10},{kg:27.5,reps:10}] } }
             ]
           }
         ]
@@ -847,70 +1168,70 @@ const USERS = {
       D: {
         name: 'Schema D — Donderdag',
         subtitle: 'Volume Variation',
-        desc: '32 sets \u2022 ~92 min',
+        desc: '34 sets \u2022 ~96 min',
         supersets: [
           {
-            name: 'A: V-Squat + Lat Pulldown', sets: 4, rest: '90s', color: 'green',
-            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. V-Squat: 1x10 @80kg. Pulldown: 1x10 @35kg, 1x6 @50kg',
+            name: 'A: Horizontal Leg Press + Chin-ups', sets: 4, rest: '90s', color: 'green',
+            warmup: 'Rehab: polsextensie 3x15 + Tyler Twist 3x15. Horizontal Leg Press: 1x10 @80kg, 1x6 @110kg. Chin-ups: 1x3 strict, 1x5 op 60% effort',
             exercises: [
-              { id: 'a1', name: 'V-Squat', detail: '10-12 reps \u2022 inward looking', target_kg: 130,
-                target_sets: [{kg:100,reps:12},{kg:115,reps:12},{kg:130,reps:10},{kg:130,reps:10}],
-                alt: { name: 'Hack Squat', detail: '10-12 reps', target_kg: 100,
-                  target_sets: [{kg:80,reps:12},{kg:90,reps:12},{kg:100,reps:10},{kg:100,reps:10}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps', target_kg: 70,
-                target_sets: [{kg:55,reps:12},{kg:60,reps:12},{kg:65,reps:12},{kg:70,reps:10}],
-                alt: { name: 'Straight-arm Pulldown', detail: '12-15 reps \u2022 kabel + straps', target_kg: 30,
-                  target_sets: [{kg:25,reps:12},{kg:30,reps:12},{kg:30,reps:10},{kg:30,reps:10}] } }
+              { id: 'a1', name: 'Horizontal Leg Press', detail: '10-12 reps \u2022 andere hoek dan Sled', target_kg: 140,
+                target_sets: [{kg:120,reps:12},{kg:130,reps:12},{kg:140,reps:10},{kg:140,reps:10}],
+                alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 140,
+                  target_sets: [{kg:120,reps:12},{kg:130,reps:12},{kg:140,reps:10},{kg:140,reps:10}] } },
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutral grip, zonder straps, reps-progressie 6\u219210 \u2022 3 sets', target_kg: 0,
+                target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}],
+                alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight, of Lat Pulldown V-grip (10-12 @70kg)', target_kg: 0,
+                  target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8}] } }
             ]
           },
           {
-            name: 'B: Cable Fly + Lying Leg Curl', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Incline Press + Leg Curl', sets: 3, rest: '75s', color: 'blue',
             exercises: [
-              { id: 'b1', name: 'Cable Fly', detail: '10-12 reps \u2022 stretch + squeeze', target_kg: 20, target_label: '20 kg/hand',
-                target_sets: [{kg:15,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
-                alt: { name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps', target_kg: 50,
-                  target_sets: [{kg:40,reps:12},{kg:50,reps:10},{kg:50,reps:10}] } },
-              { id: 'b2', name: 'Lying Leg Curl', detail: '12-15 reps \u2022 LET OP: monitor knie links', target_kg: 40,
-                target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}],
-                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 65,
-                  target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}] } }
+              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps', target_kg: 50,
+                target_sets: [{kg:40,reps:12},{kg:45,reps:12},{kg:50,reps:10}],
+                alt: { name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
+                  target_sets: [{kg:20,reps:12},{kg:25,reps:10},{kg:25,reps:10}] } },
+              { id: 'b2', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 65,
+                target_sets: [{kg:55,reps:15},{kg:60,reps:15},{kg:65,reps:12}],
+                alt: { name: 'Lying Leg Curl', detail: '12-15 reps', target_kg: 40,
+                  target_sets: [{kg:35,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
             ]
           },
           {
-            name: 'C: Arnold Press + Cable Row', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Cable Lateral Raise + Cable Row', sets: 4, rest: '90s', color: 'purple',
             exercises: [
-              { id: 'c1', name: 'Arnold Press', detail: '10-12 reps \u2022 zittend, rotatie vanuit neutraal', target_kg: 20, target_label: '2x20 kg',
-                target_sets: [{kg:17.5,reps:12},{kg:20,reps:10},{kg:20,reps:10}],
-                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm', target_kg: 10,
-                  target_sets: [{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}] } },
-              { id: 'c2', name: 'Seated Cable Row', detail: '10-12 reps \u2022 V-grip + straps', target_kg: 70,
-                target_sets: [{kg:65,reps:12},{kg:70,reps:10},{kg:70,reps:10}],
+              { id: 'c1', name: 'Cable Lateral Raise', detail: '12-15 reps \u2022 1 arm \u2022 per arm', target_kg: 10, target_label: '10 kg per arm',
+                target_sets: [{kg:8,reps:15},{kg:10,reps:12},{kg:10,reps:12},{kg:10,reps:12}],
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 8, target_label: '2x8 kg',
+                  target_sets: [{kg:8,reps:12},{kg:8,reps:12},{kg:8,reps:12},{kg:8,reps:12}] } },
+              { id: 'c2', name: 'Seated Cable Row', detail: '10-12 reps \u2022 V-grip + straps', target_kg: 75,
+                target_sets: [{kg:65,reps:12},{kg:70,reps:10},{kg:75,reps:10},{kg:75,reps:10}],
                 alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta + straps', target_kg: 35, target_label: '35 kg/kant',
-                  target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10}] } }
+                  target_sets: [{kg:30,reps:12},{kg:35,reps:10},{kg:35,reps:10},{kg:35,reps:10}] } }
             ]
           },
           {
             name: 'D: Core', sets: 3, rest: '45s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 70,
-                target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:70,reps:12}],
+              { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps \u2022 2 katrollen', target_kg: 75,
+                target_sets: [{kg:65,reps:15},{kg:70,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 80,
                   target_sets: [{kg:75,reps:15},{kg:80,reps:12},{kg:80,reps:12}] } },
               { id: 'd2', name: 'Woodchop', detail: '12 reps per kant \u2022 kabel', target_kg: 20,
                 target_sets: [{kg:15,reps:12},{kg:20,reps:12},{kg:20,reps:12}],
-                alt: { name: 'Pallof Press', detail: '10-15 reps per kant', target_kg: 30,
+                alt: { name: 'Torso Rotation', detail: '12-15 reps per kant \u2022 Panatta machine', target_kg: 30,
                   target_sets: [{kg:25,reps:15},{kg:30,reps:12},{kg:30,reps:12}] } }
             ]
           },
           {
             name: 'E: Arms', sets: 3, rest: '45s', color: 'red',
             exercises: [
-              { id: 'e1', name: 'Dips Press', detail: '10-12 reps \u2022 Panatta Dual System', target_kg: 70,
-                target_sets: [{kg:60,reps:12},{kg:65,reps:12},{kg:70,reps:10}],
+              { id: 'e1', name: 'Dips Press', detail: '10-12 reps \u2022 Panatta Dual System', target_kg: 85,
+                target_sets: [{kg:70,reps:12},{kg:80,reps:10},{kg:85,reps:10}],
                 alt: { name: 'OH Tricep Extension', detail: '10-12 reps \u2022 kabel', target_kg: 30,
                   target_sets: [{kg:25,reps:12},{kg:30,reps:10},{kg:30,reps:10}] } },
-              { id: 'e2', name: 'DB Hammer Curl', detail: '10-12 reps \u2022 neutraal grip (duimen omhoog)', target_kg: 12, target_label: '2x12 kg',
-                target_sets: [{kg:10,reps:12},{kg:12,reps:10},{kg:12,reps:10}],
+              { id: 'e2', name: 'DB Hammer Curl', detail: '10-12 reps \u2022 neutraal grip (duimen omhoog)', target_kg: 12.5, target_label: '2x12.5 kg',
+                target_sets: [{kg:12.5,reps:12},{kg:12.5,reps:10},{kg:12.5,reps:10}],
                 alt: { name: 'Cable Bicep Curl', detail: '10-12 reps \u2022 1 arm, neutraal/licht', target_kg: 25,
                   target_sets: [{kg:20,reps:12},{kg:25,reps:10},{kg:25,reps:10}] } }
             ]
@@ -929,12 +1250,12 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: Leg Press + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
+            name: 'A: Leg Press + Lat Pulldown', sets: 3, rest: '75s', color: 'green',
             warmup: '1x12 Leg Press @60 kg',
             exercises: [
               { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
                 target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:12}],
-                alt: { name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+                alt: { name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 60,
                   target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 wide grip', target_kg: 45,
                 target_sets: [{kg:40,reps:12},{kg:45,reps:12},{kg:45,reps:12}],
@@ -943,13 +1264,13 @@ const USERS = {
             ]
           },
           {
-            name: 'B: Bench Press + Cable Row', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Bench Press + Cable Row', sets: 5, rest: '75s', color: 'blue',
             warmup: '1x10 Bench Press @20 kg (stang)',
             exercises: [
-              { id: 'b1', name: 'Barbell Bench Press', detail: '8-10 reps \u2022 flat', target_kg: 30,
-                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8}],
+              { id: 'b1', name: 'Barbell Bench Press', detail: '8-10 reps \u2022 flat \u2022 5 sets (rebalance v2 20 apr: bench-focus)', target_kg: 30,
+                target_sets: [{kg:20,reps:10},{kg:30,reps:8},{kg:30,reps:8},{kg:30,reps:8},{kg:30,reps:8}],
                 alt: { name: 'Vertical Chest Press', detail: '10-12 reps \u2022 Panatta', target_kg: 45,
-                  target_sets: [{kg:35,reps:12},{kg:45,reps:10},{kg:45,reps:10}] } },
+                  target_sets: [{kg:35,reps:12},{kg:45,reps:10},{kg:45,reps:10},{kg:45,reps:10},{kg:45,reps:10}] } },
               { id: 'b2', name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 40,
                 target_sets: [{kg:35,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
                 alt: { name: 'Plate-loaded Row', detail: '10-12 reps \u2022 Panatta', target_kg: 20, target_label: '20 kg/kant',
@@ -957,7 +1278,7 @@ const USERS = {
             ]
           },
           {
-            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '60s', color: 'purple',
             warmup: '1x10 RDL @20 kg (stang)',
             exercises: [
               { id: 'c1', name: 'Barbell Romanian Deadlift', detail: '8-10 reps', target_kg: 30,
@@ -971,7 +1292,7 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Core + Biceps', sets: 2, rest: '45s', color: 'orange',
+            name: 'D: Core + Biceps', sets: 2, rest: '30s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 55,
                 target_sets: [{kg:45,reps:15},{kg:55,reps:12}],
@@ -991,7 +1312,7 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: Barbell Squat + Lat Pulldown', sets: 3, rest: '90s', color: 'green',
+            name: 'A: Barbell Squat + Lat Pulldown', sets: 4, rest: '75s', color: 'green',
             warmup: '1x10 Squat @20 kg (stang)',
             exercises: [
               { id: 'a1', name: 'Barbell Back Squat', detail: '8-10 reps', target_kg: 30,
@@ -999,13 +1320,13 @@ const USERS = {
                 alt: { name: 'Sled Leg Press', detail: '12-15 reps', target_kg: 110,
                   target_sets: [{kg:100,reps:12},{kg:110,reps:12},{kg:110,reps:15}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '12-15 reps \u2022 close grip', target_kg: 45,
-                target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15}],
+                target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15},{kg:45,reps:15}],
                 alt: { name: 'Lat Pulldown', detail: '12-15 reps \u2022 wide grip', target_kg: 45,
-                  target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15}] } }
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:15},{kg:45,reps:15},{kg:45,reps:15}] } }
             ]
           },
           {
-            name: 'B: Incline Press + Row', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Incline Press + Row', sets: 3, rest: '75s', color: 'blue',
             warmup: '1x12 DB Incline @2x6 kg',
             exercises: [
               { id: 'b1', name: 'DB Incline Press', detail: '12-15 reps', target_kg: 15, target_label: '2x15 kg',
@@ -1019,7 +1340,7 @@ const USERS = {
             ]
           },
           {
-            name: 'C: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Leg Curl + Lateral Raise', sets: 3, rest: '60s', color: 'purple',
             exercises: [
               { id: 'c1', name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 45,
                 target_sets: [{kg:40,reps:15},{kg:45,reps:15},{kg:45,reps:15}],
@@ -1032,16 +1353,16 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Core + Dips Press', sets: 2, rest: '45s', color: 'orange',
+            name: 'D: Core + Dips Press', sets: 2, rest: '30s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 60,
                 target_sets: [{kg:55,reps:15},{kg:60,reps:12}],
                 alt: { name: 'Dead Bug', detail: '10 per kant', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } },
               { id: 'd2', name: 'Dips Press', detail: '10-15 reps \u2022 Panatta Dual System', target_kg: 65,
-                target_sets: [{kg:60,reps:15},{kg:65,reps:15}],
+                target_sets: [{kg:65,reps:15}],
                 alt: { name: 'OH Tricep Extension', detail: '12-15 reps \u2022 1 dumbbell', target_kg: 10,
-                  target_sets: [{kg:10,reps:12},{kg:10,reps:12}] } }
+                  target_sets: [{kg:10,reps:12}] } }
             ]
           }
         ]
@@ -1052,10 +1373,10 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: V-Squat + Seated Row', sets: 3, rest: '90s', color: 'green',
-            warmup: '1x12 V-Squat @30 kg',
+            name: 'A: Panatta Power Squat + Seated Row', sets: 3, rest: '75s', color: 'green',
+            warmup: '1x12 Panatta Power Squat @30 kg',
             exercises: [
-              { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+              { id: 'a1', name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 60,
                 target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}],
                 alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
                   target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:10}] } },
@@ -1066,7 +1387,7 @@ const USERS = {
             ]
           },
           {
-            name: 'B: Incline Press + Lat Pulldown', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Incline Press + Lat Pulldown', sets: 3, rest: '75s', color: 'blue',
             warmup: '1x12 Incline Press @15 kg',
             exercises: [
               { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps \u2022 Panatta', target_kg: 35,
@@ -1080,7 +1401,7 @@ const USERS = {
             ]
           },
           {
-            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Barbell RDL + Shoulder Press', sets: 3, rest: '60s', color: 'purple',
             warmup: '1x10 RDL @20 kg (stang)',
             exercises: [
               { id: 'c1', name: 'Barbell Romanian Deadlift', detail: '8-10 reps', target_kg: 30,
@@ -1094,16 +1415,16 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Core + Triceps', sets: 2, rest: '45s', color: 'orange',
+            name: 'D: Core + Calf', sets: 3, rest: '30s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Cable Crunch', detail: '12-15 reps', target_kg: 55,
                 target_sets: [{kg:45,reps:15},{kg:55,reps:12}],
                 alt: { name: 'Ab Machine', detail: '12-15 reps', target_kg: 55,
                   target_sets: [{kg:50,reps:15},{kg:55,reps:12}] } },
-              { id: 'd2', name: 'Tricep Pushdown', detail: '12-15 reps \u2022 rope', target_kg: 15,
-                target_sets: [{kg:10,reps:15},{kg:15,reps:12}],
-                alt: { name: 'OH Tricep Extension', detail: '12-15 reps \u2022 1 dumbbell', target_kg: 10,
-                  target_sets: [{kg:10,reps:12},{kg:10,reps:12}] } }
+              { id: 'd2', name: 'Seated Calf Raise', detail: '12-15 reps \u2022 plate-loaded, primary soleus', target_kg: 25,
+                target_sets: [{kg:20,reps:15},{kg:25,reps:12},{kg:30,reps:12}],
+                alt: { name: 'Smith Calf Raise', detail: '12-15 reps \u2022 plates op rug, gebogen knie', target_kg: 40,
+                  target_sets: [{kg:30,reps:15},{kg:40,reps:12},{kg:40,reps:12}] } }
             ]
           }
         ]
@@ -1114,7 +1435,7 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: Barbell Squat + Row', sets: 3, rest: '90s', color: 'green',
+            name: 'A: Barbell Squat + Row', sets: 3, rest: '75s', color: 'green',
             warmup: '1x10 Squat @20 kg (stang)',
             exercises: [
               { id: 'a1', name: 'Barbell Back Squat', detail: '8-10 reps', target_kg: 30,
@@ -1128,7 +1449,7 @@ const USERS = {
             ]
           },
           {
-            name: 'B: Chest Press + Lat Pulldown', sets: 3, rest: '90s', color: 'blue',
+            name: 'B: Chest Press + Lat Pulldown', sets: 3, rest: '75s', color: 'blue',
             warmup: '1x12 Chest Press @25 kg',
             exercises: [
               { id: 'b1', name: 'Vertical Chest Press', detail: '12-15 reps \u2022 Panatta', target_kg: 40,
@@ -1142,7 +1463,7 @@ const USERS = {
             ]
           },
           {
-            name: 'C: Lying Leg Curl + Cable Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Lying Leg Curl + Cable Lateral Raise', sets: 3, rest: '60s', color: 'purple',
             exercises: [
               { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps \u2022 Panatta', target_kg: 25,
                 target_sets: [{kg:20,reps:15},{kg:25,reps:12},{kg:25,reps:12}],
@@ -1155,7 +1476,7 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Core + Biceps', sets: 2, rest: '45s', color: 'orange',
+            name: 'D: Core + Biceps', sets: 2, rest: '30s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Ab Machine', detail: '12-15 reps', target_kg: 55,
                 target_sets: [{kg:50,reps:15},{kg:55,reps:12}],
@@ -1181,11 +1502,35 @@ let cloudSchemas = null; // cached from API
 let cloudMode = !!authToken;
 
 async function api(path, opts = {}) {
+  // Safety: in cloud mode, authUser must match currentUser. If not, state is corrupt — force logout.
+  if (cloudMode && authUser && currentUser && authUser.username !== currentUser) {
+    console.error('User mismatch: authUser=' + authUser.username + ' currentUser=' + currentUser + ' — forcing logout');
+    logout();
+    throw new Error('User mismatch');
+  }
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-  const res = await fetch(API_BASE + path, { ...opts, headers });
-  if (res.status === 401) { logout(); throw new Error('Unauthorized'); }
-  if (!res.ok) throw new Error(`API ${res.status}`);
+  // Item #11: AbortController met 15s timeout (anders hangt save oneindig op slecht netwerk)
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), 15000);
+  let res;
+  try {
+    res = await fetch(API_BASE + path, { ...opts, headers, signal: ctrl.signal });
+  } finally {
+    clearTimeout(tid);
+  }
+  if (res.status === 401) {
+    // Item #19: toast vóór logout zodat user weet wat er gebeurt
+    if (typeof showToast === 'function') showToast('Sessie verlopen — log opnieuw in');
+    logout();
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) {
+    // Item #12: extract backend-detail i.p.v. alleen status
+    let detail = '';
+    try { const body = await res.json(); detail = body.detail || ''; } catch(_) {}
+    throw new Error(detail || `API ${res.status}`);
+  }
   if (res.status === 204) return null;
   return res.json();
 }
@@ -1194,6 +1539,13 @@ function logout() {
   authToken = null; authUser = null; cloudSchemas = null; cloudMode = false;
   localStorage.removeItem('gym_token');
   localStorage.removeItem('gym_auth_user');
+  // Item #22: flush drafts + IDB-queue (cross-user JWT-leak + draft-confusie fix)
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('gym_draft_')).forEach(k => localStorage.removeItem(k));
+  } catch(_) {}
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    try { navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_QUEUE' }); } catch(_) {}
+  }
   showView('login');
   renderLoginUsers();
 }
@@ -1256,7 +1608,12 @@ async function loadCloudSchemas() {
         cloudSchemas[s.key] = { name: s.name, subtitle: s.subtitle, desc: s.description, supersets: s.data.supersets || s.data };
       });
     } else {
-      // No schemas in cloud yet — auto-import from local USERS data
+      // No schemas in cloud yet — auto-import from local USERS data.
+      // Safety: only import if authUser matches currentUser (prevent cross-user import via URL-bypass)
+      if (!authUser || authUser.username !== currentUser) {
+        console.warn('Skipping auto-import: authUser (' + (authUser?.username || 'none') + ') != currentUser (' + currentUser + ')');
+        return;
+      }
       const localSchemas = USERS[currentUser]?.schemas;
       if (localSchemas) {
         console.log('No cloud schemas found, importing from local data...');
@@ -1310,7 +1667,7 @@ function getTodaySchema(dayOfWeek) {
 
 function renderHome() {
   const schemas = getUserSchemas();
-  document.getElementById('homeTitle').textContent = 'Gym Tracker';
+  document.getElementById('homeTitle').textContent = 'Fitness Hub';
   const container = document.getElementById('homeCards');
   container.textContent = '';
 
@@ -1334,6 +1691,10 @@ function renderHome() {
   const cardHist = buildHomeCard('hist', {name:'Geschiedenis',subtitle:'Bekijk en deel eerdere workouts',desc:''}, 'hist', '\ud83d\udcca');
   cardHist.onclick = () => showView('history');
   container.appendChild(cardHist);
+
+  const cardVoeding = buildHomeCard('voed', {name:'Voeding',subtitle:'Macro-tracker met AI-parse (tekst + foto)',desc:''}, 'voed', '\ud83c\udf4e');
+  cardVoeding.onclick = () => showView('voeding');
+  container.appendChild(cardVoeding);
 }
 
 function buildHomeCard(key, schema, iconClass, emoji) {
@@ -1360,11 +1721,15 @@ function buildHomeCard(key, schema, iconClass, emoji) {
 }
 
 // === STORAGE ===
+// Workouts keyed by authenticated username when logged in (prevents URL-param mix).
+function _storageUser() {
+  return (authUser && authUser.username) ? authUser.username : currentUser;
+}
 function getWorkouts() {
-  return JSON.parse(localStorage.getItem('gym_workouts_' + currentUser) || '[]');
+  return JSON.parse(localStorage.getItem('gym_workouts_' + _storageUser()) || '[]');
 }
 function saveWorkouts(w) {
-  localStorage.setItem('gym_workouts_' + currentUser, JSON.stringify(w));
+  localStorage.setItem('gym_workouts_' + _storageUser(), JSON.stringify(w));
 }
 // Cloud workout save
 async function saveWorkoutToCloud(workout, schemaKey) {
@@ -1395,7 +1760,8 @@ async function saveWorkoutToCloud(workout, schemaKey) {
         date: workout.date,
         feedback: workout.feedback,
         notes: null,
-        sets
+        sets,
+        client_workout_id: workout.clientWorkoutId || null
       })
     });
     console.log('Workout saved to cloud:', res.id);
@@ -1418,6 +1784,7 @@ function showView(id) {
   if (id === 'home') updateStats();
   if (id === 'history') renderHistory();
   if (id === 'equipment') renderEquipment();
+  if (id === 'voeding') loadNutritionDashboard();
 }
 
 // === HOME STATS ===
@@ -1592,6 +1959,9 @@ function getResolvedEx(ex) {
 
 function renderExerciseInner(ex, numSets) {
   const resolved = getResolvedEx(ex);
+  // Asymmetric superset support: als een exercise minder target_sets heeft dan de superset-count (bv. 3 vs 4), respecteer dan het exercise-specifieke aantal zodat er geen lege 4e rij verschijnt.
+  const activeSets = (resolved.target_sets && Array.isArray(resolved.target_sets) && resolved.target_sets.length > 0) ? resolved.target_sets.length : numSets;
+  if (activeSets !== numSets) numSets = activeSets;
   const targetStr = resolved.target_label || (resolved.target_kg > 0 ? resolved.target_kg + ' kg' : 'BW');
   const hasInfo = EXERCISE_INFO[resolved.name];
   const isSwapped = currentSwaps[ex.id];
@@ -1644,14 +2014,162 @@ function toggleSwap(id, numSets) {
 }
 
 // === WORKOUT ===
-function startWorkout(schema) {
+
+// === DRAFT PERSISTENCE (survives tab-switch / OS process kill) ===
+function _draftId(schemaKey) {
+  const u = (authUser && authUser.username) ? authUser.username : currentUser;
+  return (u || 'anon') + '|' + schemaKey;
+}
+
+function swRequest(payload, timeoutMs = 1500) {
+  return new Promise((resolve) => {
+    if (!navigator.serviceWorker || !navigator.serviceWorker.controller) { resolve(null); return; }
+    const channel = new MessageChannel();
+    const timer = setTimeout(() => resolve(null), timeoutMs);
+    channel.port1.onmessage = e => { clearTimeout(timer); resolve(e.data); };
+    navigator.serviceWorker.controller.postMessage(payload, [channel.port2]);
+  });
+}
+
+let _draftSaveTimer = null;
+let currentWorkoutStartedAt = null;
+// One UUID per workout-attempt, persisted in the draft. Survives across save retries,
+// resumes, double-clicks, AND user-initiated re-saves during slow connections —
+// every POST for the same workout carries the same key, so backend dedup absorbs them.
+// Cleared by resetWorkoutState() on save/discard so the NEXT workout gets a fresh UUID.
+let currentWorkoutClientId = null;
+// In-flight guard so a second save-click while the first is awaiting the API
+// doesn't trigger a second confirm() + POST. Pure UX — backend dedup is the safety net.
+let _saveInProgress = false;
+
+function scheduleDraftSave() {
+  if (!currentSchema) return;
+  clearTimeout(_draftSaveTimer);
+  _draftSaveTimer = setTimeout(flushDraft, 500);
+}
+
+async function flushDraft() {
+  if (!currentSchema) return;
+  const draft = {
+    id: _draftId(currentSchema),
+    schemaKey: currentSchema,
+    sets: currentWorkout,
+    swaps: currentSwaps,
+    feedback: document.getElementById('workoutFeedback')?.value || '',
+    startedAt: currentWorkoutStartedAt || Date.now(),
+    // Persist the per-workout idempotency key so a resumed/restored workout
+    // keeps the same UUID across save-retries and even after page reload.
+    clientWorkoutId: currentWorkoutClientId,
+  };
+  try { localStorage.setItem('gym_draft_' + draft.id, JSON.stringify(draft)); } catch(e){}
+  await swRequest({ type: 'DRAFT_SAVE', draft });
+}
+
+// Item #23: TTL for localStorage drafts (7d). Older drafts get dropped — vermijdt
+// dat een orphan-draft uit de oude bug-period nog opduikt na 3 maanden.
+const DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function loadDraft(schemaKey) {
+  const id = _draftId(schemaKey);
+  const swRes = await swRequest({ type: 'DRAFT_LOAD', id });
+  if (swRes && swRes.draft) {
+    const ts = swRes.draft.startedAt || swRes.draft.savedAt;
+    if (ts && (Date.now() - ts) > DRAFT_TTL_MS) {
+      await clearDraft(schemaKey);
+      return null;
+    }
+    return swRes.draft;
+  }
+  try {
+    const raw = localStorage.getItem('gym_draft_' + id);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    const ts = d.startedAt || d.savedAt;
+    if (ts && (Date.now() - ts) > DRAFT_TTL_MS) {
+      localStorage.removeItem('gym_draft_' + id);
+      return null;
+    }
+    return d;
+  } catch { return null; }
+}
+
+async function clearDraft(schemaKey) {
+  const id = _draftId(schemaKey);
+  localStorage.removeItem('gym_draft_' + id);
+  await swRequest({ type: 'DRAFT_CLEAR', id });
+}
+
+// Reset in-memory workout state + clear feedback textarea.
+// Call AFTER clearDraft on save/exit so a fast restart of the same schema
+// doesn't show stale feedback while DB-clear async-completes.
+// Also clears the persistent UUID so the NEXT workout starts fresh.
+function resetWorkoutState() {
+  currentWorkout = {};
+  currentSwaps = {};
+  currentWorkoutStartedAt = null;
+  currentWorkoutClientId = null;
+  const fb = document.getElementById('workoutFeedback');
+  if (fb) fb.value = '';
+}
+
+// Generate a UUIDv4 (crypto.randomUUID with polyfill).
+// Used as client_workout_id for idempotent POST /api/workouts.
+function makeClientWorkoutId() {
+  if (window.crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+// Safety: flush draft when tab is hidden / page unloads
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushDraft(); });
+window.addEventListener('pagehide', () => { flushDraft(); });
+window.addEventListener('beforeunload', () => { flushDraft(); });
+
+async function startWorkout(schema) {
   currentSchema = schema;
   currentWorkout = {};
   currentSwaps = {};
+  currentWorkoutStartedAt = Date.now();
   const s = getUserSchemas()[schema];
 
+  // Check for in-progress draft.
+  // BUG-FIX (2026-05-16): previously clearDraft was only called when hasDraftData === true
+  // (i.e. sets had data). A draft with only feedback (no sets) would persist forever,
+  // resurfacing the old feedback in every subsequent session. Now: any draft without
+  // set-data is treated as an orphan and cleared.
+  const draft = await loadDraft(schema);
+  let hasDraftData = false;
+  if (draft) {
+    hasDraftData = !!(draft.sets && Object.values(draft.sets).some(
+      sets => Array.isArray(sets) && sets.some(x => x.kg || x.reps)
+    ));
+    if (hasDraftData) {
+      if (confirm('Je had een workout in progress. Doorgaan waar je gebleven was?')) {
+        currentWorkout = draft.sets || {};
+        currentSwaps = draft.swaps || {};
+        currentWorkoutStartedAt = draft.startedAt || Date.now();
+        // Resumed workout reuses the same idempotency UUID — guarantees that any
+        // save-retry (today or after page reload) still hits the dedup branch.
+        currentWorkoutClientId = draft.clientWorkoutId || makeClientWorkoutId();
+      } else {
+        await clearDraft(schema);
+        hasDraftData = false;
+        currentWorkoutClientId = makeClientWorkoutId();
+      }
+    } else {
+      // Orphan draft (feedback/swaps but no sets) — always wipe it.
+      await clearDraft(schema);
+      currentWorkoutClientId = makeClientWorkoutId();
+    }
+  } else {
+    currentWorkoutClientId = makeClientWorkoutId();
+  }
+
   document.getElementById('workoutTitle').textContent = s.name;
-  document.getElementById('workoutFeedback').value = '';
+  document.getElementById('workoutFeedback').value = (hasDraftData && draft && draft.feedback) || '';
 
   let html = '';
   s.supersets.forEach(ss => {
@@ -1670,6 +2188,7 @@ function startWorkout(schema) {
 
   document.getElementById('workoutExercises').innerHTML = html;
   showView('workout');
+  if (hasDraftData) restoreDraftInputs();
 }
 
 function autoSave(id, numSets) {
@@ -1680,6 +2199,20 @@ function autoSave(id, numSets) {
     sets.push({ kg, reps });
   }
   currentWorkout[id] = sets;
+  scheduleDraftSave();
+}
+
+function restoreDraftInputs() {
+  if (!currentWorkout) return;
+  Object.entries(currentWorkout).forEach(([id, sets]) => {
+    if (!Array.isArray(sets)) return;
+    sets.forEach((set, i) => {
+      const kgEl = document.getElementById('kg_' + id + '_' + i);
+      const repsEl = document.getElementById('reps_' + id + '_' + i);
+      if (kgEl && set.kg) kgEl.value = set.kg;
+      if (repsEl && set.reps) repsEl.value = set.reps;
+    });
+  });
 }
 
 function confirmExit() {
@@ -1687,13 +2220,23 @@ function confirmExit() {
     Array.isArray(sets) && sets.some(s => s.kg || s.reps)
   );
   if (hasData) {
-    if (confirm('Workout afsluiten zonder opslaan?')) showView('home');
+    if (confirm('Workout afsluiten zonder opslaan?')) {
+      if (currentSchema) clearDraft(currentSchema);
+      resetWorkoutState();
+      showView('home');
+    }
   } else {
+    if (currentSchema) clearDraft(currentSchema);
+    resetWorkoutState();
     showView('home');
   }
 }
 
 async function saveWorkout() {
+  if (_saveInProgress) {
+    showToast('Bezig met opslaan…');
+    return;
+  }
   const s = getUserSchemas()[currentSchema];
   const exercises = [];
   let hasAny = false;
@@ -1725,34 +2268,54 @@ async function saveWorkout() {
 
   if (!confirm('Workout opslaan?')) return;
 
-  const feedback = document.getElementById('workoutFeedback').value.trim();
+  _saveInProgress = true;
+  try {
+    const feedback = document.getElementById('workoutFeedback').value.trim();
 
-  const workout = {
-    date: new Date().toISOString(),
-    schema: currentSchema,
-    schemaName: s.name,
-    feedback: feedback || null,
-    exercises: exercises
-  };
+    const workout = {
+      date: new Date().toISOString(),
+      schema: currentSchema,
+      schemaName: s.name,
+      feedback: feedback || null,
+      exercises: exercises,
+      // Persistent UUID set at startWorkout() (or resumed from draft). Stays stable
+      // across ALL save attempts for this workout \u2014 double-clicks, user-initiated
+      // re-saves during slow connections, AND SW-queue replays all hit the same
+      // backend idempotency branch. Defensive fallback in case startWorkout wasn't
+      // called somehow.
+      clientWorkoutId: currentWorkoutClientId || makeClientWorkoutId()
+    };
 
-  const workouts = getWorkouts();
-  workouts.unshift(workout);
-  saveWorkouts(workouts);
+    const workouts = getWorkouts();
+    workouts.unshift(workout);
+    saveWorkouts(workouts);
 
-  // Save to cloud and show evaluation
-  const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
-  if (cloudResult && cloudResult.queued) {
-    // Offline: queued in service worker
-    showToast('Offline opgeslagen \u2014 synct automatisch');
-    registerSync();
-    setTimeout(() => showView('home'), 1200);
-  } else if (cloudResult && cloudResult.id) {
-    showToast('Workout opgeslagen!');
-    showView('home');
-    showWorkoutEvaluation(cloudResult.id, s.name);
-  } else {
-    showToast('Opgeslagen (lokaal)');
-    setTimeout(() => showView('home'), 800);
+    // Save to cloud and show evaluation
+    const cloudResult = await saveWorkoutToCloud(workout, currentSchema);
+    const savedSchema = currentSchema;
+    if (cloudResult && cloudResult.queued) {
+      // Offline: queued in service worker
+      showToast('Offline opgeslagen \u2014 synct automatisch');
+      registerSync();
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      setTimeout(() => showView('home'), 1200);
+    } else if (cloudResult && cloudResult.id) {
+      showToast('Workout opgeslagen!');
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      showView('home');
+      // Item #28: refresh stats-bar zodat "Vandaag" / "Deze week" direct kloppen.
+      try { await updateStats(); } catch(_) {}
+      showWorkoutEvaluation(cloudResult.id, s.name);
+    } else {
+      showToast('Opgeslagen (lokaal)');
+      await clearDraft(savedSchema);
+      resetWorkoutState();
+      setTimeout(() => { showView('home'); updateStats(); }, 800);
+    }
+  } finally {
+    _saveInProgress = false;
   }
 }
 
@@ -1926,7 +2489,7 @@ function showDetail(index, workouts) {
 
 // === DELETE ===
 async function deleteWorkout() {
-  if (!confirm('Workout verwijderen?')) return;
+  if (!confirm('Workout permanent verwijderen?')) return;
   if (cloudMode && viewingWorkout && viewingWorkout._cloudId) {
     try {
       await api('/api/workouts/' + viewingWorkout._cloudId, { method: 'DELETE' });
@@ -2268,11 +2831,15 @@ function copyToClipboard() {
 }
 
 // === TOAST ===
-function showToast(msg) {
+// Item #30: dynamic timeout. Default 2000ms; longer for long messages,
+// caller can override. Min 1500ms / max 5000ms.
+function showToast(msg, ms) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  const len = (msg || '').length;
+  const dynamic = Math.max(1500, Math.min(5000, 1500 + Math.floor(len * 50)));
+  setTimeout(() => t.classList.remove('show'), ms || dynamic);
 }
 
 // === REFRESH ===
@@ -2316,6 +2883,845 @@ document.addEventListener('touchend', () => {
   ptrPulling = false;
 });
 
+// === VOEDING (NUTRITION TRACKER) ===
+let nutrCurrentDate = null;       // ISO YYYY-MM-DD
+let nutrCurrentDayType = null;    // 'training' | 'rest' | 'weekend'
+let nutrInputMode = 'text';        // 'text' | 'photo'
+let nutrPhotoB64 = null;           // base64 JPEG, no data: prefix
+let nutrParsePreview = null;       // {items, totals, suggested_meal_type, overall_confidence, raw_text}
+let nutrParseClientId = null;      // UUID per save-attempt (idempotent), reused across resubmits
+let nutrSelectedMeal = null;       // user's chosen meal_type for current parse
+
+function _todayISO() {
+  // Local-date (niet UTC) zodat 'vandaag' rond middernacht in NL niet verspringt.
+  const d = new Date();
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0,10);
+}
+
+function _isoAddDays(iso, n) {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0,10);
+}
+
+function _fmtDateLabel(iso) {
+  const today = _todayISO();
+  if (iso === today) return 'Vandaag · ' + _fmtDateShort(iso);
+  if (iso === _isoAddDays(today, -1)) return 'Gisteren · ' + _fmtDateShort(iso);
+  if (iso === _isoAddDays(today, 1)) return 'Morgen · ' + _fmtDateShort(iso);
+  return _fmtDateLong(iso);
+}
+
+function _fmtDateShort(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const m = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+  return d.getDate() + ' ' + m[d.getMonth()];
+}
+
+function _fmtDateLong(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const wd = ['zo','ma','di','wo','do','vr','za'];
+  return wd[d.getDay()] + ' ' + _fmtDateShort(iso);
+}
+
+function _updateDateBar() {
+  const lbl = document.getElementById('nutrDateLabel');
+  const nextBtn = document.getElementById('nutrDateNext');
+  if (!lbl || !nutrCurrentDate) return;
+  lbl.textContent = _fmtDateLabel(nutrCurrentDate);
+  const today = _todayISO();
+  lbl.classList.toggle('is-today', nutrCurrentDate === today);
+  // Sta 1 dag vooruit toe (planning), maar niet verder
+  const maxFuture = _isoAddDays(today, 1);
+  nextBtn.disabled = (nutrCurrentDate >= maxFuture);
+  // Update "VANDAAG" header naar gekozen dag
+  const hdr = document.getElementById('nutrEntriesHeader');
+  if (hdr) {
+    if (nutrCurrentDate === today) hdr.textContent = 'Vandaag';
+    else if (nutrCurrentDate === _isoAddDays(today, -1)) hdr.textContent = 'Gisteren';
+    else if (nutrCurrentDate === _isoAddDays(today, 1)) hdr.textContent = 'Morgen';
+    else hdr.textContent = _fmtDateLong(nutrCurrentDate);
+  }
+}
+
+function shiftNutrDate(delta) {
+  if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
+  const today = _todayISO();
+  const next = _isoAddDays(nutrCurrentDate, delta);
+  if (delta > 0 && next > _isoAddDays(today, 1)) return; // max 1 dag vooruit
+  nutrCurrentDate = next;
+  // dagtype auto-resetten naar baseline van die nieuwe dag (user kan overrulen)
+  nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  if (nutrParsePreview) cancelParse();
+  loadNutritionDashboard();
+}
+
+function openNutrDatePicker() {
+  const p = document.getElementById('nutrDatePicker');
+  if (!p) return;
+  p.value = nutrCurrentDate || _todayISO();
+  p.max = _isoAddDays(_todayISO(), 7);  // max 1 wk vooruit voor planning
+  // showPicker als browser het ondersteunt (iOS 16.4+, Chrome 99+)
+  if (typeof p.showPicker === 'function') {
+    try { p.showPicker(); return; } catch(_) {}
+  }
+  p.click();
+}
+
+function onNutrDatePicked(e) {
+  const v = e.target.value;
+  if (!v) return;
+  nutrCurrentDate = v;
+  nutrCurrentDayType = _detectDayType(v);
+  if (nutrParsePreview) cancelParse();
+  loadNutritionDashboard();
+}
+
+function _detectDayType(iso) {
+  // Auto-detect baseline; user kan altijd handmatig refeed/other kiezen
+  const d = new Date(iso + 'T00:00:00');
+  const wd = d.getDay();
+  if (wd === 0 || wd === 6) return 'weekend';
+  if (wd === 1 || wd === 4) return 'training';  // ma + do
+  return 'rest';
+}
+
+function setDayType(dt) {
+  nutrCurrentDayType = dt;
+  // Item #24: parse-preview heeft stale meal-context bij wissel — clear hem
+  if (typeof nutrParsePreview !== 'undefined' && nutrParsePreview) cancelParse();
+  document.querySelectorAll('#nutrDayType button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dt === dt);
+  });
+  loadNutritionDashboard();
+}
+
+async function loadNutritionDashboard() {
+  if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
+  if (!nutrCurrentDayType) nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  document.querySelectorAll('#nutrDayType button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dt === nutrCurrentDayType);
+  });
+  try {
+    const url = '/api/nutrition/dashboard?date=' + nutrCurrentDate + '&day_type=' + nutrCurrentDayType;
+    const r = await api(url);
+    renderNutritionDashboard(r);
+  } catch (e) {
+    console.error('Nutrition dashboard load failed', e);
+    showToast('Voeding kon niet laden — ben je offline?');
+  }
+}
+
+function _pctBar(now, target) {
+  if (!target) return {pct: 0, cls: ''};
+  const p = (now / target) * 100;
+  let cls = '';
+  if (p > 110) cls = 'over';
+  else if (p >= 90) cls = 'near';
+  return {pct: Math.min(p, 100), cls};
+}
+
+function _el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  if (attrs) Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'class') e.className = v;
+    else if (k === 'onclick') e.onclick = v;
+    else if (k.startsWith('data-')) e.setAttribute(k, v);
+    else e[k] = v;
+  });
+  kids.forEach(k => {
+    if (k == null) return;
+    if (typeof k === 'string') e.appendChild(document.createTextNode(k));
+    else e.appendChild(k);
+  });
+  return e;
+}
+
+function renderNutritionDashboard(d) {
+  const t = d.target, tot = d.totals, dl = d.delta;
+  document.getElementById('nutrKcalNow').textContent = Math.round(tot.kcal);
+  document.getElementById('nutrKcalTarget').textContent = '/ ' + t.kcal + ' kcal';
+  document.getElementById('nutrKcalDelta').textContent = dl.kcal > 0
+    ? Math.round(dl.kcal) + ' kcal te gaan'
+    : Math.abs(Math.round(dl.kcal)) + ' kcal over';
+  const kb = _pctBar(tot.kcal, t.kcal);
+  const kbar = document.getElementById('nutrKcalBar');
+  kbar.style.width = kb.pct + '%';
+  kbar.className = 'macro-bar-fill ' + kb.cls;
+  [['P', t.protein_g, tot.protein_g],
+   ['C', t.carbs_g, tot.carbs_g],
+   ['F', t.fat_g, tot.fat_g]].forEach(([k, tgt, now]) => {
+    document.getElementById('nutr' + k + 'Now').textContent = Math.round(now);
+    document.getElementById('nutr' + k + 'Target').textContent = tgt;
+    const bb = _pctBar(now, tgt);
+    const bar = document.getElementById('nutr' + k + 'Bar');
+    bar.style.width = bb.pct + '%';
+    bar.className = 'macro-bar-fill ' + bb.cls;
+  });
+  // Entries list — safe DOM construction
+  const list = document.getElementById('nutrEntries');
+  list.textContent = '';
+  if (!d.entries.length) {
+    const today = _todayISO();
+    let emptyMsg = 'Nog niets gelogd vandaag. Begin met je ontbijt ↓';
+    if (nutrCurrentDate && nutrCurrentDate < today) emptyMsg = 'Geen logs op deze dag.';
+    else if (nutrCurrentDate && nutrCurrentDate > today) emptyMsg = 'Nog geen plan voor deze dag — log vooruit ↓';
+    list.appendChild(_el('div', {class:'nutr-empty'}, emptyMsg));
+    return;
+  }
+  d.entries.forEach(e => {
+    const time = new Date(e.created_at).toTimeString().slice(0,5);
+    const itemNames = (e.parsed_foods || []).map(it =>
+      it.name + ' ' + Math.round(it.quantity_g) + 'g').join(' · ');
+    const entry = _el('div', {class:'intake-entry'},
+      _el('div', {class:'intake-entry-head'},
+        _el('span', {class:'intake-entry-time'}, time + ' ',
+          _el('span', {class:'intake-entry-meal'}, e.meal_type || '')),
+        _el('span', {class:'intake-entry-totals'}, Math.round(e.totals.kcal) + ' kcal')
+      ),
+      _el('div', {class:'intake-entry-items'}, itemNames),
+      _el('div', {class:'intake-entry-totals'},
+        'E' + Math.round(e.totals.protein_g) +
+        ' · KH' + Math.round(e.totals.carbs_g) +
+        ' · V' + Math.round(e.totals.fat_g)),
+      _el('div', {class:'intake-entry-actions'},
+        _el('button', {onclick: () => deleteIntake(e.id)}, '🗑️ Verwijder'))
+    );
+    list.appendChild(entry);
+  });
+}
+
+function switchNutrInput(mode) {
+  nutrInputMode = mode;
+  document.getElementById('nutrTabText').classList.toggle('active', mode === 'text');
+  document.getElementById('nutrTabPhoto').classList.toggle('active', mode === 'photo');
+  document.getElementById('nutrInputText').style.display = mode === 'text' ? '' : 'none';
+  document.getElementById('nutrInputPhoto').style.display = mode === 'photo' ? '' : 'none';
+}
+
+function onPhotoSelected(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  // Item #21: file size + MIME pre-check (geen 50MB HEIC die UI bevriest)
+  if (!file.type.startsWith('image/')) { showToast('Geen geldige afbeelding'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('Bestand te groot (max 10MB)'); return; }
+  const img = new Image();
+  img.onload = () => {
+    const max = 640;
+    let w = img.width, h = img.height;
+    if (w > h && w > max) { h = h * max / w; w = max; }
+    else if (h > max) { w = w * max / h; h = max; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.82);
+    nutrPhotoB64 = dataUrl.split(',', 2)[1];
+    const preview = document.getElementById('nutrPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+    URL.revokeObjectURL(img.src);  // Item #13: memory-leak fix
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+async function parseNutritionInput() {
+  let text = '';
+  let image_b64 = null;
+  if (nutrInputMode === 'text') {
+    text = document.getElementById('nutrText').value.trim();
+    if (!text) { showToast('Vul iets in om te analyseren'); return; }
+  } else {
+    if (!nutrPhotoB64) { showToast('Kies eerst een foto'); return; }
+    image_b64 = nutrPhotoB64;
+    text = document.getElementById('nutrPhotoText').value.trim();
+  }
+  const btn = document.getElementById('nutrParseBtn');
+  btn.disabled = true; btn.textContent = 'Bezig met analyseren…';
+  try {
+    const result = await api('/api/nutrition/parse', {
+      method: 'POST',
+      body: JSON.stringify({text: text || null, image_b64})
+    });
+    nutrParsePreview = result;
+    nutrParseClientId = makeClientWorkoutId();
+    nutrSelectedMeal = result.suggested_meal_type || 'snack';
+    renderParsePreview(result);
+  } catch (e) {
+    console.error('parse failed', e);
+    console.error('parse error', e); showToast('Analyse mislukt — probeer opnieuw');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Analyseren';
+  }
+}
+
+function renderParsePreview(p) {
+  const box = document.getElementById('nutrParseResult');
+  box.style.display = 'block';
+  // Item #9: confidence NL-map (was "(high/medium/low)" Engels)
+  const _confNL = {high: 'hoog', medium: 'middel', low: 'laag'};
+  document.getElementById('nutrParseConf').textContent = '(' + (_confNL[p.overall_confidence] || p.overall_confidence) + ')';
+  // Items — safe DOM
+  const items = document.getElementById('nutrParseItems');
+  items.textContent = '';
+  p.items.forEach((it, i) => {
+    const qtyInput = _el('input', {type:'number', value: Math.round(it.quantity_g), min:0, step:1});
+    qtyInput.onchange = (ev) => adjustParseQty(i, ev.target.value);
+    const row = _el('div', {class:'parse-item'},
+      _el('span', {class:'parse-item-name'}, it.name),
+      qtyInput,
+      'g',
+      _el('span', {class:'parse-item-macros'},
+        Math.round(it.kcal) + 'k E' + Math.round(it.protein_g) +
+        ' KH' + Math.round(it.carbs_g) + ' V' + Math.round(it.fat_g)),
+      _el('span', {class:'parse-item-conf ' + (it.confidence || 'medium')},
+        ({high:'H', medium:'M', low:'L'}[it.confidence] || 'M')),
+      _el('button', {class:'parse-item-del', title:'Verwijder', onclick: () => removeParseItem(i)}, '✕')
+    );
+    items.appendChild(row);
+  });
+  // Meal-type selector
+  const mealSel = document.getElementById('nutrMealSelect');
+  mealSel.textContent = '';
+  ['ontbijt','lunch','diner','snack'].forEach(m => {
+    const b = _el('button', null, m.charAt(0).toUpperCase() + m.slice(1));
+    if (m === nutrSelectedMeal) b.classList.add('active');
+    b.onclick = () => { nutrSelectedMeal = m; renderParsePreview(nutrParsePreview); };
+    mealSel.appendChild(b);
+  });
+}
+
+function adjustParseQty(idx, newQty) {
+  const it = nutrParsePreview.items[idx];
+  if (!it) return;
+  const old = it.quantity_g || 1;
+  const factor = parseFloat(newQty) / old;
+  if (!isFinite(factor) || factor <= 0) return;
+  it.quantity_g = parseFloat(newQty);
+  it.kcal *= factor;
+  it.protein_g *= factor;
+  it.carbs_g *= factor;
+  it.fat_g *= factor;
+  renderParsePreview(nutrParsePreview);
+}
+
+function removeParseItem(idx) {
+  nutrParsePreview.items.splice(idx, 1);
+  renderParsePreview(nutrParsePreview);
+}
+
+function cancelParse() {
+  nutrParsePreview = null;
+  nutrParseClientId = null;
+  document.getElementById('nutrParseResult').style.display = 'none';
+}
+
+async function saveIntake() {
+  if (!nutrParsePreview || !nutrParsePreview.items.length) { showToast('Geen items om op te slaan'); return; }
+  const body = {
+    client_entry_id: nutrParseClientId,
+    date: nutrCurrentDate || _todayISO(),
+    meal_type: nutrSelectedMeal,
+    raw_input: nutrParsePreview.raw_text || (nutrInputMode === 'text'
+      ? document.getElementById('nutrText').value.trim()
+      : document.getElementById('nutrPhotoText').value.trim() || null),
+    photo_b64: nutrInputMode === 'photo' ? nutrPhotoB64 : null,
+    parsed_foods: nutrParsePreview.items,
+    ai_confidence: nutrParsePreview.overall_confidence,
+    user_corrected: false
+  };
+  try {
+    await api('/api/nutrition/intake', {method: 'POST', body: JSON.stringify(body)});
+    showToast('Opgeslagen!');
+    document.getElementById('nutrText').value = '';
+    document.getElementById('nutrPhotoText').value = '';
+    document.getElementById('nutrPhotoPreview').style.display = 'none';
+    document.getElementById('nutrPhotoFile').value = '';
+    nutrPhotoB64 = null;
+    cancelParse();
+    await loadNutritionDashboard();
+  } catch (e) {
+    console.error('save intake failed', e);
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
+  }
+}
+
+async function deleteIntake(id) {
+  if (!confirm('Deze entry verwijderen?')) return;
+  try {
+    await api('/api/nutrition/intake/' + id, {method: 'DELETE'});
+    showToast('Verwijderd');
+    await loadNutritionDashboard();
+  } catch (e) {
+    console.error('delete failed', e);
+    showToast('Verwijderen mislukt');
+  }
+}
+
+// === Hydration (water + natrium) ===
+async function openHydrationModal() {
+  document.getElementById('hydWater').value = '';
+  document.getElementById('hydSodium').value = '';
+  document.getElementById('hydNotes').value = '';
+  document.getElementById('hydModal').classList.add('open');
+  // Pre-fill if already logged today
+  try {
+    const h = await api('/api/nutrition/hydration?date=' + (nutrCurrentDate || _todayISO()));
+    if (h) {
+      if (h.water_ml) document.getElementById('hydWater').value = h.water_ml;
+      if (h.sodium_g) document.getElementById('hydSodium').value = h.sodium_g;
+      if (h.notes) document.getElementById('hydNotes').value = h.notes;
+    }
+  } catch (e) { /* nieuwe dag of geen entry, prima */ }
+}
+function closeHydrationModal() { document.getElementById('hydModal').classList.remove('open'); }
+async function saveHydration() {
+  const w = parseInt(document.getElementById('hydWater').value) || null;
+  const na = parseFloat(document.getElementById('hydSodium').value) || null;
+  const notes = document.getElementById('hydNotes').value.trim() || null;
+  if (!w && !na && !notes) { showToast('Vul iets in'); return; }
+  try {
+    await api('/api/nutrition/hydration', {method: 'PUT', body: JSON.stringify({
+      date: nutrCurrentDate || _todayISO(), water_ml: w, sodium_g: na, notes,
+    })});
+    showToast('💧 Opgeslagen!');
+    closeHydrationModal();
+  } catch (e) {
+    console.error('saveHydration failed', e);
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
+  }
+}
+
+// === Activity correction (Apple Conditie) ===
+function openActivityModal() {
+  document.getElementById('actPhotoPreview').style.display = 'none';
+  document.getElementById('actPhotoFile').value = '';
+  document.getElementById('actParseStatus').textContent = '';
+  document.getElementById('actResultBox').style.display = 'none';
+  document.getElementById('actModal').classList.add('open');
+}
+function closeActivityModal() { document.getElementById('actModal').classList.remove('open'); }
+
+function onActPhotoSelected(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = async () => {
+    const max = 1024;
+    let w = img.width, h = img.height;
+    if (w > h && w > max) { h = h * max / w; w = max; }
+    else if (h > max) { w = w * max / h; h = max; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    const b64 = dataUrl.split(',', 2)[1];
+
+    const preview = document.getElementById('actPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+    URL.revokeObjectURL(img.src);  // Item #13
+    const status = document.getElementById('actParseStatus');
+    status.textContent = '🔍 Foto wordt geanalyseerd…';
+    status.style.color = '#ff9500';
+
+    try {
+      const r = await api('/api/nutrition/activity-correction', {
+        method: 'POST',
+        body: JSON.stringify({image_b64: b64})
+      });
+      // Item #14: NL confidence-label i.p.v. "(high)"
+      const _conf = {high:'hoog', medium:'middel', low:'laag'}[r.confidence] || r.confidence;
+      status.textContent = '✓ Klaar (betrouwbaarheid: ' + _conf + ') — doel aangepast';
+      status.style.color = '#30d158';
+      renderActivityResult(r);
+      await loadNutritionDashboard();
+    } catch (e) {
+      console.error('activity correction failed', e);
+      status.textContent = '✗ Lukt niet — controleer de foto en probeer opnieuw';
+      status.style.color = '#ff453a';
+    }
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function renderActivityResult(r) {
+  const box = document.getElementById('actResult');
+  box.textContent = '';
+  const rows = [
+    ['📅 Datum', r.date],
+    ['🔥 Active kcal verbrand', r.active_kcal + ' kcal'],
+    ['🏃 Training tijd', r.exercise_min ? r.exercise_min + ' min' : '—'],
+    ['🚶 Staan', r.standing_hours ? r.standing_hours + ' uur' : '—'],
+    ['—', '—'],
+    ['BMR (basis)', r.bmr_used + ' kcal'],
+    ['Werkelijk TDEE', (r.bmr_used + r.active_kcal) + ' kcal'],
+    ['Cut-deficit', '-' + r.deficit_used + ' kcal'],
+    ['Baseline target was', r.baseline_target_kcal + ' kcal'],
+    ['Aangepast target', r.adjusted_target_kcal + ' kcal'],
+    [r.extra_kcal >= 0 ? '✨ Extra ruimte' : '⚠️ Minder ruimte', (r.extra_kcal >= 0 ? '+' : '') + r.extra_kcal + ' kcal'],
+    ['—', '—'],
+    ['Macro-split (aangepast)', `${r.target.kcal}k · E${r.target.protein_g} · KH${r.target.carbs_g} · V${r.target.fat_g}`],
+    [' ', '(eiwit + vet onveranderd, extra gaat naar koolhydraten)'],
+  ];
+  rows.forEach(([k, v]) => {
+    if (k === '—') {
+      box.appendChild(_el('div', {style:'border-top:1px solid #2c2c2e;margin:6px 0'}));
+      return;
+    }
+    const row = _el('div', {style:'display:flex;justify-content:space-between;padding:3px 0;font-size:12px'},
+      _el('span', {style:'color:#8e8e93'}, k),
+      _el('span', {style:'color:#fff;font-weight:600'}, String(v))
+    );
+    box.appendChild(row);
+  });
+  document.getElementById('actResultBox').style.display = 'block';
+}
+
+// === FASE 2: Body measurements ===
+let bmParsedExtras = null;  // extra Fitdays-velden uit photo-parse (saved on Opslaan)
+let bmParseSource = 'manual';
+
+function openBodyModal() {
+  document.getElementById('bmWeight').value = '';
+  document.getElementById('bmBf').value = '';
+  document.getElementById('bmBmr').value = '';
+  document.getElementById('bmNotes').value = '';
+  document.getElementById('bmPhotoPreview').style.display = 'none';
+  document.getElementById('bmPhotoFile').value = '';
+  document.getElementById('bmParseStatus').textContent = '';
+  document.getElementById('bmExtrasPreview').style.display = 'none';
+  bmParsedExtras = null;
+  bmParseSource = 'manual';
+  document.getElementById('bmModal').classList.add('open');
+}
+function closeBodyModal() {
+  document.getElementById('bmModal').classList.remove('open');
+  // Item #19: reset state op close (anders lekt naar volgende open)
+  bmParsedExtras = null;
+  bmParseSource = 'manual';
+}
+
+function onBmPhotoSelected(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  // Item #21: file size + MIME pre-check
+  if (!file.type.startsWith('image/')) { showToast('Geen geldige afbeelding'); return; }
+  if (file.size > 10 * 1024 * 1024) { showToast('Bestand te groot (max 10MB)'); return; }
+  const img = new Image();
+  img.onload = async () => {
+    // resize naar max 1024px (Fitdays-screenshots zijn vaak hoger)
+    const max = 1024;
+    let w = img.width, h = img.height;
+    if (w > h && w > max) { h = h * max / w; w = max; }
+    else if (h > max) { w = w * max / h; h = max; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    const dataUrl = c.toDataURL('image/jpeg', 0.85);
+    URL.revokeObjectURL(img.src);  // Item #13
+    const b64 = dataUrl.split(',', 2)[1];
+
+    const preview = document.getElementById('bmPhotoPreview');
+    preview.src = dataUrl;
+    preview.style.display = 'block';
+
+    const status = document.getElementById('bmParseStatus');
+    status.textContent = '🔍 Foto wordt geanalyseerd…';
+    status.style.color = '#0a84ff';
+
+    try {
+      const res = await api('/api/nutrition/measurements/parse', {
+        method: 'POST',
+        body: JSON.stringify({image_b64: b64})
+      });
+      const p = res.parsed;
+      // Fill main form fields
+      if (p.weight_kg) document.getElementById('bmWeight').value = p.weight_kg;
+      if (p.body_fat_pct) document.getElementById('bmBf').value = p.body_fat_pct;
+      if (p.bmr) document.getElementById('bmBmr').value = p.bmr;
+      // Store extras for save
+      bmParsedExtras = p;
+      bmParseSource = 'fitdays-vision';
+      // Show extras preview
+      renderBmExtras(p);
+      const _conf = {high:'hoog', medium:'middel', low:'laag'}[res.confidence] || res.confidence;
+      status.textContent = '✓ Uitgelezen (betrouwbaarheid: ' + _conf + ') — controleer en klik Opslaan';
+      status.style.color = '#30d158';
+    } catch (e) {
+      console.error('measurement parse failed', e);
+      status.textContent = '✗ ' + (e.message || 'Analyse mislukt — probeer opnieuw');
+      status.style.color = '#ff453a';
+    }
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function renderBmExtras(p) {
+  const list = document.getElementById('bmExtrasList');
+  list.textContent = '';
+  // Item #20: hide preview vóór early-return (anders blijft oude inhoud zichtbaar)
+  document.getElementById('bmExtrasPreview').style.display = 'none';
+  const fields = [
+    ['Spiermassa',     p.spiermassa_kg,    'kg'],
+    ['Skeletspier',    p.skeletspier_pct,  '%'],
+    ['Spiersnelheid',  p.spiersnelheid_pct,'%'],
+    ['Eiwit',          p.eiwit_pct,        '%'],
+    ['Lichaamswater',  p.water_pct,        '%'],
+    ['Watergewicht',   p.watergewicht_kg,  'kg'],
+    ['Onderhuids vet', p.onderhuids_vet_pct,'%'],
+    ['Visceraal vet',  p.visceraal_vet,    ''],
+    ['BMI',            p.bmi,              ''],
+    ['Vetvrij',        p.lean_mass_kg,     'kg'],
+  ].filter(([n,v,u]) => v != null);
+  if (!fields.length) { document.getElementById('bmExtrasPreview').style.display = 'none'; return; }
+  fields.forEach(([name, val, unit]) => {
+    list.appendChild(_el('span', {style:'color:#8e8e93'}, name));
+    list.appendChild(_el('span', {}, val + (unit ? ' ' + unit : '')));
+  });
+  document.getElementById('bmExtrasPreview').style.display = 'block';
+}
+
+async function saveBodyMeasurement() {
+  const w = parseFloat(document.getElementById('bmWeight').value);
+  if (!w || w < 30 || w > 250) { showToast('Vul een geldig gewicht in'); return; }
+  const bf = parseFloat(document.getElementById('bmBf').value) || null;
+  const bmr = parseInt(document.getElementById('bmBmr').value) || null;
+  const notes = document.getElementById('bmNotes').value.trim() || null;
+  // Merge user-form values with extras from photo-parse
+  const body = {
+    weight_kg: w,
+    body_fat_pct: bf,
+    bmr,
+    notes,
+    source: bmParseSource,
+    // extras (use form-overrides if user adjusted, else use parsed)
+    bmi: bmParsedExtras?.bmi ?? null,
+    spiermassa_kg: bmParsedExtras?.spiermassa_kg ?? null,
+    skeletspier_pct: bmParsedExtras?.skeletspier_pct ?? null,
+    spiersnelheid_pct: bmParsedExtras?.spiersnelheid_pct ?? null,
+    eiwit_pct: bmParsedExtras?.eiwit_pct ?? null,
+    water_pct: bmParsedExtras?.water_pct ?? null,
+    watergewicht_kg: bmParsedExtras?.watergewicht_kg ?? null,
+    onderhuids_vet_pct: bmParsedExtras?.onderhuids_vet_pct ?? null,
+    visceraal_vet: bmParsedExtras?.visceraal_vet ?? null,
+    lean_mass_kg: bmParsedExtras?.lean_mass_kg ?? null,
+  };
+  try {
+    await api('/api/nutrition/measurements', {method: 'POST', body: JSON.stringify(body)});
+    showToast('Meting opgeslagen!');
+    closeBodyModal();
+    await loadNutritionDashboard();
+    await loadTrends(_currentTrendsDays);
+  } catch (e) {
+    console.error('saveBodyMeasurement failed', e);
+    console.error('save error', e); showToast('Opslaan mislukt — probeer opnieuw');
+  }
+}
+
+// === FASE 4: Favorieten ===
+async function loadFavorites() {
+  try {
+    const favs = await api('/api/nutrition/favorites?days=30&limit=8');
+    const section = document.getElementById('nutrFavSection');
+    const scroll = document.getElementById('nutrFavScroll');
+    scroll.textContent = '';
+    if (!favs.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    favs.forEach(f => {
+      const names = (f.parsed_foods || []).map(it => it.name).join(' + ');
+      const card = _el('div', {class:'nutr-fav-card', onclick: () => useFavorite(f)},
+        _el('div', {class:'nutr-fav-name', title: names}, names || '(leeg)'),
+        _el('div', {class:'nutr-fav-macros'}, Math.round(f.totals.kcal) + 'k · E' + Math.round(f.totals.protein_g)),
+        _el('div', {class:'nutr-fav-meta'}, '×' + f.use_count + (f.meal_type ? ' · ' + f.meal_type : ''))
+      );
+      scroll.appendChild(card);
+    });
+  } catch (e) { console.warn('favorites load failed', e); }
+}
+async function useFavorite(fav) {
+  if (!confirm('Log "' + (fav.parsed_foods||[]).map(i=>i.name).join(' + ').slice(0,60) + '" opnieuw?')) return;
+  const body = {
+    client_entry_id: makeClientWorkoutId(),
+    date: nutrCurrentDate || _todayISO(),
+    meal_type: fav.meal_type,
+    raw_input: fav.raw_input,
+    parsed_foods: fav.parsed_foods,
+    ai_confidence: 'high',  // favorite reuse = user-confirmed
+    user_corrected: false
+  };
+  try {
+    await api('/api/nutrition/intake', {method: 'POST', body: JSON.stringify(body)});
+    showToast('Gelogd!');
+    await loadNutritionDashboard();
+    await loadFavorites();  // bump use_count
+  } catch (e) {
+    console.error('useFavorite failed', e);
+    console.error('error', e); showToast('Actie mislukt — probeer opnieuw');
+  }
+}
+
+// === FASE 3: Trends + native SVG charts ===
+let _currentTrendsDays = 7;
+async function loadTrends(days) {
+  _currentTrendsDays = days;
+  document.getElementById('trendsTab7').classList.toggle('active', days === 7);
+  document.getElementById('trendsTab30').classList.toggle('active', days === 30);
+  try {
+    const [trends, meas] = await Promise.all([
+      api('/api/nutrition/trends?days=' + days),
+      api('/api/nutrition/measurements?days=' + Math.max(days, 30))
+    ]);
+    renderKcalChart(trends);
+    renderWeightChart(meas);
+  } catch (e) { console.warn('trends load failed', e); }
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function _svg(tag, attrs) {
+  const e = document.createElementNS(SVG_NS, tag);
+  if (attrs) Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k, v));
+  return e;
+}
+
+function renderKcalChart(trends) {
+  // trends: newest-first; reverse for left→right chronology
+  const data = [...trends].reverse();
+  const svg = document.getElementById('trendsKcalChart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const w = svg.clientWidth || 320, h = 120, pad = 18;
+  const cw = w - pad * 2;
+  const barW = cw / data.length;
+  // baseline at 100%
+  const baseY = pad + (h - pad*2) * 0;  // top axis = 200%
+  const scale = (h - pad*2) / 200;  // 0..200%
+  // 100% reference line
+  const line = _svg('line', {x1: pad, x2: w-pad, y1: pad + (200-100)*scale, y2: pad + (200-100)*scale, stroke:'#3a3a3c', 'stroke-dasharray':'2,3'});
+  svg.appendChild(line);
+  data.forEach((d, i) => {
+    const pct = Math.min(d.kcal_pct, 200);
+    const bh = pct * scale;
+    const x = pad + i * barW + 1;
+    const y = pad + (200 - pct) * scale;
+    const fill = d.kcal_pct >= 90 && d.kcal_pct <= 105 ? '#30d158' :
+                 d.kcal_pct > 105 ? '#ff453a' :
+                 d.entries_count === 0 ? '#48484a' : '#ffd60a';
+    const rect = _svg('rect', {x: x, y: y, width: barW - 2, height: Math.max(bh, 1), fill, rx: 2});
+    rect.appendChild(_svg('title', {})).textContent = `${d.date}: ${d.kcal}/${d.target_kcal}k (${d.kcal_pct}%) · ${d.entries_count} entries`;
+    svg.appendChild(rect);
+  });
+  // Date label start/end
+  if (data.length) {
+    const startLbl = _svg('text', {x: pad, y: h - 2, fill: '#8e8e93', 'font-size': 9});
+    startLbl.textContent = data[0].date.slice(5);
+    svg.appendChild(startLbl);
+    const endLbl = _svg('text', {x: w - pad - 30, y: h - 2, fill: '#8e8e93', 'font-size': 9});
+    endLbl.textContent = data[data.length-1].date.slice(5);
+    svg.appendChild(endLbl);
+  }
+  const ok = data.filter(d => d.entries_count > 0 && d.kcal_pct >= 90 && d.kcal_pct <= 105).length;
+  const logged = data.filter(d => d.entries_count > 0).length;
+  document.getElementById('trendsKcalLegend').textContent =
+    `${ok}/${logged} dagen op target (90-105%) · ${logged}/${data.length} dagen gelogd`;
+}
+
+function renderWeightChart(measurements) {
+  // measurements: newest-first; reverse for chronology
+  const data = [...measurements].reverse().filter(m => m.weight_kg);
+  const svg = document.getElementById('trendsWeightChart');
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  if (data.length < 1) {
+    const t = _svg('text', {x: '50%', y: '50%', fill:'#8e8e93', 'font-size':11, 'text-anchor':'middle'});
+    t.textContent = 'Nog geen metingen — klik 📊 om er een toe te voegen';
+    svg.appendChild(t);
+    document.getElementById('trendsWeightLegend').textContent = '';
+    return;
+  }
+  const w = svg.clientWidth || 320, h = 90, pad = 22;
+  const cw = w - pad * 2, ch = h - pad * 2;
+  const minW = Math.min(...data.map(m => m.weight_kg)) - 0.5;
+  const maxW = Math.max(...data.map(m => m.weight_kg)) + 0.5;
+  const range = maxW - minW || 1;
+  const xStep = data.length > 1 ? cw / (data.length - 1) : 0;
+  // path
+  let path = '';
+  data.forEach((m, i) => {
+    const x = pad + i * xStep;
+    const y = pad + ch - ((m.weight_kg - minW) / range) * ch;
+    path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+  });
+  const line = _svg('path', {d: path, fill:'none', stroke:'#0a84ff', 'stroke-width': 2});
+  svg.appendChild(line);
+  // dots
+  data.forEach((m, i) => {
+    const x = pad + i * xStep;
+    const y = pad + ch - ((m.weight_kg - minW) / range) * ch;
+    const c = _svg('circle', {cx: x, cy: y, r: 3, fill: '#0a84ff'});
+    c.appendChild(_svg('title', {})).textContent = `${m.date}: ${m.weight_kg}kg${m.body_fat_pct ? ` · ${m.body_fat_pct}%` : ''}`;
+    svg.appendChild(c);
+  });
+  // Y axis labels (min/max)
+  const yMaxLbl = _svg('text', {x: 2, y: pad+4, fill:'#8e8e93', 'font-size': 9});
+  yMaxLbl.textContent = maxW.toFixed(1);
+  svg.appendChild(yMaxLbl);
+  const yMinLbl = _svg('text', {x: 2, y: pad+ch+3, fill:'#8e8e93', 'font-size': 9});
+  yMinLbl.textContent = minW.toFixed(1);
+  svg.appendChild(yMinLbl);
+  // X labels
+  if (data.length >= 2) {
+    const xStart = _svg('text', {x: pad, y: h - 2, fill:'#8e8e93', 'font-size': 9});
+    xStart.textContent = data[0].date.slice(5);
+    svg.appendChild(xStart);
+    const xEnd = _svg('text', {x: w - pad - 30, y: h - 2, fill:'#8e8e93', 'font-size': 9});
+    xEnd.textContent = data[data.length-1].date.slice(5);
+    svg.appendChild(xEnd);
+  }
+  const first = data[0].weight_kg, last = data[data.length-1].weight_kg;
+  const delta = (last - first).toFixed(1);
+  document.getElementById('trendsWeightLegend').textContent =
+    `${data.length} meting(en) · ${delta > 0 ? '+' : ''}${delta} kg`;
+}
+
+// === smart-target badge in dashboard renderer ===
+function _renderTargetBadge(d) {
+  const elTarget = document.getElementById('nutrKcalTarget');
+  // remove old badge
+  const oldBadge = document.getElementById('nutrTargetBadge');
+  if (oldBadge) oldBadge.remove();
+  if (!elTarget) return;
+  const badge = _el('span', {id:'nutrTargetBadge', class: 'smart-badge' + (d.target_basis ? '' : ' manual')});
+  badge.textContent = d.target_basis ? 'smart' : 'manual';
+  badge.title = d.target_basis
+    ? `Op basis van: BMR ${d.target_basis.bmr} · ${d.target_basis.weight_kg}kg${d.target_basis.body_fat_pct ? ` · ${d.target_basis.body_fat_pct}%` : ''} (${d.target_basis.measurement_date})`
+    : 'Statisch target uit configuratie';
+  badge.onclick = () => alert(badge.title);
+  elTarget.parentNode.appendChild(badge);
+}
+
+// Patch loadNutritionDashboard to also load favorites + trends + badge
+const _origLoadDash = loadNutritionDashboard;
+loadNutritionDashboard = async function() {
+  if (!nutrCurrentDate) nutrCurrentDate = _todayISO();
+  if (!nutrCurrentDayType) nutrCurrentDayType = _detectDayType(nutrCurrentDate);
+  _updateDateBar();
+  document.querySelectorAll('#nutrDayType button').forEach(b => {
+    b.classList.toggle('active', b.dataset.dt === nutrCurrentDayType);
+  });
+  try {
+    const url = '/api/nutrition/dashboard?date=' + nutrCurrentDate + '&day_type=' + nutrCurrentDayType;
+    const r = await api(url);
+    renderNutritionDashboard(r);
+    _renderTargetBadge(r);
+  } catch (e) {
+    console.error('Nutrition dashboard load failed', e);
+    showToast('Voeding kon niet laden — ben je offline?');
+  }
+  // sidecar loads (non-blocking)
+  loadFavorites();
+  loadTrends(_currentTrendsDays);
+};
+
 // === INIT ===
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
@@ -2329,7 +3735,26 @@ if ('serviceWorker' in navigator) {
         console.log('Workout queued for offline sync');
       }
     });
+    // Prompt user when a new SW version installs (critical for PWA — iOS otherwise
+    // sticks with stale cached index.html for days). Reloads when new SW takes control.
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      if (!nw) return;
+      nw.addEventListener('statechange', () => {
+        if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+          if (confirm('Nieuwe versie van de gym-app beschikbaar. Nu laden?')) {
+            nw.postMessage({ type: 'SKIP_WAITING' });
+          }
+        }
+      });
+    });
   }).catch(() => {});
+  let _reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_reloading) return;
+    _reloading = true;
+    location.reload();
+  });
 }
 
 // Migrate old single-user data to joost
@@ -2338,9 +3763,15 @@ if (localStorage.getItem('gym_workouts') && !localStorage.getItem('gym_workouts_
   localStorage.removeItem('gym_workouts');
 }
 
-// Determine user from URL param, fallback to saved user, default to joost
+// Determine user: JWT auth wins. URL-param only works if NOT logged in (offline/preview).
 const urlUser = new URLSearchParams(window.location.search).get('user');
-if (urlUser && USERS[urlUser]) {
+if (authToken && authUser) {
+  // Logged in: JWT is source of truth, ignore URL-param for user switching
+  currentUser = authUser.username;
+  if (urlUser && urlUser !== authUser.username) {
+    console.warn('URL ?user=' + urlUser + ' ignored — logged in as ' + authUser.username);
+  }
+} else if (urlUser && USERS[urlUser]) {
   currentUser = urlUser;
   localStorage.setItem('gym_user', urlUser);
 } else {

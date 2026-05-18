@@ -751,10 +751,10 @@ const EXERCISE_INFO = {
     dos: ['Voeten op heupbreedte, mid-platform', 'Volle ROM: knie\u00ebn naar borst tot 90-100\u00b0', 'Duw gelijk via beide hielen', 'Rug + heup tegen het pad — niet heffen bij diep zakken', 'Andere hoek dan Sled: meer hamstring-rek'],
     donts: ['Knie\u00ebn niet naar binnen laten vallen', 'Niet half-rep (verlies van quad-stretch)', 'Knie\u00ebn niet op slot gooien bovenin', 'Niet bouncen uit de bottom']
   },
-  'V-Squat': {
+  'Panatta Power Squat': {
     muscles: 'Quadriceps, glutes, hamstrings',
-    dos: ['Voeten op schouderbreedte, laag op het platform voor meer quads, hoog voor meer glutes', 'Volle ROM tot minstens 90° kniehoek', 'Rug plat tegen het pad houden', 'Knieën in lijn met tenen duwen', 'V-Squat heeft 2 standen: Outward looking (rug naar machine) = meer quad-activatie · Inward looking (gezicht naar machine) = meer glute/hamstring + hipdrive (Schema B gebruikt inward)'],
-    donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen']
+    dos: ['Voeten ongeveer schouderbreedte, lichte buitenwaartse stand', 'Verticale romp, schouders stevig tegen de pads', 'Diep zakken — minstens dijen parallel aan de grond', 'Druk vanuit hielen omhoog', 'Knieën in lijn met tenen sturen'],
+    donts: ['Knieën niet naar binnen laten vallen', 'Niet met halve reps werken', 'Niet op je tenen duwen', 'Niet bouncen uit de bottom']
   },
   'Lat Pulldown': {
     muscles: 'Lats, biceps, middenrug',
@@ -965,8 +965,8 @@ const USERS = {
             exercises: [
               { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps \u2022 volle diepte', target_kg: 90,
                 target_sets: [{kg:90,reps:7},{kg:90,reps:7},{kg:90,reps:7},{kg:90,reps:7}],
-                alt: { name: 'V-Squat', detail: '6-8 reps', target_kg: 130,
-                  target_sets: [{kg:120,reps:8},{kg:130,reps:6},{kg:130,reps:6},{kg:130,reps:6}] } },
+                alt: { name: 'Panatta Power Squat', detail: '6-8 reps', target_kg: 110,
+                  target_sets: [{kg:90,reps:8},{kg:100,reps:7},{kg:110,reps:6},{kg:110,reps:6}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '6-10 reps \u2022 V-grip/neutraal + straps \u2022 3 sets (rebalance 20 apr)', target_kg: 80,
                 target_sets: [{kg:70,reps:8},{kg:75,reps:8},{kg:80,reps:7}],
                 alt: { name: 'Assisted Chin-up', detail: '8-10 reps \u2022 machine met counter-weight (Nautilus)', target_kg: 0,
@@ -1027,8 +1027,8 @@ const USERS = {
             exercises: [
               { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 185,
                 target_sets: [{kg:145,reps:12},{kg:165,reps:12},{kg:185,reps:12},{kg:185,reps:12}],
-                alt: { name: 'V-Squat', detail: '10-12 reps \u2022 inward looking', target_kg: 130,
-                  target_sets: [{kg:100,reps:12},{kg:120,reps:10},{kg:130,reps:10},{kg:130,reps:10}] } },
+                alt: { name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 100,
+                  target_sets: [{kg:80,reps:12},{kg:90,reps:10},{kg:100,reps:10},{kg:100,reps:10}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 V-grip/neutraal + straps \u2022 3 sets (rebalance 20 apr)', target_kg: 75,
                 target_sets: [{kg:70,reps:12},{kg:75,reps:12},{kg:75,reps:12}],
                 alt: { name: 'Seated Cable Row', detail: '10-12 reps', target_kg: 70,
@@ -1255,7 +1255,7 @@ const USERS = {
             exercises: [
               { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
                 target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:12}],
-                alt: { name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+                alt: { name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 60,
                   target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}] } },
               { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps \u2022 wide grip', target_kg: 45,
                 target_sets: [{kg:40,reps:12},{kg:45,reps:12},{kg:45,reps:12}],
@@ -1373,10 +1373,10 @@ const USERS = {
         desc: '22 sets \u2022 ~60 min',
         supersets: [
           {
-            name: 'A: V-Squat + Seated Row', sets: 3, rest: '75s', color: 'green',
-            warmup: '1x12 V-Squat @30 kg',
+            name: 'A: Panatta Power Squat + Seated Row', sets: 3, rest: '75s', color: 'green',
+            warmup: '1x12 Panatta Power Squat @30 kg',
             exercises: [
-              { id: 'a1', name: 'V-Squat', detail: '10-12 reps', target_kg: 60,
+              { id: 'a1', name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 60,
                 target_sets: [{kg:40,reps:12},{kg:55,reps:10},{kg:60,reps:10}],
                 alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 110,
                   target_sets: [{kg:100,reps:10},{kg:110,reps:10},{kg:110,reps:10}] } },
