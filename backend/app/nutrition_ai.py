@@ -107,6 +107,12 @@ def _extract_tool_call(response) -> dict:
     """Pull the log_intake tool_use block from Claude's response."""
     for block in response.content:
         if block.type == "tool_use" and block.name == "log_intake":
+            # Detect truncated tool_use: max_tokens hit + empty items = silent fail
+            items = block.input.get("items", []) if isinstance(block.input, dict) else []
+            if response.stop_reason == "max_tokens" and not items:
+                raise RuntimeError(
+                    "input te complex voor 1 analyse — splits het in kleinere stukken (max ~10 items per beurt)"
+                )
             return block.input
     raise RuntimeError(f"No log_intake tool_use in response: {[b.type for b in response.content]}")
 
@@ -180,7 +186,7 @@ def parse_measurement(image_b64: str) -> dict:
 
     response = client.messages.create(
         model=_model(),
-        max_tokens=1024,
+        max_tokens=2048,  # bump 1024 → 2048 (Fitdays kan 18+ velden hebben)
         system=[{"type": "text", "text": MEASUREMENT_SYSTEM, "cache_control": {"type": "ephemeral"}}],
         tools=[LOG_MEASUREMENT_TOOL],
         tool_choice={"type": "tool", "name": "log_measurement"},
@@ -249,7 +255,7 @@ def parse_activity(image_b64: str) -> dict:
 
     response = client.messages.create(
         model=_model(),
-        max_tokens=512,
+        max_tokens=1024,  # bump 512 → 1024 (defensive)
         system=[{"type": "text", "text": ACTIVITY_SYSTEM, "cache_control": {"type": "ephemeral"}}],
         tools=[LOG_ACTIVITY_TOOL],
         tool_choice={"type": "tool", "name": "log_activity"},
@@ -306,7 +312,9 @@ def parse_intake(text: str | None = None, image_b64: str | None = None) -> dict:
 
     response = client.messages.create(
         model=_model(),
-        max_tokens=1024,
+        # 18 mei 2026: bump van 1024 → 4096. Joost's lunch (4 boterhammen × ingrediënten = 15 items)
+        # raakte 1024-cap → stop_reason=max_tokens + items=[] = silent fail in UI.
+        max_tokens=4096,
         system=[{"type": "text", "text": SYSTEM_PROMPT, "cache_control": {"type": "ephemeral"}}],
         tools=[LOG_INTAKE_TOOL],
         tool_choice={"type": "tool", "name": "log_intake"},
