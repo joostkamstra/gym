@@ -1,5 +1,5 @@
 // v13 - voeding review-aanpassingen: Mifflin BMR + dynamic deficit + refeed + carb-cycling ±250 + hydration
-const CACHE_NAME = 'gym-v14';
+const CACHE_NAME = 'gym-v15';
 const STATIC_ASSETS = ['/', '/index.html', '/manifest.json'];
 const API_CACHE = 'gym-api-v13';
 const DB_NAME = 'gym-offline';

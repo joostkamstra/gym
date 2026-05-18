@@ -1510,9 +1510,13 @@ async function api(path, opts = {}) {
   }
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-  // Item #11: AbortController met 15s timeout (anders hangt save oneindig op slecht netwerk)
+  // Item #11: AbortController met timeout. 18 mei: parse-endpoints krijgen 45s
+  // (Anthropic tool_use cold-cache kan 20-30s zijn voor multi-item input),
+  // overige calls 15s default.
+  const isAI = /\/api\/nutrition\/(parse|parse-activity|parse-measurement|measurements\/parse)/.test(path);
+  const timeoutMs = opts.timeout || (isAI ? 45000 : 15000);
   const ctrl = new AbortController();
-  const tid = setTimeout(() => ctrl.abort(), 15000);
+  const tid = setTimeout(() => ctrl.abort(), timeoutMs);
   let res;
   try {
     res = await fetch(API_BASE + path, { ...opts, headers, signal: ctrl.signal });
