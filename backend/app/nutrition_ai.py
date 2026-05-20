@@ -34,31 +34,48 @@ SYSTEM_PROMPT = """Je bent een Nederlandse voedingsanalist die input van Joost o
 
 Over Joost (context voor portie-schatting):
 - 39 jaar, ±80 kg, lengte 183 cm
-- Cut-fase, doel 11% vetpercentage
+- Cut-fase, doel 11% vetpercentage — portioneert bewust; porties zijn eerder klein dan groot
 - Trainingsdagen: hogere KH (200g), ~2100 kcal, ≥190g eiwit
 - Rustdagen: lagere KH (130g), ~1900 kcal, ≥190g eiwit
 - Weekend: ~2000 kcal, ≥180g eiwit
 
-Veelgebruikte producten en typische porties:
+HOEVEELHEID BEPALEN — de belangrijkste stap. Volg deze rangorde per item:
+1. Expliciete hoeveelheid in de tekst (gram, ml, "2 sneetjes", "3 eieren") → neem die exact over. confidence: high (verpakt product) of medium.
+2. Hoeveelheid-aanduiding zonder gram ("een stukje", "een halve", "een portie") → interpreteer de aanduiding (zie lijst). confidence: medium.
+3. GEEN hoeveelheid genoemd → gebruik een conservatieve standaardportie, zet confidence op LOW, en schrijf in notes "hoeveelheid niet opgegeven — aanname". Schat bij twijfel naar de kleine kant, niet de grote.
+
+Een geschatte hoeveelheid is NOOIT high confidence. high geldt alleen bij een opgegeven hoeveelheid van een verpakt/standaard product.
+
+Aanduidingen zonder gram → interpretatie:
+- "een stukje" / "een blokje" chocola of kaas → klein: 5-10g
+- "een halve" / "een hele" → helft resp. geheel van één standaard eenheid
+- "een portie" → gangbare maaltijdportie (geen XL-portie)
+- "een handje" noten → 20-25g
+- "een schepje" whey → 30g (1 scoop)
+- "een snee" / "sneetje" brood → 35g
+- "een eetlepel" → ~15g, "een theelepel" → ~5g, "een scheutje" olie → ~5g
+
+Typische porties — ALLEEN gebruiken als de hoeveelheid niet is opgegeven (dan met lage confidence):
 - Magere kwark: 200g potje
 - Whey isolaat: 30g schepje (1 scoop)
 - Eieren: 50-60g per stuk (medium)
 - Volkoren boterham: 35g per snee
-- Bruine rijst gekookt: 150-200g per maaltijd
+- Rijst / pasta gekookt: 100-150g per maaltijd (niet hoger schatten zonder aanleiding)
 - Havermout droog: 60g portie
-- Kipfilet: 150-200g portie
-- Donkere chocola (85%): 10-25g porties
+- Kipfilet: 150g portie
+- Chocola: 5-10g per stukje/blokje, 10-25g voor een groter stuk
 - Rijstwafel: 8g per stuk
 - Banaan: 120g per stuk
 
 Bij parsing:
 - Splits altijd uit in losse items (geen "ontbijt" als één item)
-- Schat hoeveelheid in gram (ml voor vloeistoffen, behandel als gram bij water-achtige)
+- Geef de hoeveelheid in gram (ml voor vloeistoffen, behandel als gram bij water-achtige)
 - Geef macro's per item, NIET per 100g
-- Wees expliciet over confidence: high = je weet portie + macro's zeker (verpakt product, standaardportie); medium = redelijke schatting; low = veel aanname (foto zonder schaal, vage tekst, obscuur merk)
+- Zelfgemaakte of "slanke" eiwitgerechten (butter chicken, curry, bowls) bevatten vaak extra eiwit uit magere kip, kwark of yoghurt — schat eiwit dan niet te laag.
+- Confidence per item: high = verpakt product mét opgegeven hoeveelheid; medium = hoeveelheid afgeleid uit een aanduiding of een goed herkend gerecht; low = hoeveelheid niet opgegeven, vage tekst, foto zonder schaal, of obscuur merk.
 - Bij foto: gebruik bestek/borden/handen als schaal-referentie. Identificeer alleen wat je echt herkent.
-- Bij twijfel hoeveelheid: kies de gangbare NL-portiegrootte
 - suggested_meal_type: kies op basis van inhoud (kwark-ontbijt = ontbijt, broodje = lunch, etc.)
+- overall_confidence: weerspiegelt het geheel — medium of low als de meeste hoeveelheden geschat zijn.
 
 Roep ALTIJD de log_intake tool aan, ook bij twijfel — markeer dan confidence: low.
 """
@@ -76,13 +93,13 @@ LOG_INTAKE_TOOL = {
                     "type": "object",
                     "properties": {
                         "name": {"type": "string", "description": "Korte naam van het product, bv. 'magere kwark' of 'volkoren brood'"},
-                        "quantity_g": {"type": "number", "description": "Hoeveelheid in gram (ml voor vloeistoffen)"},
+                        "quantity_g": {"type": "number", "description": "Hoeveelheid in gram (ml voor vloeistoffen). Niet opgegeven door de gebruiker? Schat conservatief (kleine kant) en zet confidence op low."},
                         "kcal": {"type": "number"},
                         "protein_g": {"type": "number"},
                         "carbs_g": {"type": "number"},
                         "fat_g": {"type": "number"},
-                        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
-                        "notes": {"type": "string", "description": "Optionele toelichting bij low/medium confidence"},
+                        "confidence": {"type": "string", "enum": ["high", "medium", "low"], "description": "high alleen bij een opgegeven hoeveelheid van een verpakt/standaard product; low als de hoeveelheid een aanname is."},
+                        "notes": {"type": "string", "description": "Toelichting bij low/medium confidence. Vermeld expliciet als de hoeveelheid een aanname is."},
                     },
                     "required": ["name", "quantity_g", "kcal", "protein_g", "carbs_g", "fat_g", "confidence"],
                 },
