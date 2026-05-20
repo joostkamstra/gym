@@ -122,8 +122,9 @@ class Food(Base):
     user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     brand: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    source: Mapped[str] = mapped_column(String(30), nullable=False)  # 'manual', 'ai-estimated', 'open-food-facts'
+    source: Mapped[str] = mapped_column(String(30), nullable=False)  # 'manual', 'ai-estimated', 'open-food-facts', 'nevo'
     source_ref: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    barcode: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
     kcal_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
     protein_per_100g: Mapped[float] = mapped_column(Float, nullable=False)
     carbs_per_100g: Mapped[float] = mapped_column(Float, nullable=False)

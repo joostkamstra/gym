@@ -180,6 +180,15 @@ class ParsedFoodItem(BaseModel):
     confidence: str | None = None  # 'high', 'medium', 'low'
     notes: str | None = None
     food_id: uuid.UUID | None = None  # if matched to known food
+    # Macro-bron: 'ai-estimate' (LLM-schatting) | 'open-food-facts' | 'database'
+    source: str | None = None
+    barcode: str | None = None  # gezet bij een open-food-facts match/scan
+    # Per-100g dichtheid uit de voedingsdatabase (None bij pure AI-schatting).
+    # Laat de frontend exact herschalen wanneer de portie wordt gecorrigeerd.
+    kcal_per_100g: float | None = None
+    protein_per_100g: float | None = None
+    carbs_per_100g: float | None = None
+    fat_per_100g: float | None = None
 
 
 class ParseRequest(BaseModel):
