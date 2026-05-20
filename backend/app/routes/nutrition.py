@@ -19,9 +19,8 @@ from app.config import get_settings
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import BodyMeasurement, DailyTargetOverride, Food, IntakeEntry, NutritionTarget, User
+from app.models import BodyMeasurement, DailyTargetOverride, IntakeEntry, NutritionTarget, User
 from app.nutrition_ai import parse_activity, parse_intake, parse_measurement
-from app.food_db import best_search_match, cache_food, lookup_barcode, match_food, search_by_name
 from app.schemas import (
     ActivityCorrectionRequest,
     ActivityCorrectionResponse,
@@ -88,66 +87,12 @@ async def _portion_history(db: AsyncSession, user_id, days: int = 90, limit_food
     return dict(sorted(out.items(), key=lambda kv: -len(by_name[kv[0]]))[:limit_foods])
 
 
-def _db_enriched_item(it: dict, food: Food) -> dict:
-    """Item-dict met macro's uit een Food-databaserij (per-100g × portie)."""
-    f = float(it.get("quantity_g") or 0) / 100.0
-    return {
-        **it,
-        "kcal": round(food.kcal_per_100g * f),
-        "protein_g": round(food.protein_per_100g * f, 1),
-        "carbs_g": round(food.carbs_per_100g * f, 1),
-        "fat_g": round(food.fat_per_100g * f, 1),
-        "food_id": food.id,
-        "source": food.source,
-        "barcode": food.barcode,
-        "kcal_per_100g": food.kcal_per_100g,
-        "protein_per_100g": food.protein_per_100g,
-        "carbs_per_100g": food.carbs_per_100g,
-        "fat_per_100g": food.fat_per_100g,
-    }
-
-
-def _ai_estimate_item(it: dict) -> dict:
-    """Item zonder DB-match: AI-schatting behouden, kcal consistent maken (4/4/9)."""
+def _finalize_item(it: dict) -> dict:
+    """kcal afleiden uit de macro's (4/4/9) zodat het item intern consistent is."""
     p = float(it.get("protein_g") or 0)
     c = float(it.get("carbs_g") or 0)
     fat = float(it.get("fat_g") or 0)
-    return {**it, "kcal": round(4 * p + 4 * c + 9 * fat), "source": "ai-estimate"}
-
-
-async def _enrich_with_food_db(db: AsyncSession, items: list[dict]) -> list[dict]:
-    """Verrijk AI-geparsede items met echte database-macro's.
-
-    Per item: lokale trigram-match in de Food-tabel → anders een live OFF-zoek-
-    opdracht (parallel, strikte naam-acceptatie). Match → macro's = DB-dichtheid ×
-    portie. Miss → AI-schatting behouden. Faalt de hele stap, dan AI-schatting voor
-    alles (parsen mag nooit breken op een database-glitch).
-    """
-    try:
-        out: list[dict | None] = [None] * len(items)
-        misses: list[tuple[int, str]] = []
-        for i, it in enumerate(items):
-            local = await match_food(db, it.get("name", "") or "")
-            if local:
-                out[i] = _db_enriched_item(it, local)
-            else:
-                misses.append((i, it.get("name", "") or ""))
-
-        miss_subset = misses[:6]  # cap OFF-calls per parse
-        if miss_subset:
-            results = await asyncio.gather(*[
-                asyncio.to_thread(search_by_name, name) for _, name in miss_subset
-            ])
-            for (idx, name), candidates in zip(miss_subset, results):
-                hit = best_search_match(name, candidates)
-                if hit:
-                    food = await cache_food(db, hit)
-                    out[idx] = _db_enriched_item(items[idx], food)
-
-        return [out[i] if out[i] is not None else _ai_estimate_item(items[i])
-                for i in range(len(items))]
-    except Exception:
-        return [_ai_estimate_item(it) for it in items]
+    return {**it, "kcal": round(4 * p + 4 * c + 9 * fat)}
 
 
 def _detect_day_type(d: date_type) -> str:
@@ -337,9 +282,7 @@ async def parse(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Parse text/photo input into structured macros, verrijkt met database-macro's.
-
-    Cachet Open-Food-Facts-treffers in de Food-tabel (lichte DB-write)."""
+    """Parse text/photo input into structured macros. No DB write."""
     if not req.text and not req.image_b64:
         raise HTTPException(status_code=400, detail="Geef tekst of foto mee")
     # Item #5: image size cap
@@ -362,9 +305,7 @@ async def parse(
         # Item #36: generic message ipv raw exception
         raise HTTPException(status_code=502, detail="AI-analyse mislukt — probeer opnieuw")
 
-    # Veranker macro's aan de voedingsdatabase waar mogelijk (Open Food Facts).
-    enriched = await _enrich_with_food_db(db, result.get("items", []))
-    items = [ParsedFoodItem(**it) for it in enriched]
+    items = [ParsedFoodItem(**_finalize_item(it)) for it in result.get("items", [])]
     totals = _sum_totals(items)
     return ParseResponse(
         items=items,
@@ -373,27 +314,6 @@ async def parse(
         overall_confidence=result.get("overall_confidence", "medium"),
         raw_text=req.text,
     )
-
-
-@router.get("/barcode/{code}", response_model=ParsedFoodItem)
-async def barcode_lookup(
-    code: str,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Zoek een product op barcode via Open Food Facts → ParsedFoodItem met echte
-    labelmacro's. Portie staat default op 100g; de gebruiker stelt 'm daarna in."""
-    data = await asyncio.to_thread(lookup_barcode, code)
-    if not data:
-        raise HTTPException(status_code=404, detail="Product niet gevonden in Open Food Facts")
-    food = await cache_food(db, data)
-    return _db_enriched_item({
-        "name": data["name"],
-        "quantity_g": 100,
-        "kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0,
-        "confidence": "medium",
-        "notes": "Macro's van het productlabel — stel je portie in.",
-    }, food)
 
 
 @router.post("/intake", response_model=IntakeEntryResponse, status_code=status.HTTP_201_CREATED)
