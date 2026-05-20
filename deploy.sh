@@ -88,8 +88,22 @@ docker run -d --name gym-api \
   --env-file /opt/gym/.env \
   "$IMAGE_TAG" >/dev/null
 
-echo "    -- wachten op startup (8s)"
-sleep 8
+echo "    -- wachten op startup (poll /health, max 40s)"
+HEALTHY=""
+for i in $(seq 1 20); do
+  if docker exec gym-api curl -sf http://localhost:8001/health >/dev/null 2>&1; then
+    HEALTHY="yes"; echo "       ready na $((i*2))s"; break
+  fi
+  sleep 2
+done
+if [ -z "$HEALTHY" ]; then
+  echo "    !! container niet ready binnen 40s — rolling back"
+  docker stop gym-api && docker rm gym-api
+  docker rename gym-api-prev gym-api
+  docker start gym-api
+  echo "    rolled back. aborting."
+  exit 1
+fi
 
 echo "    -- status"
 docker ps --filter name=^gym-api$ --format '       {{.Names}}: {{.Status}}'
