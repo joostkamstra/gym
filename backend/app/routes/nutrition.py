@@ -56,6 +56,37 @@ def _sum_totals(items: list) -> MacroTotals:
     )
 
 
+async def _portion_history(db: AsyncSession, user_id, days: int = 90, limit_foods: int = 30) -> dict:
+    """Typische porties per voedingsmiddel uit Joost's eerdere intake-entries.
+
+    Voedt de AI-parser i.p.v. een hardcoded portie-tabel: porties die Joost zelf
+    heeft gelogd zijn betrouwbaarder dan generieke aannames. Voorkeur voor
+    user_corrected entries; mediaan tegen uitschieters; cap op de meest-gelogde items.
+    """
+    import statistics
+    since = date_type.today() - timedelta(days=days)
+    rows = (await db.execute(
+        select(IntakeEntry)
+        .where(IntakeEntry.user_id == user_id, IntakeEntry.date >= since)
+        .order_by(desc(IntakeEntry.created_at))
+        .limit(400)
+    )).scalars().all()
+    by_name: dict = defaultdict(list)
+    for e in rows:
+        for it in (e.parsed_foods or []):
+            name = (it.get("name") or "").lower().strip()
+            q = it.get("quantity_g")
+            if name and isinstance(q, (int, float)) and q > 0:
+                by_name[name].append((float(q), bool(e.user_corrected)))
+    out: dict = {}
+    for name, vals in by_name.items():
+        corrected = [q for q, c in vals if c]
+        sample = corrected if corrected else [q for q, _ in vals]
+        out[name] = round(statistics.median(sample))
+    # meest-gelogde items eerst, cap zodat de prompt compact blijft
+    return dict(sorted(out.items(), key=lambda kv: -len(by_name[kv[0]]))[:limit_foods])
+
+
 def _detect_day_type(d: date_type) -> str:
     """Default day-type detection (smart version comes in Phase 2).
 
@@ -241,6 +272,7 @@ def _entry_response(e: IntakeEntry) -> IntakeEntryResponse:
 async def parse(
     req: ParseRequest,
     user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Parse text/photo input into structured macros. No DB write."""
     if not req.text and not req.image_b64:
@@ -250,9 +282,15 @@ async def parse(
         b64 = req.image_b64.split(",", 1)[1] if req.image_b64.startswith("data:") else req.image_b64
         if len(b64) * 3 // 4 > MAX_IMAGE_BYTES:
             raise HTTPException(status_code=413, detail="Foto te groot (max 5MB)")
+    # Portie-priors uit Joost's eigen history — vervangt de hardcoded portie-tabel.
+    # Faalt dit, dan parsen we zonder priors (degradeert netjes).
+    try:
+        history = await _portion_history(db, user.id)
+    except Exception:
+        history = {}
     try:
         # Item #2: async wrapping zodat event-loop niet 2-8s blokt
-        result = await asyncio.to_thread(parse_intake, req.text, req.image_b64)
+        result = await asyncio.to_thread(parse_intake, req.text, req.image_b64, history)
     except RuntimeError:
         raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
     except Exception:
