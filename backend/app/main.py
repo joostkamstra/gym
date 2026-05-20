@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
@@ -31,6 +31,22 @@ app = FastAPI(
     docs_url="/api/docs" if settings.APP_ENV != "production" else None,
     redoc_url=None,
 )
+
+# No-cache headers voor PWA shell-files (index.html, sw.js, manifest.json)
+# zodat iOS PWA op elke relaunch een fresh versie ophaalt. Anders zit een
+# gebruiker eeuwig vast aan de cached versie zonder dat het hostname iets
+# verandert (single-domain deploy = geen URL-based cache-buster).
+_NO_CACHE_PATHS = {"/", "/index.html", "/sw.js", "/manifest.json"}
+
+@app.middleware("http")
+async def no_cache_shell(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path in _NO_CACHE_PATHS:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
 
 # CORS (item #6 + #7: strip-trim + explicit methods)
 _origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]

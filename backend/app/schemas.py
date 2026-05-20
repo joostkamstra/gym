@@ -310,22 +310,11 @@ class MeasurementParseResponse(BaseModel):
 # === DAILY ACTIVITY CORRECTION ===
 
 class ActivityCorrectionRequest(BaseModel):
-    image_b64: str
+    image_b64: str | None = None          # screenshot-route
+    active_kcal: int | None = None        # handmatige route (alternatief)
+    exercise_min: int | None = None
+    standing_hours: float | None = None
     date: date_type | None = None  # defaults today
-
-
-class HydrationUpsertRequest(BaseModel):
-    date: date_type | None = None  # default today
-    water_ml: int | None = None
-    sodium_g: float | None = None
-    notes: str | None = None
-
-
-class HydrationResponse(BaseModel):
-    date: date_type
-    water_ml: int | None
-    sodium_g: float | None
-    notes: str | None
 
 
 class ActivityCorrectionResponse(BaseModel):

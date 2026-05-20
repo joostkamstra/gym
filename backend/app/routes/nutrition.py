@@ -19,7 +19,7 @@ from app.config import get_settings
 
 from app.auth import get_current_user
 from app.database import get_db
-from app.models import BodyMeasurement, DailyHydration, DailyTargetOverride, IntakeEntry, NutritionTarget, User
+from app.models import BodyMeasurement, DailyTargetOverride, IntakeEntry, NutritionTarget, User
 from app.nutrition_ai import parse_activity, parse_intake, parse_measurement
 from app.schemas import (
     ActivityCorrectionRequest,
@@ -27,8 +27,6 @@ from app.schemas import (
     BodyMeasurementCreate,
     BodyMeasurementResponse,
     DayDashboardResponse,
-    HydrationResponse,
-    HydrationUpsertRequest,
     IntakeCreateRequest,
     IntakeEntryResponse,
     MacroTotals,
@@ -88,6 +86,30 @@ def _mifflin_bmr(weight_kg: float, height_cm: int, age: int, gender: str) -> int
     return round(base + (5 if (gender or "M").upper() == "M" else -161))
 
 
+def _macro_split(kcal: int, weight: float, day_type: str) -> dict:
+    """Verdeel kcal over eiwit/vet/KH volgens day_type-protocol.
+
+    Eiwit + vet zijn gewicht-gebaseerd (cut-protocol), KH absorbeert de rest.
+    Gedeeld door _smart_target én de activity-correction override-pad zodat
+    een day_type-wissel ook bij een actieve override de macro-split bijwerkt.
+    """
+    if day_type == "training":
+        protein_per_kg, fat_per_kg = 2.3, 0.7
+    elif day_type == "rest":
+        protein_per_kg, fat_per_kg = 2.3, 0.8
+    elif day_type == "refeed":
+        protein_per_kg, fat_per_kg = 2.2, 0.5
+    else:  # weekend / unknown
+        protein_per_kg, fat_per_kg = 2.2, 0.8
+    protein_g = round(weight * protein_per_kg)
+    fat_g = round(weight * fat_per_kg)
+    carbs_g = max(0, round((kcal - protein_g * 4 - fat_g * 9) / 4))
+    return {
+        "kcal": kcal, "protein_g": protein_g, "carbs_g": carbs_g, "fat_g": fat_g,
+        "protein_per_kg": protein_per_kg, "fat_per_kg": fat_per_kg,
+    }
+
+
 def _smart_target(
     measurement: BodyMeasurement, day_type: str,
     user: User | None = None,
@@ -135,26 +157,16 @@ def _smart_target(
 
     if day_type == "training":
         kcal = base_kcal + 250            # was +100 — meaningful cycling
-        protein_per_kg = 2.3
-        fat_per_kg = 0.7
     elif day_type == "rest":
         kcal = base_kcal - 250            # was -100
-        protein_per_kg = 2.3
-        fat_per_kg = 0.8
     elif day_type == "refeed":
         kcal = base_kcal                  # = TDEE, geen deficit
-        protein_per_kg = 2.2              # houdt eiwit gelijk aan weekend
-        fat_per_kg = 0.5                  # minimum hormonaal — laat KH alle ruimte
     else:  # weekend / unknown
         kcal = base_kcal
-        protein_per_kg = 2.2
-        fat_per_kg = 0.8
 
-    protein_g = round(weight * protein_per_kg)
-    fat_g = round(weight * fat_per_kg)
-    p_kcal = protein_g * 4
-    f_kcal = fat_g * 9
-    carbs_g = max(0, round((kcal - p_kcal - f_kcal) / 4))
+    split = _macro_split(kcal, weight, day_type)
+    protein_g, fat_g, carbs_g = split["protein_g"], split["fat_g"], split["carbs_g"]
+    protein_per_kg, fat_per_kg = split["protein_per_kg"], split["fat_per_kg"]
 
     target = {"kcal": kcal, "protein_g": protein_g, "carbs_g": carbs_g, "fat_g": fat_g}
     basis = {
@@ -359,12 +371,25 @@ async def dashboard(
             .where(DailyTargetOverride.user_id == user.id, DailyTargetOverride.date == date)
         )).scalar_one_or_none()
         if override:
+            # kcal-totaal staat vast (= gemeten TDEE − deficit), maar de
+            # eiwit/vet/KH-split volgt het gekozen day_type. Zo is de
+            # day-type-toggle ook bij een actieve override betekenisvol.
+            ov_basis = dict(override.basis or {})
+            ov_weight = ov_basis.get("weight_kg")
+            if ov_weight:
+                sp = _macro_split(override.kcal, ov_weight, dt)
+                ov_kcal, ov_protein, ov_carbs, ov_fat = (
+                    sp["kcal"], sp["protein_g"], sp["carbs_g"], sp["fat_g"])
+            else:
+                # oude override-rows zonder weight_kg → opgeslagen split
+                ov_kcal, ov_protein, ov_carbs, ov_fat = (
+                    override.kcal, override.protein_g, override.carbs_g, override.fat_g)
             target_response = TargetResponse(
-                day_type=dt, kcal=override.kcal, protein_g=override.protein_g,
-                carbs_g=override.carbs_g, fat_g=override.fat_g,
+                day_type=dt, kcal=ov_kcal, protein_g=ov_protein,
+                carbs_g=ov_carbs, fat_g=ov_fat,
                 source="activity-correction:" + str(override.active_kcal) + "kcal",
             )
-            target_basis = dict(override.basis or {})
+            target_basis = ov_basis
             target_basis["override_source"] = "apple-activity"
             target_basis["override_active_kcal"] = override.active_kcal
 
@@ -473,7 +498,7 @@ async def activity_correction(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    """Parse Apple Activity screenshot → recompute today's target from actual TDEE.
+    """Recompute today's target from actual TDEE — via screenshot of handmatig.
 
     Math:
       actual_TDEE = BMR + active_kcal (Apple's 'Bewegen' = active calories)
@@ -484,24 +509,35 @@ async def activity_correction(
     over smart-target / seeded targets.
     """
     from datetime import date as _date
-    # Item #5: image size cap
+
     if req.image_b64:
+        # Screenshot-route: vision-parse
         b64 = req.image_b64.split(",", 1)[1] if req.image_b64.startswith("data:") else req.image_b64
         if len(b64) * 3 // 4 > MAX_IMAGE_BYTES:
             raise HTTPException(status_code=413, detail="Foto te groot (max 5MB)")
-    try:
-        # Item #2: async wrapping
-        parsed = await asyncio.to_thread(parse_activity, req.image_b64)
-    except RuntimeError:
-        raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
-    except Exception:
-        # Item #13 + #36: generic 4xx i.p.v. raw 500
-        raise HTTPException(status_code=422, detail="Kon screenshot niet uitlezen — controleer foto en probeer opnieuw")
+        try:
+            parsed = await asyncio.to_thread(parse_activity, req.image_b64)
+        except RuntimeError:
+            raise HTTPException(status_code=503, detail="AI-service niet beschikbaar")
+        except Exception:
+            raise HTTPException(status_code=422, detail="Kon screenshot niet uitlezen — controleer foto en probeer opnieuw")
+        confidence = parsed.get("confidence", "medium")
+        active_kcal = int(parsed.get("active_kcal", 0))
+        exercise_min = parsed.get("exercise_min")
+        standing_hours = parsed.get("standing_hours")
+        source = "apple-activity-vision"
+    elif req.active_kcal is not None:
+        # Handmatige route: gebruiker voert active kcal zelf in
+        confidence = "manual"
+        active_kcal = int(req.active_kcal)
+        exercise_min = req.exercise_min
+        standing_hours = req.standing_hours
+        source = "apple-activity-manual"
+    else:
+        raise HTTPException(status_code=400, detail="Geef een screenshot óf een handmatige active_kcal op")
 
-    confidence = parsed.get("confidence", "medium")
-    active_kcal = int(parsed.get("active_kcal", 0))
     if active_kcal <= 0:
-        raise HTTPException(status_code=400, detail="Geen active_kcal gevonden in screenshot")
+        raise HTTPException(status_code=400, detail="active_kcal moet groter dan 0 zijn")
 
     target_date = req.date or _date.today()
     dt = _detect_day_type(target_date)
@@ -533,14 +569,19 @@ async def activity_correction(
         "bmr_source": baseline_basis.get("bmr_source", "?"),
         "actual_tdee": actual_tdee,
         "active_kcal": active_kcal,
-        "exercise_min": parsed.get("exercise_min"),
-        "standing_hours": parsed.get("standing_hours"),
+        "exercise_min": exercise_min,
+        "standing_hours": standing_hours,
         "cut_deficit_kcal": cut_deficit,
         "deficit_pct": round(cut_deficit / actual_tdee * 100, 1),
         "baseline_kcal": baseline_tgt["kcal"],
         "extra_vs_baseline": adjusted_kcal - baseline_tgt["kcal"],
         "day_type": dt,
         "source_image_confidence": confidence,
+        # measurement-context zodat de smart-badge tooltip niet 'undefined' toont
+        "weight_kg": m.weight_kg,
+        "body_fat_pct": m.body_fat_pct,
+        "lean_mass_kg": m.lean_mass_kg,
+        "measurement_date": str(m.date),
     }
 
     # Upsert
@@ -554,18 +595,18 @@ async def activity_correction(
         existing.carbs_g = carbs_g
         existing.fat_g = fat_g
         existing.active_kcal = active_kcal
-        existing.exercise_min = parsed.get("exercise_min")
-        existing.standing_hours = parsed.get("standing_hours")
+        existing.exercise_min = exercise_min
+        existing.standing_hours = standing_hours
         existing.basis = basis
-        existing.source = "apple-activity-vision"
+        existing.source = source
     else:
         override = DailyTargetOverride(
             user_id=user.id, date=target_date,
             kcal=adjusted_kcal, protein_g=protein_g, carbs_g=carbs_g, fat_g=fat_g,
             active_kcal=active_kcal,
-            exercise_min=parsed.get("exercise_min"),
-            standing_hours=parsed.get("standing_hours"),
-            basis=basis, source="apple-activity-vision",
+            exercise_min=exercise_min,
+            standing_hours=standing_hours,
+            basis=basis, source=source,
         )
         db.add(override)
     await db.flush()
@@ -573,8 +614,8 @@ async def activity_correction(
     return ActivityCorrectionResponse(
         date=target_date,
         active_kcal=active_kcal,
-        exercise_min=parsed.get("exercise_min"),
-        standing_hours=parsed.get("standing_hours"),
+        exercise_min=exercise_min,
+        standing_hours=standing_hours,
         bmr_used=bmr,
         deficit_used=cut_deficit,
         baseline_target_kcal=baseline_tgt["kcal"],
@@ -638,9 +679,27 @@ async def nutrition_trends(
         .order_by(IntakeEntry.date)
     )).scalars().all()
 
-    # Latest measurement drives target (snapshot in time would be more accurate
-    # but for short windows latest is good enough)
-    m = await _latest_measurement(db, user.id)
+    # Snapshot-in-time: zelfde 3-laagse prio als dashboard.
+    # 1. DailyTargetOverride (activity-correction) voor die specifieke dag
+    # 2. Smart target uit measurement-as-of-that-day
+    # 3. Manual seeded target fallback
+    all_measurements = (await db.execute(
+        select(BodyMeasurement)
+        .where(BodyMeasurement.user_id == user.id, BodyMeasurement.date <= _date.today())
+        .order_by(desc(BodyMeasurement.date), desc(BodyMeasurement.created_at))
+    )).scalars().all()
+
+    overrides_rows = (await db.execute(
+        select(DailyTargetOverride)
+        .where(DailyTargetOverride.user_id == user.id, DailyTargetOverride.date >= since)
+    )).scalars().all()
+    overrides_by_date = {o.date: o for o in overrides_rows}
+
+    def _measurement_as_of(d):
+        for mm in all_measurements:
+            if mm.date <= d:
+                return mm
+        return None
 
     by_date: dict = defaultdict(lambda: {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0, "n": 0})
     for e in rows:
@@ -657,12 +716,17 @@ async def nutrition_trends(
         bucket = by_date.get(d, {"kcal": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0, "n": 0})
         dt = _detect_day_type(d)
         target = None
-        if m:
-            tgt, _ = _smart_target(m, dt, user=user)  # Item #15: was zonder user → mifflin-default fallback
-            target = tgt
+        ov = overrides_by_date.get(d)
+        if ov:
+            target = {"kcal": ov.kcal, "protein_g": ov.protein_g, "carbs_g": ov.carbs_g, "fat_g": ov.fat_g}
         else:
-            t = await _get_target_for(db, user.id, d, dt)
-            target = {"kcal": t.kcal, "protein_g": t.protein_g, "carbs_g": t.carbs_g, "fat_g": t.fat_g} if t else {"kcal": 2000, "protein_g": 180, "carbs_g": 170, "fat_g": 65}
+            m_for_day = _measurement_as_of(d)
+            if m_for_day:
+                tgt, _ = _smart_target(m_for_day, dt, user=user)
+                target = tgt
+            else:
+                t = await _get_target_for(db, user.id, d, dt)
+                target = {"kcal": t.kcal, "protein_g": t.protein_g, "carbs_g": t.carbs_g, "fat_g": t.fat_g} if t else {"kcal": 2000, "protein_g": 180, "carbs_g": 170, "fat_g": 65}
         out.append({
             "date": str(d),
             "day_type": dt,
@@ -730,49 +794,6 @@ async def favorites(
         }
         for sig, g in top
     ]
-
-
-# === HYDRATION (water + natrium) ===
-
-@router.put("/hydration", response_model=HydrationResponse)
-async def upsert_hydration(
-    req: HydrationUpsertRequest,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Upsert water + natrium voor een specifieke dag (uniek per user×date)."""
-    from datetime import date as _date
-    target_date = req.date or _date.today()
-    existing = (await db.execute(
-        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == target_date)
-    )).scalar_one_or_none()
-    if existing:
-        if req.water_ml is not None: existing.water_ml = req.water_ml
-        if req.sodium_g is not None: existing.sodium_g = req.sodium_g
-        if req.notes is not None: existing.notes = req.notes
-        h = existing
-    else:
-        h = DailyHydration(
-            user_id=user.id, date=target_date,
-            water_ml=req.water_ml, sodium_g=req.sodium_g, notes=req.notes,
-        )
-        db.add(h)
-    await db.flush()
-    return HydrationResponse(date=h.date, water_ml=h.water_ml, sodium_g=h.sodium_g, notes=h.notes)
-
-
-@router.get("/hydration", response_model=HydrationResponse | None)
-async def get_hydration(
-    date: date_type = Query(...),
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    h = (await db.execute(
-        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == date)
-    )).scalar_one_or_none()
-    if not h:
-        return None
-    return HydrationResponse(date=h.date, water_ml=h.water_ml, sodium_g=h.sodium_g, notes=h.notes)
 
 
 # === REMINDERS (Phase 5 — Telegram-based, HTTPS-free MVP) ===
@@ -908,22 +929,6 @@ async def delete_measurement(
     if not m:
         raise HTTPException(status_code=404, detail="Meting niet gevonden")
     await db.delete(m)
-    await db.flush()
-
-
-@router.delete("/hydration", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_hydration(
-    date: date_type = Query(...),
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """Item: feature-test bug #5 — DELETE-endpoint voor hydration (was 405)."""
-    h = (await db.execute(
-        select(DailyHydration).where(DailyHydration.user_id == user.id, DailyHydration.date == date)
-    )).scalar_one_or_none()
-    if not h:
-        raise HTTPException(status_code=404, detail="Geen hydratie-log gevonden voor die datum")
-    await db.delete(h)
     await db.flush()
 
 
