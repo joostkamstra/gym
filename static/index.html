@@ -327,8 +327,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .parse-item:last-child{border-bottom:0}
 .parse-item input{background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:4px 6px;font-size:12px;width:60px;text-align:right}
 .parse-item-name{flex:1;font-size:13px}
+.parse-item input.parse-item-name-input{flex:1;width:auto;text-align:left;font-size:13px}
 .parse-item-macros{font-size:11px;color:#8e8e93;white-space:nowrap}
-.parse-item-conf{font-size:10px;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.parse-item-conf{font-size:12px;padding:2px 6px;border-radius:4px;font-weight:600}
+.nutr-additem{display:flex;gap:8px;margin-top:8px}
+.nutr-additem input{flex:1;background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:6px 8px;font-size:13px}
 .parse-item-conf.high{background:#1a3a1f;color:#30d158}
 .parse-item-conf.medium{background:#3a2e1a;color:#ffd60a}
 .parse-item-conf.low{background:#3a1a1a;color:#ff453a}
@@ -552,19 +555,8 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
 
   <!-- Quick input -->
   <div class="nutr-input-card">
-    <div class="nutr-input-tabs">
-      <button class="active" id="nutrTabText"  onclick="switchNutrInput('text')">✏️ Tekst</button>
-      <button id="nutrTabPhoto" onclick="switchNutrInput('photo')">📷 Foto</button>
-    </div>
     <div id="nutrInputText">
-      <textarea class="nutr-textarea" id="nutrText" placeholder="Wat heb je gegeten/gedronken? Bv: '200g magere kwark met whey en 1 banaan'"></textarea>
-    </div>
-    <div id="nutrInputPhoto" style="display:none">
-      <label class="nutr-photo-btn">
-        📷 Kies foto<input type="file" accept="image/*"  style="display:none" id="nutrPhotoFile" onchange="onPhotoSelected(event)">
-      </label>
-      <img id="nutrPhotoPreview" class="nutr-photo-preview" style="display:none" alt="">
-      <textarea class="nutr-textarea" id="nutrPhotoText" placeholder="Optionele toelichting bij de foto..." style="min-height:40px"></textarea>
+      <textarea class="nutr-textarea" id="nutrText" placeholder="Wat heb je gegeten? Bv: '1 bruine boterham, 1 gekookt ei' of '1 portie spaghetti bolognese'"></textarea>
     </div>
     <button class="btn btn-blue" style="margin-top:10px" onclick="parseNutritionInput()" id="nutrParseBtn">Analyseren</button>
   </div>
@@ -574,6 +566,10 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
     <h3>Voorstel <span id="nutrParseConf"></span></h3>
     <div class="parse-warn" id="nutrParseWarn">⚠️ De AI is niet zeker van deze herkenning. Controleer de namen en hoeveelheden goed voordat je opslaat.</div>
     <div id="nutrParseItems"></div>
+    <div class="nutr-additem">
+      <input type="text" id="nutrAddItemText" placeholder="+ ontbrekend item, bv. 'een appel'">
+      <button class="btn btn-outline" onclick="addParseItem()">Toevoegen</button>
+    </div>
     <div class="nutr-meal-select" id="nutrMealSelect"></div>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btn-outline" onclick="cancelParse()">Annuleer</button>
@@ -3027,12 +3023,11 @@ document.addEventListener('touchend', () => {
 // === VOEDING (NUTRITION TRACKER) ===
 let nutrCurrentDate = null;       // ISO YYYY-MM-DD
 let nutrCurrentDayType = null;    // 'training' | 'rest' | 'weekend'
-let nutrInputMode = 'text';        // 'text' | 'photo'
-let nutrPhotoB64 = null;           // base64 JPEG, no data: prefix
 let nutrParsePreview = null;       // {items, totals, suggested_meal_type, overall_confidence, raw_text}
 let nutrParseClientId = null;      // UUID per save-attempt (idempotent), reused across resubmits
 let nutrSaveArmed = false;         // low-confidence opslaan vereist 2e tik
 let nutrSelectedMeal = null;       // user's chosen meal_type for current parse
+let nutrUserEdited = false;        // true zodra Joost een item wijzigt → user_corrected
 
 function _todayISO() {
   // Local-date (niet UTC) zodat 'vandaag' rond middernacht in NL niet verspringt.
@@ -3245,64 +3240,24 @@ function renderNutritionDashboard(d) {
   });
 }
 
-function switchNutrInput(mode) {
-  nutrInputMode = mode;
-  document.getElementById('nutrTabText').classList.toggle('active', mode === 'text');
-  document.getElementById('nutrTabPhoto').classList.toggle('active', mode === 'photo');
-  document.getElementById('nutrInputText').style.display = mode === 'text' ? '' : 'none';
-  document.getElementById('nutrInputPhoto').style.display = mode === 'photo' ? '' : 'none';
-}
-
-function onPhotoSelected(ev) {
-  const file = ev.target.files[0];
-  if (!file) return;
-  // Item #21: file size + MIME pre-check (geen 50MB HEIC die UI bevriest)
-  if (!file.type.startsWith('image/')) { showToast('Geen geldige afbeelding'); return; }
-  if (file.size > 10 * 1024 * 1024) { showToast('Bestand te groot (max 10MB)'); return; }
-  const img = new Image();
-  img.onload = () => {
-    const max = 640;
-    let w = img.width, h = img.height;
-    if (w > h && w > max) { h = h * max / w; w = max; }
-    else if (h > max) { w = w * max / h; h = max; }
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    const dataUrl = c.toDataURL('image/jpeg', 0.82);
-    nutrPhotoB64 = dataUrl.split(',', 2)[1];
-    const preview = document.getElementById('nutrPhotoPreview');
-    preview.src = dataUrl;
-    preview.style.display = 'block';
-    URL.revokeObjectURL(img.src);  // Item #13: memory-leak fix
-  };
-  img.src = URL.createObjectURL(file);
-}
-
 async function parseNutritionInput() {
-  let text = '';
-  let image_b64 = null;
-  if (nutrInputMode === 'text') {
-    text = document.getElementById('nutrText').value.trim();
-    if (!text) { showToast('Vul iets in om te analyseren'); return; }
-  } else {
-    if (!nutrPhotoB64) { showToast('Kies eerst een foto'); return; }
-    image_b64 = nutrPhotoB64;
-    text = document.getElementById('nutrPhotoText').value.trim();
-  }
+  const text = document.getElementById('nutrText').value.trim();
+  if (!text) { showToast('Vul iets in om te analyseren'); return; }
   const btn = document.getElementById('nutrParseBtn');
   btn.disabled = true; btn.textContent = 'Bezig met analyseren…';
   try {
     const result = await api('/api/nutrition/parse', {
       method: 'POST',
-      body: JSON.stringify({text: text || null, image_b64})
+      body: JSON.stringify({text: text, image_b64: null})
     });
     nutrParsePreview = result;
     nutrParseClientId = makeClientWorkoutId();
     nutrSelectedMeal = result.suggested_meal_type || 'snack';
+    nutrUserEdited = false;
     renderParsePreview(result);
   } catch (e) {
     console.error('parse failed', e);
-    console.error('parse error', e); showToast('Analyse mislukt — probeer opnieuw');
+    showToast('Analyse mislukt — probeer opnieuw');
   } finally {
     btn.disabled = false; btn.textContent = 'Analyseren';
   }
@@ -3314,9 +3269,10 @@ function renderParsePreview(p) {
   // Item #9: confidence NL-map (was "(high/medium/low)" Engels)
   const _confNL = {high: 'hoog', medium: 'middel', low: 'laag'};
   document.getElementById('nutrParseConf').textContent = '(' + (_confNL[p.overall_confidence] || p.overall_confidence) + ')';
-  // Low-confidence: waarschuwing tonen + Opslaan-knop in let-op-modus
+  // Waarschuwing tonen bij low overall OF zodra één item low is.
   const lowConf = p.overall_confidence === 'low';
-  document.getElementById('nutrParseWarn').style.display = lowConf ? 'block' : 'none';
+  const hasLowItem = (p.items || []).some(it => it.confidence === 'low');
+  document.getElementById('nutrParseWarn').style.display = (lowConf || hasLowItem) ? 'block' : 'none';
   nutrSaveArmed = false;
   const saveBtn = document.getElementById('nutrSaveBtn');
   if (saveBtn) {
@@ -3326,18 +3282,25 @@ function renderParsePreview(p) {
   // Items — safe DOM
   const items = document.getElementById('nutrParseItems');
   items.textContent = '';
-  p.items.forEach((it, i) => {
+  if (!p.items || !p.items.length) {
+    items.appendChild(_el('div', {class:'nutr-empty'},
+      'Geen items herkend — pas je tekst aan en analyseer opnieuw.'));
+  }
+  (p.items || []).forEach((it, i) => {
+    const nameInput = _el('input', {type:'text', class:'parse-item-name-input', value: it.name || ''});
+    nameInput.onchange = (ev) => { it.name = ev.target.value.trim(); nutrUserEdited = true; };
     const qtyInput = _el('input', {type:'number', value: Math.round(it.quantity_g), min:0, step:1});
     qtyInput.onchange = (ev) => adjustParseQty(i, ev.target.value);
+    const conf = it.confidence || 'medium';
+    const confSym = {high:'✓', medium:'~', low:'⚠'}[conf] || '~';
     const row = _el('div', {class:'parse-item'},
-      _el('span', {class:'parse-item-name'}, it.name),
+      nameInput,
       qtyInput,
       'g',
       _el('span', {class:'parse-item-macros'},
         Math.round(it.kcal) + 'k E' + Math.round(it.protein_g) +
         ' KH' + Math.round(it.carbs_g) + ' V' + Math.round(it.fat_g)),
-      _el('span', {class:'parse-item-conf ' + (it.confidence || 'medium')},
-        ({high:'H', medium:'M', low:'L'}[it.confidence] || 'M')),
+      _el('span', {class:'parse-item-conf ' + conf, title:'Betrouwbaarheid: ' + conf}, confSym),
       _el('button', {class:'parse-item-del', title:'Verwijder', onclick: () => removeParseItem(i)}, '✕')
     );
     items.appendChild(row);
@@ -3364,12 +3327,38 @@ function adjustParseQty(idx, newQty) {
   it.protein_g *= factor;
   it.carbs_g *= factor;
   it.fat_g *= factor;
+  it.confidence = 'high';  // door Joost bevestigde portie
+  nutrUserEdited = true;
   renderParsePreview(nutrParsePreview);
 }
 
 function removeParseItem(idx) {
   nutrParsePreview.items.splice(idx, 1);
+  nutrUserEdited = true;
   renderParsePreview(nutrParsePreview);
+}
+
+async function addParseItem() {
+  const inp = document.getElementById('nutrAddItemText');
+  const txt = (inp.value || '').trim();
+  if (!txt) { showToast('Typ eerst een item'); return; }
+  const btn = inp.nextElementSibling;
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    const r = await api('/api/nutrition/parse', {
+      method: 'POST',
+      body: JSON.stringify({text: txt, image_b64: null})
+    });
+    (r.items || []).forEach(it => nutrParsePreview.items.push(it));
+    nutrUserEdited = true;
+    inp.value = '';
+    renderParsePreview(nutrParsePreview);
+  } catch (e) {
+    console.error('add item failed', e);
+    showToast('Toevoegen mislukt — probeer opnieuw');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Toevoegen';
+  }
 }
 
 function cancelParse() {
@@ -3397,22 +3386,16 @@ async function saveIntake() {
     client_entry_id: nutrParseClientId,
     date: nutrCurrentDate || _todayISO(),
     meal_type: nutrSelectedMeal,
-    raw_input: nutrParsePreview.raw_text || (nutrInputMode === 'text'
-      ? document.getElementById('nutrText').value.trim()
-      : document.getElementById('nutrPhotoText').value.trim() || null),
-    photo_b64: nutrInputMode === 'photo' ? nutrPhotoB64 : null,
+    raw_input: nutrParsePreview.raw_text || document.getElementById('nutrText').value.trim(),
+    photo_b64: null,
     parsed_foods: nutrParsePreview.items,
     ai_confidence: nutrParsePreview.overall_confidence,
-    user_corrected: false
+    user_corrected: nutrUserEdited
   };
   try {
     await api('/api/nutrition/intake', {method: 'POST', body: JSON.stringify(body)});
     showToast('Opgeslagen!');
     document.getElementById('nutrText').value = '';
-    document.getElementById('nutrPhotoText').value = '';
-    document.getElementById('nutrPhotoPreview').style.display = 'none';
-    document.getElementById('nutrPhotoFile').value = '';
-    nutrPhotoB64 = null;
     cancelParse();
     await loadNutritionDashboard();
   } catch (e) {
