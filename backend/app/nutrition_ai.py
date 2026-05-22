@@ -73,6 +73,7 @@ Bij parsing:
 - Productnaam: geef een schone, consistente naam zodat 'm matcht met Joost's eerdere logs. Generiek waar generiek ("witte rijst, gekookt"), mét merk als je het herkent. Geen subjectieve omschrijvingen ("lekker bordje rijst").
 - Geef de hoeveelheid in gram (ml voor vloeistoffen, behandel als gram bij water-achtige)
 - Geef macro's per item, NIET per 100g
+- Alcoholische dranken (bier, wijn, prosecco/cava, Aperol, cocktails, sterke drank): vul `alcohol_g` met de geschatte ethanol in gram. Vuistregel: gram ethanol = ml × volume% × 0,79. Typische volume%: bier ~5%, wijn/prosecco/cava ~11-13%, Aperol/Campari ~11%, likeur ~15-25%, sterke drank (wodka/gin/whisky/rum) ~40%. Suiker in de drank hoort apart in `carbs_g` — tel alcohol daar NIET bij. De alcoholcalorieën (7 kcal/g) worden automatisch bovenop de macro's geteld. Niet-alcoholische items: `alcohol_g` = 0 of weglaten.
 - Zelfgemaakte of "slanke" eiwitgerechten (butter chicken, curry, bowls) bevatten vaak extra eiwit uit magere kip, kwark of yoghurt — schat eiwit dan niet te laag.
 - Confidence per item: high = verpakt product mét opgegeven hoeveelheid; medium = een aantal van een standaard telbare eenheid (eenheidsgewicht algemeen bekend), óf een hoeveelheid uit een aanduiding, óf een goed herkend gerecht met opgegeven portie; low = portie echt onbepaald ("1 portie X", "een bord", "wat rijst"), vage tekst, of obscuur merk.
 - Bij foto: gebruik bestek/borden/handen als schaal-referentie. Identificeer alleen wat je echt herkent.
@@ -100,6 +101,7 @@ LOG_INTAKE_TOOL = {
                         "protein_g": {"type": "number"},
                         "carbs_g": {"type": "number"},
                         "fat_g": {"type": "number"},
+                        "alcohol_g": {"type": "number", "description": "Alcohol (ethanol) in gram — 0 of weglaten voor niet-alcoholische items. Voor drank: ml × volume% × 0,79. Levert 7 kcal/g."},
                         "confidence": {"type": "string", "enum": ["high", "medium", "low"], "description": "high alleen bij een opgegeven hoeveelheid van een verpakt/standaard product; low als de hoeveelheid een aanname is."},
                         "notes": {"type": "string", "description": "Toelichting bij low/medium confidence. Vermeld expliciet als de hoeveelheid een aanname is."},
                     },

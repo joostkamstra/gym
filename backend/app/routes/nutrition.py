@@ -88,11 +88,14 @@ async def _portion_history(db: AsyncSession, user_id, days: int = 90, limit_food
 
 
 def _finalize_item(it: dict) -> dict:
-    """kcal afleiden uit de macro's (4/4/9) zodat het item intern consistent is."""
+    """kcal afleiden uit de macro's (4/4/9) + alcohol (7 kcal/g) zodat het item
+    intern consistent is. Zonder de alcohol-term verdwenen de calorieën van bier/
+    wijn/sterke drank volledig (ethanol is geen eiwit/KH/vet)."""
     p = float(it.get("protein_g") or 0)
     c = float(it.get("carbs_g") or 0)
     fat = float(it.get("fat_g") or 0)
-    return {**it, "kcal": round(4 * p + 4 * c + 9 * fat)}
+    alc = float(it.get("alcohol_g") or 0)
+    return {**it, "kcal": round(4 * p + 4 * c + 9 * fat + 7 * alc)}
 
 
 def _detect_day_type(d: date_type) -> str:
