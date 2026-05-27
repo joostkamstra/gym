@@ -323,13 +323,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .nutr-photo-preview{max-width:200px;border-radius:8px;margin:8px 0;display:block}
 .nutr-parse-result{background:#1c1c1e;border-radius:12px;padding:16px;margin-bottom:16px;border-left:4px solid #0a84ff}
 .nutr-parse-result h3{font-size:14px;margin-bottom:10px;color:#8e8e93}
-.parse-item{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #2c2c2e}
+.parse-item{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:8px 0;border-bottom:1px solid #2c2c2e}
 .parse-item:last-child{border-bottom:0}
 .parse-item input{background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:4px 6px;font-size:12px;width:60px;text-align:right}
 .parse-item-name{flex:1;font-size:13px}
-.parse-item input.parse-item-name-input{flex:1;width:auto;text-align:left;font-size:13px}
+.parse-item input.parse-item-name-input{flex:1 1 100%;width:auto;min-width:0;text-align:left;font-size:13px}
 .parse-item-macros{font-size:11px;color:#8e8e93;white-space:nowrap}
-.parse-item-conf{font-size:12px;padding:2px 6px;border-radius:4px;font-weight:600}
+.parse-item-conf{font-size:12px;padding:2px 6px;border-radius:4px;font-weight:600;margin-left:auto}
 .nutr-additem{display:flex;gap:8px;margin-top:8px}
 .nutr-additem input{flex:1;background:#000;border:1px solid #2c2c2e;border-radius:6px;color:#fff;padding:6px 8px;font-size:13px}
 .parse-item-conf.high{background:#1a3a1f;color:#30d158}
@@ -1042,10 +1042,10 @@ const USERS = {
             name: 'C: RDL + Shoulder Press', sets: 3, rest: '90s', color: 'purple',
             warmup: 'RDL: 1x8 @40kg, 1x5 @65kg',
             exercises: [
-              { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • barbell + straps • 2 sets', target_kg: 95,
-                target_sets: [{kg:95,reps:11},{kg:95,reps:11}],
+              { id: 'c1', name: 'Romanian Deadlift', detail: '10-12 reps • barbell + straps • 3 sets', target_kg: 95,
+                target_sets: [{kg:95,reps:11},{kg:95,reps:11},{kg:95,reps:11}],
                 alt: { name: 'DB RDL', detail: '10-12 reps', target_kg: 30, target_label: '2x30 kg',
-                  target_sets: [{kg:30,reps:11},{kg:30,reps:11}] } },
+                  target_sets: [{kg:30,reps:11},{kg:30,reps:11},{kg:30,reps:11}] } },
               { id: 'c2', name: 'Shoulder Press Machine', detail: '8-10 reps • bij schouderklacht → wissel naar DB Lateral Raise', target_kg: 40,
                 target_sets: [{kg:40,reps:9},{kg:40,reps:9},{kg:40,reps:9}],
                 alt: { name: 'DB Lateral Raise', detail: '12-15 reps • schouder-wissel', target_kg: 12, target_label: '2x12 kg',
@@ -1053,16 +1053,16 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Rear-delt + Decline Crunch', sets: 3, rest: '60s', color: 'orange',
+            name: 'D: Rear-delt + Decline Crunch', sets: 2, rest: '60s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck • knijp schouderbladen • NIEUW: kalibreer gewicht', target_kg: 25,
                 target_sets: [{kg:25,reps:14},{kg:25,reps:14}],
                 alt: { name: 'Face Pull', detail: '12-15 reps • kabel, touw', target_kg: 25,
                   target_sets: [{kg:25,reps:14},{kg:25,reps:14}] } },
-              { id: 'd2', name: 'Decline Crunch', detail: '12-15 reps • schijf op borst • bench 30-45°', target_kg: 12.5,
-                target_sets: [{kg:12.5,reps:13},{kg:12.5,reps:13},{kg:12.5,reps:13}],
+              { id: 'd2', name: 'Decline Crunch', detail: '12-15 reps • schijf op borst • bench 30-45° • 2 sets', target_kg: 12.5,
+                target_sets: [{kg:12.5,reps:13},{kg:12.5,reps:13}],
                 alt: { name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen', target_kg: 80,
-                  target_sets: [{kg:80,reps:13},{kg:80,reps:13},{kg:80,reps:13}] } }
+                  target_sets: [{kg:80,reps:13},{kg:80,reps:13}] } }
             ]
           }
         ]
@@ -1080,36 +1080,36 @@ const USERS = {
                 target_sets: [{kg:145,reps:12},{kg:165,reps:12},{kg:185,reps:12}],
                 alt: { name: 'Panatta Power Squat', detail: '10-12 reps', target_kg: 100,
                   target_sets: [{kg:80,reps:12},{kg:90,reps:11},{kg:100,reps:10}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • neutraal/V-grip + straps • 2 sets', target_kg: 70,
-                target_sets: [{kg:65,reps:12},{kg:70,reps:11}],
+              { id: 'a2', name: 'Lat Pulldown', detail: '10-12 reps • neutraal/V-grip + straps • 3 sets', target_kg: 75,
+                target_sets: [{kg:65,reps:12},{kg:70,reps:11},{kg:75,reps:10}],
                 alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus counter-weight', target_kg: 0,
-                  target_sets: [{kg:0,reps:12},{kg:0,reps:11}] } }
+                  target_sets: [{kg:0,reps:12},{kg:0,reps:11},{kg:0,reps:10}] } }
             ]
           },
           {
-            name: 'B: Incline Press + Row', sets: 4, rest: '90s', color: 'blue',
+            name: 'B: Incline Press + Row', sets: 3, rest: '90s', color: 'blue',
             exercises: [
-              { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps • 4 sets', target_kg: 25, target_label: '2x25 kg',
-                target_sets: [{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
+              { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps • 3 sets', target_kg: 25, target_label: '2x25 kg',
+                target_sets: [{kg:25,reps:12},{kg:25,reps:12},{kg:25,reps:12}],
                 alt: { name: 'Incline Barbell Bench Press', detail: '10-12 reps • Panatta, vaste hoek', target_kg: 50,
-                  target_sets: [{kg:40,reps:12},{kg:45,reps:11},{kg:50,reps:10},{kg:50,reps:10}] } },
-              { id: 'b2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta, zonder straps • 2 sets', target_kg: 40, target_label: '40 kg/kant',
-                target_sets: [{kg:40,reps:12},{kg:40,reps:12}],
+                  target_sets: [{kg:45,reps:11},{kg:50,reps:10},{kg:50,reps:10}] } },
+              { id: 'b2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta, zonder straps • 3 sets', target_kg: 40, target_label: '40 kg/kant',
+                target_sets: [{kg:40,reps:12},{kg:40,reps:12},{kg:40,reps:12}],
                 alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps', target_kg: 80,
-                  target_sets: [{kg:75,reps:12},{kg:80,reps:11}] } }
+                  target_sets: [{kg:75,reps:12},{kg:80,reps:11},{kg:80,reps:11}] } }
             ]
           },
           {
-            name: 'C: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Leg Curl + Lateral Raise', sets: 2, rest: '75s', color: 'purple',
             exercises: [
               { id: 'c1', name: 'Leg Curl (seated)', detail: '12-15 reps • 2 sets', target_kg: 75,
                 target_sets: [{kg:75,reps:13},{kg:75,reps:13}],
                 alt: { name: 'Leg Curl (lying)', detail: '12-15 reps • LET OP: kniepijn links', target_kg: 40,
                   target_sets: [{kg:40,reps:13},{kg:40,reps:13}] } },
-              { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps • 3 sets', target_kg: 12, target_label: '2x12 kg',
-                target_sets: [{kg:12,reps:14},{kg:12,reps:14},{kg:12,reps:14}],
+              { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps • 2 sets', target_kg: 12, target_label: '2x12 kg',
+                target_sets: [{kg:12,reps:14},{kg:12,reps:14}],
                 alt: { name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm', target_kg: 12,
-                  target_sets: [{kg:12,reps:14},{kg:12,reps:14},{kg:12,reps:14}] } }
+                  target_sets: [{kg:12,reps:14},{kg:12,reps:14}] } }
             ]
           },
           {
@@ -1173,10 +1173,10 @@ const USERS = {
             name: 'C: Hip Thrust + Shoulder Press', sets: 3, rest: '90s', color: 'purple',
             warmup: 'Hip Thrust: 1x10 @60kg, 1x8 @80kg. Smith Shoulder Press: 1x8 @20kg',
             exercises: [
-              { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps • squeeze glutes bovenin • 2 sets', target_kg: 110,
-                target_sets: [{kg:100,reps:12},{kg:110,reps:10}],
+              { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps • squeeze glutes bovenin • 3 sets', target_kg: 110,
+                target_sets: [{kg:100,reps:12},{kg:110,reps:10},{kg:110,reps:10}],
                 alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 70,
-                  target_sets: [{kg:70,reps:13},{kg:70,reps:13}] } },
+                  target_sets: [{kg:70,reps:13},{kg:70,reps:13},{kg:70,reps:13}] } },
               { id: 'c2', name: 'Smith Shoulder Press', detail: '8-10 reps • gewicht excl. stang • bij schouderklacht → DB Lateral Raise', target_kg: 35,
                 target_sets: [{kg:35,reps:9},{kg:35,reps:9},{kg:35,reps:9}],
                 alt: { name: 'DB Lateral Raise', detail: '12-15 reps • schouder-wissel', target_kg: 12, target_label: '2x12 kg',
@@ -1184,16 +1184,16 @@ const USERS = {
             ]
           },
           {
-            name: 'D: Face Pull + Ab Machine', sets: 3, rest: '60s', color: 'orange',
+            name: 'D: Face Pull + Ab Machine', sets: 2, rest: '60s', color: 'orange',
             exercises: [
               { id: 'd1', name: 'Face Pull', detail: '12-15 reps • kabel, touw • externe rotatie aan het eind • NIEUW: kalibreer gewicht', target_kg: 25,
                 target_sets: [{kg:25,reps:14},{kg:25,reps:14}],
                 alt: { name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck', target_kg: 25,
                   target_sets: [{kg:25,reps:14},{kg:25,reps:14}] } },
-              { id: 'd2', name: 'Ab Machine', detail: '12-15 reps • Technogym', target_kg: 80,
-                target_sets: [{kg:80,reps:13},{kg:80,reps:13},{kg:80,reps:13}],
+              { id: 'd2', name: 'Ab Machine', detail: '12-15 reps • Technogym • 2 sets', target_kg: 80,
+                target_sets: [{kg:80,reps:13},{kg:80,reps:13}],
                 alt: { name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen', target_kg: 80,
-                  target_sets: [{kg:80,reps:13},{kg:80,reps:13},{kg:80,reps:13}] } }
+                  target_sets: [{kg:80,reps:13},{kg:80,reps:13}] } }
             ]
           }
         ]
@@ -1211,36 +1211,36 @@ const USERS = {
                 target_sets: [{kg:130,reps:12},{kg:140,reps:11},{kg:150,reps:10}],
                 alt: { name: 'Sled Leg Press', detail: '10-12 reps', target_kg: 185,
                   target_sets: [{kg:145,reps:12},{kg:165,reps:12},{kg:185,reps:11}] } },
-              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps, reps-progressie 6→10 • 2 sets', target_kg: 0,
-                target_sets: [{kg:0,reps:8},{kg:0,reps:8}],
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps, reps-progressie 6→10 • 3 sets', target_kg: 0,
+                target_sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:7}],
                 alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus, of Lat Pulldown V-grip @70kg', target_kg: 0,
-                  target_sets: [{kg:0,reps:11},{kg:0,reps:10}] } }
+                  target_sets: [{kg:0,reps:11},{kg:0,reps:10},{kg:0,reps:10}] } }
             ]
           },
           {
-            name: 'B: Incline Press + Row', sets: 4, rest: '90s', color: 'blue',
+            name: 'B: Incline Press + Row', sets: 3, rest: '90s', color: 'blue',
             exercises: [
-              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • 4 sets', target_kg: 80,
-                target_sets: [{kg:80,reps:11},{kg:80,reps:11},{kg:80,reps:11},{kg:80,reps:10}],
+              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • 3 sets', target_kg: 80,
+                target_sets: [{kg:80,reps:11},{kg:80,reps:11},{kg:80,reps:10}],
                 alt: { name: 'DB Incline Press', detail: '10-12 reps', target_kg: 25, target_label: '2x25 kg',
-                  target_sets: [{kg:25,reps:11},{kg:25,reps:11},{kg:25,reps:11},{kg:25,reps:10}] } },
-              { id: 'b2', name: 'Iso-lateral Row', detail: '10-12 reps • Panatta plate-loaded • 1 arm per keer • 2 sets', target_kg: 40, target_label: '40 kg/kant',
-                target_sets: [{kg:35,reps:12},{kg:40,reps:11}],
+                  target_sets: [{kg:25,reps:11},{kg:25,reps:11},{kg:25,reps:10}] } },
+              { id: 'b2', name: 'Iso-lateral Row', detail: '10-12 reps • Panatta plate-loaded • 1 arm per keer • 3 sets', target_kg: 40, target_label: '40 kg/kant',
+                target_sets: [{kg:35,reps:12},{kg:40,reps:11},{kg:40,reps:11}],
                 alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps', target_kg: 80,
-                  target_sets: [{kg:75,reps:11},{kg:80,reps:10}] } }
+                  target_sets: [{kg:75,reps:11},{kg:80,reps:10},{kg:80,reps:10}] } }
             ]
           },
           {
-            name: 'C: Leg Curl + Cable Lateral Raise', sets: 3, rest: '75s', color: 'purple',
+            name: 'C: Leg Curl + Cable Lateral Raise', sets: 2, rest: '75s', color: 'purple',
             exercises: [
               { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps • LET OP: kniepijn links monitoren • 2 sets', target_kg: 40,
                 target_sets: [{kg:40,reps:13},{kg:40,reps:13}],
                 alt: { name: 'Leg Curl (seated)', detail: '12-15 reps', target_kg: 70,
                   target_sets: [{kg:70,reps:13},{kg:70,reps:13}] } },
-              { id: 'c2', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm • per arm • 3 sets', target_kg: 15, target_label: '15 kg per arm',
-                target_sets: [{kg:15,reps:14},{kg:15,reps:14},{kg:15,reps:14}],
+              { id: 'c2', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm • per arm • 2 sets', target_kg: 15, target_label: '15 kg per arm',
+                target_sets: [{kg:15,reps:14},{kg:15,reps:14}],
                 alt: { name: 'DB Lateral Raise', detail: '12-15 reps', target_kg: 12, target_label: '2x12 kg',
-                  target_sets: [{kg:12,reps:14},{kg:12,reps:14},{kg:12,reps:14}] } }
+                  target_sets: [{kg:12,reps:14},{kg:12,reps:14}] } }
             ]
           },
           {
