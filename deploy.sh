@@ -10,9 +10,8 @@
 #   5. Verify routes + health, cleanup
 #
 # Vereisten op server:
-#   - /opt/gym/.env compleet met 8 vars (APP_ENV, DATABASE_URL, SECRET_KEY,
-#     CORS_ORIGINS, ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID_JOOST,
-#     REMINDER_SECRET)
+#   - /opt/gym/.env compleet met 5 vars (APP_ENV, DATABASE_URL, SECRET_KEY,
+#     CORS_ORIGINS, ANTHROPIC_API_KEY)
 #   - Docker network 'cloudwijk_default' bestaat
 #
 # Gebruik:
