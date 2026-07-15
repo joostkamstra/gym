@@ -1016,273 +1016,273 @@ const USERS = {
     email: 'kamstra@gmail.com',
     schemas: {
       A: {
-        name: 'Schema A — Maandag',
+        name: 'Schema A - Maandag',
         subtitle: 'Full-body Strength (kwaliteit)',
-        desc: '22 sets • ~72 min • 3s neg + pauze',
+        desc: '22 sets • ~72 min • 3s excentriek + pauze',
         supersets: [
           {
-            name: 'A: Squat + Lat Pulldown', sets: 3, rest: '2-2,5 min (compound los)', color: 'green',
-            warmup: 'KWALITEIT VOOROP: elke werkset 3s gecontroleerde excentriek + 1s pauze in de gerekte positie, volle ROM, gecontroleerd omhoog. Kies gewicht zodat dit schoon lukt (lichter dan vroeger = prima); verhoog pas als ALLE reps zo lukken. Sessie 1-2: pak bewust te licht en groef het tempo — de tabelgewichten zijn het doel na 2-3 sessies, niet dag 1. — Rehab thuis (polsextensie + Tyler Twist). Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats + terminal knee extensions. Squat ramp: 1x8 @stang, 1x5 @45kg, 1x3 @57,5kg. Lat Pulldown: 1x10 @30kg, 1x6 @45kg. Squat = zware compound: neem 2-2,5 min tussen de squat-sets (pulldown vult de rust). Ramp bouwt GEEN vermoeidheid op — al warm? overslaan.',
+            name: 'A: Squat + Lat Pulldown', sets: 3, rest: 'zware lift 2-2,5 min', color: 'green',
+            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo schoon lukken. Sessie 1-2: pak bewust te licht en slijp het tempo erin (tabelgewichten = doel na 2-3 sessies, niet dag 1). Rehab thuis (polsextensie + Tyler Twist). Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats + terminal knee extensions. Squat ramp: 1x8 @stang, 1x5 @45kg, 1x3 @57,5kg. Lat Pulldown: 1x10 @30kg, 1x6 @45kg. Squat = zware compound: neem 2-2,5 min tussen de squat-sets, Lat Pulldown vult de rust.',
             exercises: [
-              { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte, 3s neg + pauze onderin • waist band >65kg', target_kg: 65,
+              { id: 'a1', name: 'Barbell Squat', detail: '6-8 reps • volle diepte, 3s excentriek + pauze onderin • waist band >65kg', target_kg: 65,
                 target_sets: [{kg:57.5,reps:8},{kg:62.5,reps:7},{kg:65,reps:6}],
-                alt: { name: 'Panatta Power Squat', detail: '8-10 reps • verticale romp, diep, 3s neg + pauze', target_kg: 75,
+                alt: { name: 'Panatta Power Squat', detail: '8-10 reps • verticale romp, diep, 3s excentriek + pauze', target_kg: 75,
                   target_sets: [{kg:65,reps:10},{kg:70,reps:9},{kg:75,reps:8}] } },
-              { id: 'a2', name: 'Lat Pulldown', detail: '8-10 reps • neutraal/V-grip + straps • 3s neg, volle stretch bovenaan', target_kg: 60,
+              { id: 'a2', name: 'Lat Pulldown', detail: '8-10 reps • neutraal/V-grip + straps • 3s excentriek, volle stretch bovenaan', target_kg: 60,
                 target_sets: [{kg:50,reps:10},{kg:55,reps:9},{kg:60,reps:8}],
-                alt: { name: 'Assisted Chin-up', detail: '8-10 reps • Nautilus counter-weight • 3s neg', target_kg: 0,
+                alt: { name: 'Assisted Chin-up', detail: '8-10 reps • Nautilus counter-weight • 3s excentriek', target_kg: 0,
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:8}] } }
             ]
           },
           {
             name: 'B: Bench Press + Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: 'Bench ramp: 1x8 @stang, 1x5 @40kg. Tempo: 3s neg + 1s pauze op de borst (licht), volle ROM.',
+            warmup: 'Bench ramp: 1x8 @stang, 1x5 @40kg. Tempo: 3s excentriek + 1s pauze op de borst (licht), volle ROM.',
             exercises: [
-              { id: 'b1', name: 'Flat Bench Press', detail: '6-8 reps • 3s neg + pauze op borst • volle ROM', target_kg: 50,
+              { id: 'b1', name: 'Flat Bench Press', detail: '6-8 reps • 3s excentriek + pauze op borst • volle ROM', target_kg: 50,
                 target_sets: [{kg:45,reps:8},{kg:47.5,reps:7},{kg:50,reps:6}],
-                alt: { name: 'DB Flat Bench Press', detail: '8-10 reps • 3s neg + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
+                alt: { name: 'DB Flat Bench Press', detail: '8-10 reps • 3s excentriek + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
                   target_sets: [{kg:22.5,reps:9},{kg:22.5,reps:9},{kg:22.5,reps:8}] } },
-              { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps • V-grip + straps • 3s neg, volle stretch vooraan', target_kg: 60,
+              { id: 'b2', name: 'Seated Cable Row', detail: '8-10 reps • V-grip + straps • 3s excentriek, volle stretch vooraan', target_kg: 60,
                 target_sets: [{kg:50,reps:10},{kg:55,reps:9},{kg:60,reps:8}],
-                alt: { name: 'T-bar Row', detail: '8-10 reps • Panatta, close-grip • 3s neg', target_kg: 40,
+                alt: { name: 'T-bar Row', detail: '8-10 reps • Panatta, close-grip • 3s excentriek', target_kg: 40,
                   target_sets: [{kg:35,reps:10},{kg:37.5,reps:9},{kg:40,reps:8}] } }
             ]
           },
           {
             name: 'C: RDL + Shoulder Press', sets: 3, rest: '90s', color: 'purple',
-            warmup: 'RDL ramp: 1x8 @45kg, 1x5 @60kg. Heup-/hamstring-prep vooraf. Tempo: 3s neg + pauze in de stretch (mid-scheen), volle ROM.',
+            warmup: 'RDL ramp: 1x8 @45kg, 1x5 @60kg. Heup-/hamstring-prep vooraf. Tempo: 3s excentriek + pauze in de stretch (mid-scheen), volle ROM.',
             exercises: [
-              { id: 'c1', name: 'Romanian Deadlift', detail: '8-10 reps • straps • 3s neg + pauze in stretch tot mid-scheen', target_kg: 70,
+              { id: 'c1', name: 'Romanian Deadlift', detail: '8-10 reps • straps • 3s excentriek + pauze in stretch tot mid-scheen', target_kg: 70,
                 target_sets: [{kg:65,reps:10},{kg:67.5,reps:9},{kg:70,reps:8}],
-                alt: { name: 'DB RDL', detail: '8-10 reps • 3s neg + pauze in stretch', target_kg: 25, target_label: '2x25 kg',
+                alt: { name: 'DB RDL', detail: '8-10 reps • 3s excentriek + pauze in stretch', target_kg: 25, target_label: '2x25 kg',
                   target_sets: [{kg:25,reps:10},{kg:25,reps:9},{kg:25,reps:8}] } },
-              { id: 'c2', name: 'DB Shoulder Press', detail: '8-10 reps • tot oorhoogte, 3s neg • bij schouderklacht → DB Lateral Raise', target_kg: 17.5, target_label: '2x17.5 kg',
+              { id: 'c2', name: 'DB Shoulder Press', detail: '8-10 reps • tot oorhoogte, 3s excentriek • bij schouderklacht → DB Lateral Raise', target_kg: 17.5, target_label: '2x17.5 kg',
                 target_sets: [{kg:17.5,reps:10},{kg:17.5,reps:9},{kg:17.5,reps:8}],
-                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s neg • schouder-wissel', target_kg: 10, target_label: '2x10 kg',
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s excentriek • schouder-wissel', target_kg: 10, target_label: '2x10 kg',
                   target_sets: [{kg:10,reps:13},{kg:10,reps:13},{kg:10,reps:13}] } }
             ]
           },
           {
             name: 'D: Rear-delt + Decline Crunch', sets: 2, rest: '60s', color: 'orange',
             exercises: [
-              { id: 'd1', name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck • 3s neg, knijp + pauze achteraan', target_kg: 35,
+              { id: 'd1', name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck • 3s excentriek, knijp + pauze achteraan', target_kg: 35,
                 target_sets: [{kg:30,reps:14},{kg:35,reps:12}],
-                alt: { name: 'Face Pull', detail: '12-15 reps • kabel, touw • 3s neg + externe rotatie', target_kg: 20,
+                alt: { name: 'Face Pull', detail: '12-15 reps • kabel, touw • 3s excentriek + externe rotatie', target_kg: 20,
                   target_sets: [{kg:20,reps:14},{kg:20,reps:14}] } },
-              { id: 'd2', name: 'Decline Crunch', detail: '12-15 reps • schijf op borst • 3s neg, volledige crunch-ROM', target_kg: 12.5,
+              { id: 'd2', name: 'Decline Crunch', detail: '12-15 reps • schijf op borst • 3s excentriek, volledige crunch-ROM', target_kg: 12.5,
                 target_sets: [{kg:12.5,reps:13},{kg:12.5,reps:13}],
-                alt: { name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen • 3s neg', target_kg: 70,
+                alt: { name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen • 3s excentriek', target_kg: 70,
                   target_sets: [{kg:70,reps:13},{kg:70,reps:13}] } }
             ]
           }
         ]
       },
       B: {
-        name: 'Schema B — Vrijdag',
+        name: 'Schema B - Vrijdag',
         subtitle: 'Full-body Volume (kwaliteit)',
-        desc: '26 sets • ~78 min • 3s neg + pauze',
+        desc: '26 sets • ~78 min • 3s excentriek + pauze',
         supersets: [
           {
             name: 'A: Leg Press + Row', sets: 3, rest: '90s', color: 'green',
-            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo schoon lukken. Sessie 1-2: pak bewust te licht en groef het tempo — de tabelgewichten zijn het doel na 2-3 sessies, niet dag 1. — Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats. Sled Leg Press ramp: 1x10 @90kg, 1x6 @120kg. Plate-loaded Row: 1x10 @20kg/kant.',
+            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo schoon lukken. Sessie 1-2: pak bewust te licht en slijp het tempo erin (tabelgewichten = doel na 2-3 sessies, niet dag 1). Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats. Sled Leg Press ramp: 1x10 @90kg, 1x6 @120kg. Plate-loaded Row: 1x10 @20kg/kant.',
             exercises: [
-              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps • volle ROM tot diepe kniebuiging • 3s neg + pauze onderin', target_kg: 145,
+              { id: 'a1', name: 'Sled Leg Press', detail: '10-12 reps • volle ROM tot diepe kniebuiging • 3s excentriek + pauze onderin', target_kg: 145,
                 target_sets: [{kg:125,reps:12},{kg:135,reps:12},{kg:145,reps:11}],
-                alt: { name: 'Panatta Power Squat', detail: '10-12 reps • 3s neg + pauze', target_kg: 90,
+                alt: { name: 'Panatta Power Squat', detail: '10-12 reps • 3s excentriek + pauze', target_kg: 90,
                   target_sets: [{kg:75,reps:12},{kg:85,reps:11},{kg:90,reps:10}] } },
-              { id: 'a2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta, zonder straps • 3s neg + volle stretch vooraan', target_kg: 30, target_label: '30 kg/kant',
+              { id: 'a2', name: 'Plate-loaded Row', detail: '10-12 reps • Panatta, zonder straps • 3s excentriek + volle stretch vooraan', target_kg: 30, target_label: '30 kg/kant',
                 target_sets: [{kg:30,reps:12},{kg:30,reps:12},{kg:30,reps:11}],
-                alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps • 3s neg', target_kg: 65,
+                alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps • 3s excentriek', target_kg: 65,
                   target_sets: [{kg:60,reps:12},{kg:65,reps:11},{kg:65,reps:11}] } }
             ]
           },
           {
             name: 'B: Incline Press + Lat Pulldown', sets: 3, rest: '90s', color: 'blue',
-            warmup: 'Tempo: 3s neg + diepe stretch onderin, volle ROM.',
+            warmup: 'Tempo: 3s excentriek + diepe stretch onderin, volle ROM.',
             exercises: [
-              { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps • bank 30-45° • 3s neg + diepe stretch onderaan', target_kg: 20, target_label: '2x20 kg',
+              { id: 'b1', name: 'DB Incline Press', detail: '10-12 reps • bank 30-45° • 3s excentriek + diepe stretch onderaan', target_kg: 20, target_label: '2x20 kg',
                 target_sets: [{kg:20,reps:12},{kg:20,reps:12},{kg:20,reps:11}],
-                alt: { name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • 3s neg', target_kg: 60,
+                alt: { name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • 3s excentriek', target_kg: 60,
                   target_sets: [{kg:55,reps:12},{kg:60,reps:11},{kg:60,reps:10}] } },
-              { id: 'b2', name: 'Lat Pulldown', detail: '10-12 reps • neutraal/V-grip + straps • 3s neg, volle stretch bovenaan', target_kg: 55,
+              { id: 'b2', name: 'Lat Pulldown', detail: '10-12 reps • neutraal/V-grip + straps • 3s excentriek, volle stretch bovenaan', target_kg: 55,
                 target_sets: [{kg:45,reps:12},{kg:50,reps:11},{kg:55,reps:10}],
-                alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus counter-weight • 3s neg', target_kg: 0,
+                alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus counter-weight • 3s excentriek', target_kg: 0,
                   target_sets: [{kg:0,reps:12},{kg:0,reps:11},{kg:0,reps:10}] } }
             ]
           },
           {
             name: 'C: Leg Curl + Lateral Raise', sets: 3, rest: '75s', color: 'purple',
-            warmup: 'Tempo: 3s neg + pauze in de stretch, volle ROM, geen zwaai.',
+            warmup: 'Tempo: 3s excentriek + pauze in de stretch, volle ROM, geen zwaai.',
             exercises: [
-              { id: 'c1', name: 'Leg Curl (seated)', detail: '10-15 reps • heup gebogen = stretch • 3s neg + volle ROM', target_kg: 60,
+              { id: 'c1', name: 'Leg Curl (seated)', detail: '10-15 reps • heup gebogen = stretch • 3s excentriek + volle ROM', target_kg: 60,
                 target_sets: [{kg:50,reps:14},{kg:55,reps:12},{kg:60,reps:11}],
-                alt: { name: 'Leg Curl (lying)', detail: '12-15 reps • 3s neg • LET OP: kniepijn links', target_kg: 35,
+                alt: { name: 'Leg Curl (lying)', detail: '12-15 reps • 3s excentriek • LET OP: kniepijn links', target_kg: 35,
                   target_sets: [{kg:30,reps:14},{kg:35,reps:13},{kg:35,reps:12}] } },
-              { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps • tot schouderhoogte, schouders laag • 3s neg', target_kg: 10, target_label: '2x10 kg',
+              { id: 'c2', name: 'DB Lateral Raise', detail: '12-15 reps • tot schouderhoogte, schouders laag • 3s excentriek', target_kg: 10, target_label: '2x10 kg',
                 target_sets: [{kg:8,reps:14},{kg:10,reps:13},{kg:10,reps:12}],
-                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm • 3s neg (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
+                alt: { name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm • 3s excentriek (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
                   target_sets: [{kg:10,reps:14},{kg:10,reps:13},{kg:10,reps:12}] } }
             ]
           },
           {
             name: 'D: Arms (Tricep + Hammer Curl)', sets: 2, rest: '60s', color: 'red',
-            warmup: 'Tempo: 3s neg, volle ROM, ellebogen vast.',
+            warmup: 'Tempo: 3s excentriek, volle ROM, ellebogen vast.',
             exercises: [
-              { id: 'd1', name: 'Tricep Pushdown', detail: '10-15 reps • rope, neutraal • 3s neg + volledige lockout', target_kg: 50,
+              { id: 'd1', name: 'Tricep Pushdown', detail: '10-15 reps • rope, neutraal • 3s excentriek + volledige lockout', target_kg: 50,
                 target_sets: [{kg:45,reps:13},{kg:50,reps:11}],
-                alt: { name: 'OH Tricep Extension', detail: '10-12 reps • kabel, lange kop • 3s neg', target_kg: 20,
+                alt: { name: 'OH Tricep Extension', detail: '10-12 reps • kabel, lange kop • 3s excentriek', target_kg: 20,
                   target_sets: [{kg:20,reps:12},{kg:20,reps:11}] } },
-              { id: 'd2', name: 'DB Hammer Curl', detail: '10-12 reps • neutraal (duimen omhoog, elleboog-veilig) • 3s neg', target_kg: 10, target_label: '2x10 kg',
+              { id: 'd2', name: 'DB Hammer Curl', detail: '10-12 reps • neutraal (duimen omhoog, elleboog-veilig) • 3s excentriek', target_kg: 10, target_label: '2x10 kg',
                 target_sets: [{kg:10,reps:12},{kg:10,reps:11}],
-                alt: { name: 'Cable Bicep Curl', detail: '10-12 reps • 1 arm, neutraal • 3s neg', target_kg: 20,
+                alt: { name: 'Cable Bicep Curl', detail: '10-12 reps • 1 arm, neutraal • 3s excentriek', target_kg: 20,
                   target_sets: [{kg:20,reps:11},{kg:20,reps:11}] } }
             ]
           },
           {
             name: 'E: Calf + Core', sets: 2, rest: '60s', color: 'orange',
             exercises: [
-              { id: 'e1', name: 'Leg-press Calf Raise', detail: '12-15 reps • gestrekte knie = gastrocnemius • 3s neg + diepe stretch, pauze 1s onderin • kalibreer', target_kg: 90,
+              { id: 'e1', name: 'Leg-press Calf Raise', detail: '12-15 reps • gestrekte knie = gastrocnemius • 3s excentriek + diepe stretch, pauze 1s onderin • kalibreer', target_kg: 90,
                 target_sets: [{kg:90,reps:15},{kg:90,reps:14}],
-                alt: { name: 'Seated Calf Raise', detail: '12-15 reps • soleus • 3s neg + pauze', target_kg: 50,
+                alt: { name: 'Seated Calf Raise', detail: '12-15 reps • soleus • 3s excentriek + pauze', target_kg: 50,
                   target_sets: [{kg:50,reps:15},{kg:50,reps:14}] } },
-              { id: 'e2', name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen • 3s neg, heupen gefixeerd', target_kg: 70,
+              { id: 'e2', name: 'Cable Crunch', detail: '12-15 reps • 2 katrollen • 3s excentriek, heupen gefixeerd', target_kg: 70,
                 target_sets: [{kg:70,reps:13},{kg:70,reps:13}],
-                alt: { name: 'Ab Wheel Rollout', detail: '8-12 reps • op knieën • 3s neg', target_kg: 0, target_label: 'BW',
+                alt: { name: 'Ab Wheel Rollout', detail: '8-12 reps • op knieën • 3s excentriek', target_kg: 0, target_label: 'BW',
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10}] } }
             ]
           }
         ]
       },
       C: {
-        name: 'Schema C — Maandag',
+        name: 'Schema C - Maandag',
         subtitle: 'Full-body Strength variatie (kwaliteit)',
-        desc: '22 sets • ~72 min • 3s neg + pauze',
+        desc: '22 sets • ~72 min • 3s excentriek + pauze',
         supersets: [
           {
-            name: 'A: Power Squat + Chin-ups', sets: 3, rest: '2-2,5 min (compound los)', color: 'green',
-            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo lukken. Sessie 1-2: pak bewust te licht en groef het tempo — de tabelgewichten zijn het doel na 2-3 sessies, niet dag 1. — Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats + terminal knee extensions. Power Squat ramp: 1x10 @50kg, 1x6 @65kg. Chin-ups: 1x3 strict (3s neg). Power Squat = zware compound: 2-2,5 min tussen sets (chin-ups vult de rust).',
+            name: 'A: Power Squat + Chin-ups', sets: 3, rest: 'zware lift 2-2,5 min', color: 'green',
+            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo schoon lukken. Sessie 1-2: pak bewust te licht en slijp het tempo erin (tabelgewichten = doel na 2-3 sessies, niet dag 1). Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats + terminal knee extensions. Power Squat ramp: 1x10 @50kg, 1x6 @65kg. Chin-ups: 1x3 strict (3s excentriek). Power Squat = zware compound: 2-2,5 min tussen sets (chin-ups vult de rust).',
             exercises: [
-              { id: 'a1', name: 'Panatta Power Squat', detail: '8-10 reps • verticale romp, diep • 3s neg + pauze onderin', target_kg: 70,
+              { id: 'a1', name: 'Panatta Power Squat', detail: '8-10 reps • verticale romp, diep • 3s excentriek + pauze onderin', target_kg: 70,
                 target_sets: [{kg:60,reps:10},{kg:65,reps:9},{kg:70,reps:8}],
-                alt: { name: 'Hack Squat', detail: '8-10 reps • 3s neg + pauze', target_kg: 75,
+                alt: { name: 'Hack Squat', detail: '8-10 reps • 3s excentriek + pauze', target_kg: 75,
                   target_sets: [{kg:65,reps:10},{kg:70,reps:9},{kg:75,reps:8}] } },
-              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps • volle ROM (dead hang → kin over) • 3s neg • reps 6→10', target_kg: 0,
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps • volle ROM (dead hang → kin over) • 3s excentriek • reps 6→10', target_kg: 0,
                 target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:5}],
-                alt: { name: 'Assisted Chin-up', detail: '8-10 reps • Nautilus, of Lat Pulldown V-grip @55kg • 3s neg', target_kg: 0,
+                alt: { name: 'Assisted Chin-up', detail: '8-10 reps • Nautilus, of Lat Pulldown V-grip @55kg • 3s excentriek', target_kg: 0,
                   target_sets: [{kg:0,reps:9},{kg:0,reps:8},{kg:0,reps:7}] } }
             ]
           },
           {
             name: 'B: Vertical Chest Press + T-bar Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: 'Vertical Chest Press ramp: 1x10 @30kg, 1x6 @45kg. T-bar Row: 1x10 @25kg. Tempo: 3s neg + volle ROM.',
+            warmup: 'Vertical Chest Press ramp: 1x10 @30kg, 1x6 @45kg. T-bar Row: 1x10 @25kg. Tempo: 3s excentriek + volle ROM.',
             exercises: [
-              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps • Panatta • 3s neg + volle stretch', target_kg: 60,
+              { id: 'b1', name: 'Vertical Chest Press', detail: '8-10 reps • Panatta • 3s excentriek + volle stretch', target_kg: 60,
                 target_sets: [{kg:50,reps:10},{kg:55,reps:9},{kg:60,reps:8}],
-                alt: { name: 'DB Flat Bench Press', detail: '8-10 reps • 3s neg + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
+                alt: { name: 'DB Flat Bench Press', detail: '8-10 reps • 3s excentriek + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
                   target_sets: [{kg:22.5,reps:10},{kg:22.5,reps:9},{kg:22.5,reps:8}] } },
-              { id: 'b2', name: 'T-bar Row', detail: '8-10 reps • Panatta, neutraal handvat • 3s neg + volle stretch', target_kg: 40,
+              { id: 'b2', name: 'T-bar Row', detail: '8-10 reps • Panatta, neutraal handvat • 3s excentriek + volle stretch', target_kg: 40,
                 target_sets: [{kg:35,reps:10},{kg:37.5,reps:9},{kg:40,reps:8}],
-                alt: { name: 'Plate-loaded Row', detail: '8-10 reps • Panatta, zonder straps • 3s neg', target_kg: 35, target_label: '35 kg/kant',
+                alt: { name: 'Plate-loaded Row', detail: '8-10 reps • Panatta, zonder straps • 3s excentriek', target_kg: 35, target_label: '35 kg/kant',
                   target_sets: [{kg:35,reps:10},{kg:35,reps:9},{kg:35,reps:8}] } }
             ]
           },
           {
             name: 'C: Hip Thrust + Shoulder Press', sets: 3, rest: '90s', color: 'purple',
-            warmup: 'Hip Thrust: 1x10 @50kg, 1x8 @70kg. Smith Shoulder Press: 1x8 @15kg. Tempo: 3s neg + pauze/squeeze.',
+            warmup: 'Hip Thrust: 1x10 @50kg, 1x8 @70kg. Smith Shoulder Press: 1x8 @15kg. Tempo: 3s excentriek + pauze/squeeze.',
             exercises: [
-              { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps • volle heupextensie + 1s squeeze bovenin • 3s neg', target_kg: 90,
+              { id: 'c1', name: 'Hip Thrust Machine', detail: '10-12 reps • volle heupextensie + 1s squeeze bovenin • 3s excentriek', target_kg: 90,
                 target_sets: [{kg:80,reps:12},{kg:85,reps:10},{kg:90,reps:10}],
-                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps • 3s neg', target_kg: 60,
+                alt: { name: 'Leg Curl (seated)', detail: '12-15 reps • 3s excentriek', target_kg: 60,
                   target_sets: [{kg:60,reps:13},{kg:60,reps:13},{kg:60,reps:13}] } },
-              { id: 'c2', name: 'Smith Shoulder Press', detail: '8-10 reps • excl. stang • 3s neg • bij schouderklacht → DB Lateral Raise (default op mindere dagen)', target_kg: 25,
+              { id: 'c2', name: 'Smith Shoulder Press', detail: '8-10 reps • excl. stang • 3s excentriek • bij schouderklacht → DB Lateral Raise (default op mindere dagen)', target_kg: 25,
                 target_sets: [{kg:25,reps:9},{kg:25,reps:9},{kg:25,reps:9}],
-                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s neg • schouder-wissel', target_kg: 10, target_label: '2x10 kg',
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s excentriek • schouder-wissel', target_kg: 10, target_label: '2x10 kg',
                   target_sets: [{kg:10,reps:13},{kg:10,reps:13},{kg:10,reps:13}] } }
             ]
           },
           {
             name: 'D: Lateral Raise + Face Pull', sets: 2, rest: '60s', color: 'red',
-            warmup: 'Feeler-set 1x15 licht of niets. Tempo: 3s neg, volle ROM, geen zwaai.',
+            warmup: 'Feeler-set 1x15 licht of niets. Tempo: 3s excentriek, volle ROM, geen zwaai.',
             exercises: [
-              { id: 'd1', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm, lean-away = stretch • 3s neg (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
+              { id: 'd1', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm, lean-away = stretch • 3s excentriek (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
                 target_sets: [{kg:10,reps:14},{kg:10,reps:12}],
-                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s neg', target_kg: 10, target_label: '2x10 kg',
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s excentriek', target_kg: 10, target_label: '2x10 kg',
                   target_sets: [{kg:10,reps:14},{kg:10,reps:13}] } },
-              { id: 'd2', name: 'Face Pull', detail: '12-15 reps • kabel, touw • 3s neg + externe rotatie • kalibreer', target_kg: 20,
+              { id: 'd2', name: 'Face Pull', detail: '12-15 reps • kabel, touw • 3s excentriek + externe rotatie • kalibreer', target_kg: 20,
                 target_sets: [{kg:20,reps:14},{kg:20,reps:14}],
-                alt: { name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck • 3s neg', target_kg: 35,
+                alt: { name: 'Rear-delt Machine', detail: '12-15 reps • Technogym reverse pec deck • 3s excentriek', target_kg: 35,
                   target_sets: [{kg:35,reps:13},{kg:35,reps:13}] } }
             ]
           }
         ]
       },
       D: {
-        name: 'Schema D — Vrijdag',
+        name: 'Schema D - Vrijdag',
         subtitle: 'Full-body Volume variatie (kwaliteit)',
-        desc: '22 sets • ~70 min • 3s neg + pauze',
+        desc: '22 sets • ~70 min • 3s excentriek + pauze',
         supersets: [
           {
             name: 'A: Horizontal Leg Press + Chin-ups', sets: 3, rest: '90s', color: 'green',
-            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo lukken. Sessie 1-2: pak bewust te licht en groef het tempo — de tabelgewichten zijn het doel na 2-3 sessies, niet dag 1. — Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats. Horizontal Leg Press ramp: 1x10 @70kg, 1x6 @95kg. Chin-ups: 1x3 strict (3s neg).',
+            warmup: 'KWALITEIT VOOROP: 3s excentriek + 1s pauze in de stretch, volle ROM, gecontroleerd omhoog. Lichter = prima; verhoog pas als alle reps zo schoon lukken. Sessie 1-2: pak bewust te licht en slijp het tempo erin (tabelgewichten = doel na 2-3 sessies, niet dag 1). Rehab thuis. Fiets 4-5 min zone-2 + arm swings + band pull-aparts. Knie-prep: 10 tempo-bodyweight squats. Horizontal Leg Press ramp: 1x10 @70kg, 1x6 @95kg. Chin-ups: 1x3 strict (3s excentriek).',
             exercises: [
-              { id: 'a1', name: 'Horizontal Leg Press', detail: '10-12 reps • volle ROM, meer hamstring-rek • 3s neg + pauze onderin', target_kg: 120,
+              { id: 'a1', name: 'Horizontal Leg Press', detail: '10-12 reps • volle ROM, meer hamstring-rek • 3s excentriek + pauze onderin', target_kg: 120,
                 target_sets: [{kg:105,reps:12},{kg:115,reps:11},{kg:120,reps:10}],
-                alt: { name: 'Sled Leg Press', detail: '10-12 reps • 3s neg + pauze', target_kg: 145,
+                alt: { name: 'Sled Leg Press', detail: '10-12 reps • 3s excentriek + pauze', target_kg: 145,
                   target_sets: [{kg:125,reps:12},{kg:135,reps:12},{kg:145,reps:11}] } },
-              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps • volle ROM • 3s neg • reps 6→10', target_kg: 0,
+              { id: 'a2', name: 'Chin-ups', detail: 'Neutraal grip, zonder straps • volle ROM • 3s excentriek • reps 6→10', target_kg: 0,
                 target_sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:5}],
-                alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus, of Lat Pulldown V-grip @55kg • 3s neg', target_kg: 0,
+                alt: { name: 'Assisted Chin-up', detail: '10-12 reps • Nautilus, of Lat Pulldown V-grip @55kg • 3s excentriek', target_kg: 0,
                   target_sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:9}] } }
             ]
           },
           {
             name: 'B: Super Inclined Press + Iso-lateral Row', sets: 3, rest: '90s', color: 'blue',
-            warmup: 'Tempo: 3s neg + volle ROM.',
+            warmup: 'Tempo: 3s excentriek + volle ROM.',
             exercises: [
-              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • bovenborst • 3s neg + volle stretch', target_kg: 60,
+              { id: 'b1', name: 'Panatta Super Inclined Bench Press', detail: '10-12 reps • bovenborst • 3s excentriek + volle stretch', target_kg: 60,
                 target_sets: [{kg:55,reps:11},{kg:60,reps:11},{kg:60,reps:10}],
-                alt: { name: 'DB Incline Press', detail: '10-12 reps • 3s neg + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
+                alt: { name: 'DB Incline Press', detail: '10-12 reps • 3s excentriek + diepe stretch', target_kg: 22.5, target_label: '2x22.5 kg',
                   target_sets: [{kg:22.5,reps:11},{kg:22.5,reps:11},{kg:22.5,reps:10}] } },
-              { id: 'b2', name: 'Iso-lateral Row', detail: '10-12 reps • Panatta, beide armen synchroon • 3s neg + volle stretch', target_kg: 30, target_label: '30 kg/kant',
+              { id: 'b2', name: 'Iso-lateral Row', detail: '10-12 reps • Panatta, beide armen synchroon • 3s excentriek + volle stretch', target_kg: 30, target_label: '30 kg/kant',
                 target_sets: [{kg:30,reps:12},{kg:30,reps:11},{kg:30,reps:11}],
-                alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps • 3s neg', target_kg: 65,
+                alt: { name: 'Seated Cable Row', detail: '10-12 reps • V-grip + straps • 3s excentriek', target_kg: 65,
                   target_sets: [{kg:60,reps:11},{kg:65,reps:10},{kg:65,reps:10}] } }
             ]
           },
           {
             name: 'C: Leg Curl + Cable Lateral Raise', sets: 3, rest: '75s', color: 'purple',
-            warmup: 'Tempo: 3s neg + pauze in de stretch, volle ROM.',
+            warmup: 'Tempo: 3s excentriek + pauze in de stretch, volle ROM.',
             exercises: [
-              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps • volle ROM • 3s neg • LET OP: kniepijn links monitoren', target_kg: 30,
+              { id: 'c1', name: 'Lying Leg Curl', detail: '12-15 reps • volle ROM • 3s excentriek • LET OP: kniepijn links monitoren', target_kg: 30,
                 target_sets: [{kg:25,reps:14},{kg:30,reps:13},{kg:30,reps:12}],
-                alt: { name: 'Leg Curl (seated)', detail: '10-15 reps • 3s neg', target_kg: 60,
+                alt: { name: 'Leg Curl (seated)', detail: '10-15 reps • 3s excentriek', target_kg: 60,
                   target_sets: [{kg:55,reps:14},{kg:60,reps:12},{kg:60,reps:11}] } },
-              { id: 'c2', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm, constante spanning • 3s neg (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
+              { id: 'c2', name: 'Cable Lateral Raise', detail: '12-15 reps • 1 arm, constante spanning • 3s excentriek (5kg-stappen)', target_kg: 10, target_label: '10 kg per arm',
                 target_sets: [{kg:10,reps:14},{kg:10,reps:13},{kg:10,reps:12}],
-                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s neg', target_kg: 10, target_label: '2x10 kg',
+                alt: { name: 'DB Lateral Raise', detail: '12-15 reps • 3s excentriek', target_kg: 10, target_label: '2x10 kg',
                   target_sets: [{kg:10,reps:14},{kg:10,reps:13},{kg:10,reps:12}] } }
             ]
           },
           {
             name: 'D: Arms (Dips + Preacher Curl)', sets: 2, rest: '60s', color: 'red',
-            warmup: 'Tempo: 3s neg, volle ROM, romp rechtop bij dips.',
+            warmup: 'Tempo: 3s excentriek, volle ROM, romp rechtop bij dips.',
             exercises: [
-              { id: 'd1', name: 'Tricep Dips', detail: '8-12 reps • bodyweight, romp rechtop • 3s neg tot ~90° • gewogen als te licht', target_kg: 0, target_label: 'BW',
+              { id: 'd1', name: 'Tricep Dips', detail: '8-12 reps • bodyweight, romp rechtop • 3s excentriek tot ~90° • gewogen als te licht', target_kg: 0, target_label: 'BW',
                 target_sets: [{kg:0,reps:10},{kg:0,reps:9}],
-                alt: { name: 'Dips Press', detail: '10-12 reps • Panatta Dual System • 3s neg', target_kg: 75,
+                alt: { name: 'Dips Press', detail: '10-12 reps • Panatta Dual System • 3s excentriek', target_kg: 75,
                   target_sets: [{kg:75,reps:11},{kg:75,reps:10}] } },
-              { id: 'd2', name: 'Preacher Curl', detail: '8-12 reps • EZ-bar • 3s neg + volle stretch onderin • elleboog conservatief', target_kg: 15,
+              { id: 'd2', name: 'Preacher Curl', detail: '8-12 reps • EZ-bar • 3s excentriek + volle stretch onderin • elleboog conservatief', target_kg: 15,
                 target_sets: [{kg:15,reps:12},{kg:15,reps:10}],
-                alt: { name: 'DB Hammer Curl', detail: '10-12 reps • neutraal grip • 3s neg', target_kg: 10, target_label: '2x10 kg',
+                alt: { name: 'DB Hammer Curl', detail: '10-12 reps • neutraal grip • 3s excentriek', target_kg: 10, target_label: '2x10 kg',
                   target_sets: [{kg:10,reps:11},{kg:10,reps:11}] } }
             ]
           },
           {
             name: 'E: Calf + Core (anti-rotatie)', sets: 2, rest: '60s', color: 'orange',
             exercises: [
-              { id: 'e1', name: 'Seated Calf Raise', detail: '12-15 reps • soleus • 3s neg + diepe stretch, pauze 1s onderin • kalibreer', target_kg: 50,
+              { id: 'e1', name: 'Seated Calf Raise', detail: '12-15 reps • soleus • 3s excentriek + diepe stretch, pauze 1s onderin • kalibreer', target_kg: 50,
                 target_sets: [{kg:50,reps:15},{kg:50,reps:14}],
-                alt: { name: 'Leg-press Calf Raise', detail: '12-15 reps • gastrocnemius, gestrekte knie • 3s neg', target_kg: 90,
+                alt: { name: 'Leg-press Calf Raise', detail: '12-15 reps • gastrocnemius, gestrekte knie • 3s excentriek', target_kg: 90,
                   target_sets: [{kg:90,reps:15},{kg:90,reps:14}] } },
               { id: 'e2', name: 'Pallof Press', detail: '10-15 reps per kant • kabel • anti-rotatie: heupen/schouders recht, geen draai • gecontroleerd', target_kg: 20, target_label: 'per kant',
                 target_sets: [{kg:20,reps:13},{kg:20,reps:13}],
