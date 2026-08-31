@@ -297,6 +297,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro',sans-serif;background
 .eval-change.stable{color:#636366}
 .eval-change.new{color:#0a84ff}
 
+/* === SESSIEVERSLAG === */
+.rep-block{margin-bottom:14px}
+.rep-h{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8e8e93;margin-bottom:8px}
+.rep-tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.rep-tile{background:#2c2c2e;border-radius:10px;padding:10px 12px}
+.rep-tile-label{font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.4px}
+.rep-tile-val{font-size:17px;font-weight:700;margin-top:2px}
+.rep-tile-sub{font-size:11px;color:#8e8e93;margin-top:2px}
+.rep-tile-sub.up{color:#30d158}
+.rep-tile-sub.down{color:#ff453a}
+.rep-note{background:#2c2c2e;border-radius:10px;padding:11px 13px;margin-bottom:8px;font-size:13px;line-height:1.45}
+.rep-note.context{border-left:3px solid #0a84ff}
+.rep-note.let-op{border-left:3px solid #ff9f0a}
+.rep-note-basis{font-size:11px;color:#8e8e93;margin-top:5px;line-height:1.4}
+.rep-ex{background:#2c2c2e;border-radius:10px;margin-bottom:6px;overflow:hidden}
+.rep-ex-head{padding:11px 13px;cursor:pointer}
+.rep-ex-top{display:flex;align-items:center;gap:8px}
+.rep-ex-title{font-size:14px;font-weight:600;flex:1;min-width:0}
+.rep-ex-sub{font-size:11px;color:#8e8e93;margin-top:3px}
+.rep-chip{font-size:11px;font-weight:700;padding:3px 7px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.rep-chip.doel{display:inline-block;margin-top:6px;white-space:normal}
+.rep-chip.up{background:#0d3d1a;color:#30d158}
+.rep-chip.down{background:#3d1a1a;color:#ff453a}
+.rep-chip.flat{background:#3a3a3c;color:#aeaeb2}
+.rep-chip.mixed{background:#3a2e1a;color:#ffd60a}
+.rep-chip.new{background:#0d2540;color:#0a84ff}
+.rep-chip.warn{background:#3a2e1a;color:#ff9f0a}
+.rep-caret{color:#636366;font-size:13px;flex-shrink:0}
+.rep-ex-body{padding:0 13px 12px;border-top:1px solid #3a3a3c}
+.rep-set{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px}
+.rep-set-nr{width:22px;color:#636366;font-size:11px;font-weight:600;flex-shrink:0}
+.rep-set-done{flex:1}
+.rep-set-goal{color:#8e8e93;font-size:12px}
+.rep-set-mark{width:16px;text-align:center;flex-shrink:0;font-weight:700}
+.rep-set-mark.ok{color:#30d158}
+.rep-set-mark.no{color:#ff453a}
+.rep-set-mark.na{color:#636366}
+.rep-line{font-size:12px;color:#8e8e93;line-height:1.5;margin-top:8px}
+.rep-list{margin:0;padding-left:18px;font-size:13px;line-height:1.6;color:#aeaeb2}
+.rep-basis{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:10px;padding:11px 13px;margin-top:6px}
+.rep-basis dt{font-size:11px;color:#8e8e93;text-transform:uppercase;letter-spacing:.4px;margin-top:7px}
+.rep-basis dt:first-child{margin-top:0}
+.rep-basis dd{margin:2px 0 0;font-size:12px;color:#aeaeb2;line-height:1.45}
+.rep-toggle{background:transparent;border:0;color:#0a84ff;font-size:13px;padding:8px 0;cursor:pointer}
+.rep-empty{color:#636366;font-size:13px;padding:10px 0}
+
 /* === VOEDING === */
 .nutr-summary{background:#1c1c1e;border-radius:12px;padding:16px;margin-bottom:16px}
 .nutr-kcal{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
@@ -472,6 +518,7 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
     <h1 id="detailTitle"></h1>
     <button class="header-action" onclick="shareWorkout()">Deel</button>
   </div>
+  <div id="detailReport"></div>
   <div id="detailContent"></div>
   <div style="padding:20px 0">
     <button class="btn btn-outline" style="color:#ff453a;border-color:#ff453a" onclick="deleteWorkout()">Verwijder workout</button>
@@ -718,7 +765,8 @@ button:focus-visible, input:focus-visible, .login-user:focus-visible { outline: 
     </div>
     <div class="eval-summary" id="evalSummary"></div>
     <div id="evalItems"></div>
-    <button class="btn btn-green" style="margin-top:16px" onclick="closeEvaluation()">Top! Naar home</button>
+    <button class="btn btn-outline" id="evalFullBtn" style="margin-top:16px">Volledig verslag bekijken</button>
+    <button class="btn btn-green" style="margin-top:8px" onclick="closeEvaluation()">Top! Naar home</button>
   </div>
 </div>
 
@@ -2452,7 +2500,7 @@ async function saveWorkout() {
       showView('home');
       // Item #28: refresh stats-bar zodat "Vandaag" / "Deze week" direct kloppen.
       try { await updateStats(); } catch(_) {}
-      showWorkoutEvaluation(cloudResult.id, s.name);
+      showWorkoutReport(cloudResult.id, s.name);
     } else {
       showToast('Opgeslagen (lokaal)');
       await clearDraft(savedSchema);
@@ -2590,6 +2638,8 @@ function showDetail(index, workouts) {
   document.getElementById('detailTitle').textContent =
     d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
 
+  loadDetailReport(w._cloudId);
+
   const content = document.getElementById('detailContent');
   content.textContent = '';
 
@@ -2664,7 +2714,10 @@ async function deleteWorkout() {
     try {
       await api('/api/workouts/' + viewingWorkout._cloudId, { method: 'DELETE' });
     } catch (e) { console.log('Cloud delete failed:', e); }
+    delete reportCache[viewingWorkout._cloudId];
   }
+  const repBox = document.getElementById('detailReport');
+  if (repBox) repBox.textContent = '';
   const workouts = getWorkouts();
   if (viewingIndex > -1 && viewingIndex < workouts.length) {
     workouts.splice(viewingIndex, 1);
@@ -2694,14 +2747,343 @@ if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
   navigator.serviceWorker.controller.postMessage('SYNC_NOW');
 }
 
-// === WORKOUT EVALUATION ===
+// === SESSIEVERSLAG ===
+// Het verslag komt kant-en-klaar van de server (backend/app/report.py) en wordt
+// daar bij het opslaan bevroren. Hier wordt niets uitgerekend of afgeleid --
+// alleen getoond -- zodat wat Ruud leest exact is wat er is opgeslagen.
+const reportCache = {};
+let _repRenderToken = 0;
+
+function _re(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined && text !== null) n.textContent = String(text);
+  return n;
+}
+
+function _rnum(n) {
+  if (n === null || n === undefined) return '—';
+  return Number(n).toLocaleString('nl-NL', { maximumFractionDigits: 1 });
+}
+
+function _rdate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+}
+
+function _rpct(p) {
+  if (p === null || p === undefined) return null;
+  return (p > 0 ? '+' : '') + _rnum(p) + '%';
+}
+
+const _REP_CHIP = { vooruit: 'up', achteruit: 'down', gelijk: 'flat', gemengd: 'mixed', nieuw: 'new', onbekend: 'flat' };
+const _REP_WOORD = { vooruit: 'vooruit', achteruit: 'achteruit', gelijk: 'gelijk', gemengd: 'gemengd', nieuw: 'nieuw', onbekend: '—' };
+
+function _doelChip(doel) {
+  if (!doel || !doel.van) return { cls: 'flat', txt: 'geen doel' };
+  if (doel.volledig) return { cls: 'up', txt: doel.label };
+  // `onzeker` = de doelen per set van die sessie zijn niet bewaard. Dan is
+  // "niet gehaald" te stellig; oranje in plaats van rood.
+  if (doel.onzeker) return { cls: 'warn', txt: doel.label };
+  if (doel.gehaald === 0) return { cls: 'down', txt: doel.label };
+  return { cls: 'warn', txt: doel.label };
+}
+
+async function fetchReport(workoutId) {
+  if (reportCache[workoutId]) return reportCache[workoutId];
+  const rep = await api('/api/workouts/' + workoutId + '/report');
+  reportCache[workoutId] = rep;
+  return rep;
+}
+
+function _repBlock(container, titel) {
+  const b = _re('div', 'rep-block');
+  if (titel) b.appendChild(_re('div', 'rep-h', titel));
+  container.appendChild(b);
+  return b;
+}
+
+function _repNote(tekst, basis, cls) {
+  const n = _re('div', 'rep-note' + (cls ? ' ' + cls : ''));
+  n.appendChild(_re('div', null, tekst));
+  if (basis) n.appendChild(_re('div', 'rep-note-basis', basis));
+  return n;
+}
+
+function renderReport(rep, container, opts) {
+  opts = opts || {};
+  const compact = !!opts.compact;
+  container.textContent = '';
+  if (!rep) { container.appendChild(_re('div', 'rep-empty', 'Geen verslag beschikbaar.')); return; }
+
+  // --- kerncijfers ---
+  const t = rep.totalen || {};
+  const sv = rep.sessie_vergelijking;
+  const cijfers = _repBlock(container, 'Deze sessie');
+  const tiles = _re('div', 'rep-tiles');
+
+  const tv = _re('div', 'rep-tile');
+  tv.appendChild(_re('div', 'rep-tile-label', 'Werk'));
+  tv.appendChild(_re('div', 'rep-tile-val', _rnum(t.volume_kg) + ' kg'));
+  if (sv && sv.volume_pct !== null && sv.volume_pct !== undefined) {
+    const cls = sv.volume_pct > 0 ? 'up' : (sv.volume_pct < 0 ? 'down' : '');
+    tv.appendChild(_re('div', 'rep-tile-sub ' + cls, _rpct(sv.volume_pct) + ' vs ' + _rdate(sv.vorige_datum)));
+  } else {
+    tv.appendChild(_re('div', 'rep-tile-sub', 'eerste keer dit schema'));
+  }
+  tiles.appendChild(tv);
+
+  const ts = _re('div', 'rep-tile');
+  ts.appendChild(_re('div', 'rep-tile-label', 'Sets'));
+  ts.appendChild(_re('div', 'rep-tile-val', t.sets));
+  ts.appendChild(_re('div', 'rep-tile-sub', (rep.dekking ? rep.dekking.geplande_sets + ' gepland' : '')));
+  tiles.appendChild(ts);
+
+  const tr = _re('div', 'rep-tile');
+  tr.appendChild(_re('div', 'rep-tile-label', 'Reps'));
+  tr.appendChild(_re('div', 'rep-tile-val', t.reps));
+  tr.appendChild(_re('div', 'rep-tile-sub', t.oefeningen + ' oefeningen'));
+  tiles.appendChild(tr);
+
+  cijfers.appendChild(tiles);
+
+  // --- context-signalen bovenaan: die kleuren alle cijfers eronder ---
+  const sig = rep.signalen || [];
+  const context = sig.filter(x => x.soort === 'context');
+  if (context.length) {
+    const b = _repBlock(container, null);
+    context.forEach(x => b.appendChild(_repNote(x.tekst, x.basis, 'context')));
+  }
+
+  // --- dekking: ook wat er NIET gebeurde ---
+  const d = rep.dekking;
+  if (d) {
+    const b = _repBlock(container, 'Volledigheid');
+    // Zonder eigen schema-snapshot is dit een uitspraak over het schema van NU,
+    // niet over wat er die dag op het programma stond. Anders bewoorden.
+    const opNaam = !!d.op_naam_gematcht;
+    const kop = d.volledig
+      ? (opNaam
+          ? 'Alle ' + d.geplande_oefeningen + ' oefeningen uit het huidige schema teruggevonden (' + d.gelogde_sets + ' sets).'
+          : 'Alle ' + d.geplande_oefeningen + ' oefeningen uit het schema gelogd (' + d.gelogde_sets + ' sets).')
+      : (opNaam
+          ? d.gelogde_oefeningen + ' van ' + d.geplande_oefeningen + ' oefeningen uit het huidige schema teruggevonden. Het schema kan sinds die dag zijn aangepast.'
+          : d.gelogde_oefeningen + ' van ' + d.geplande_oefeningen + ' oefeningen gelogd.');
+    b.appendChild(_repNote(kop, d.basis, d.volledig ? null : 'let-op'));
+
+    if (d.overgeslagen && d.overgeslagen.length) {
+      const ul = _re('ul', 'rep-list');
+      d.overgeslagen.forEach(o => ul.appendChild(_re('li', null, opNaam
+        ? o.oefening + ' — staat in het schema van nu, niet in deze sessie'
+        : o.oefening + ' — niet gelogd (' + o.geplande_sets + ' sets gepland)')));
+      b.appendChild(ul);
+    }
+    if (!compact && d.vervangen && d.vervangen.length) {
+      const ul = _re('ul', 'rep-list');
+      d.vervangen.forEach(o => ul.appendChild(_re('li', null,
+        o.gedaan + ' in plaats van ' + o.schema_vroeg + ' (' + o.soort + ')')));
+      b.appendChild(ul);
+    }
+    if (d.extra && d.extra.length) {
+      const ul = _re('ul', 'rep-list');
+      d.extra.forEach(o => ul.appendChild(_re('li', null, opNaam
+        ? o.oefening + ' — ' + o.sets + ' sets, staat niet in het schema van nu'
+        : o.oefening + ' — ' + o.sets + ' sets buiten het schema')));
+      b.appendChild(ul);
+    }
+  }
+
+  // --- records ---
+  if (rep.records && rep.records.length) {
+    const b = _repBlock(container, 'Persoonlijk record');
+    rep.records.forEach(r => b.appendChild(_repNote(
+      r.oefening + ': ' + (r.soort === 'reps' ? r.nu + ' reps' : _rnum(r.nu) + ' kg × ' + r.nu_reps)
+      + ' — zwaarder dan ooit eerder gelogd.', r.basis)));
+  }
+
+  // --- per oefening ---
+  const oefs = rep.oefeningen || [];
+  if (oefs.length) {
+    const b = _repBlock(container, 'Per oefening');
+    oefs.forEach((o, i) => b.appendChild(_repExercise(o, i, compact)));
+  }
+
+  // --- targets bijgewerkt ---
+  if (rep.targets_bijgewerkt && rep.targets_bijgewerkt.length) {
+    const b = _repBlock(container, 'Doelen automatisch bijgesteld');
+    rep.targets_bijgewerkt.forEach(u => {
+      const extra = (u.ook_in_schemas && u.ook_in_schemas.length)
+        ? ' · ook in schema ' + u.ook_in_schemas.join(', ') : '';
+      b.appendChild(_repNote(
+        u.oefening + ' (set ' + u.set + '): ' + _rnum(u.van_kg) + ' kg × ' + u.van_reps
+        + ' → ' + _rnum(u.naar_kg) + ' kg × ' + u.naar_reps + extra,
+        'reden: ' + u.reden));
+    });
+  }
+
+  // --- overige signalen ---
+  const rest = sig.filter(x => x.soort !== 'context');
+  if (rest.length) {
+    const b = _repBlock(container, 'Opgevallen');
+    rest.forEach(x => b.appendChild(_repNote(x.tekst, x.basis, 'let-op')));
+  }
+
+  // --- eigen opmerking ---
+  if (rep.eigen_opmerking) {
+    const b = _repBlock(container, 'Wat je zelf noteerde');
+    b.appendChild(_repNote(rep.eigen_opmerking, null));
+  }
+
+  // --- verantwoording: waar de getallen vandaan komen ---
+  if (!compact && rep.basis) {
+    const b = _repBlock(container, null);
+    const btn = _re('button', 'rep-toggle', 'Hoe is dit berekend?');
+    const dl = _re('dl', 'rep-basis');
+    dl.style.display = 'none';
+    Object.keys(rep.basis).forEach(k => {
+      dl.appendChild(_re('dt', null, k.replace(/_/g, ' ')));
+      dl.appendChild(_re('dd', null, rep.basis[k]));
+    });
+    if (rep.gegenereerd_op) {
+      dl.appendChild(_re('dt', null, 'gemaakt op'));
+      dl.appendChild(_re('dd', null, rep.gegenereerd_op.replace('T', ' ')));
+    }
+    btn.onclick = () => {
+      const open = dl.style.display !== 'none';
+      dl.style.display = open ? 'none' : 'block';
+      btn.textContent = open ? 'Hoe is dit berekend?' : 'Verbergen';
+    };
+    b.appendChild(btn);
+    b.appendChild(dl);
+  }
+}
+
+function _repExercise(o, idx, compact) {
+  const wrap = _re('div', 'rep-ex');
+  const head = _re('div', 'rep-ex-head');
+
+  const top = _re('div', 'rep-ex-top');
+  top.appendChild(_re('div', 'rep-ex-title', o.naam));
+  const vg = o.vergelijking || {};
+  let sub;
+  if (vg.vergelijkbaar === false) {
+    sub = vg.reden || 'geen vergelijking mogelijk';
+  } else if (vg.soort === 'bodyweight_of_tijd') {
+    sub = vg.reps_nu + ' reps vs ' + vg.reps_toen + ' op ' + _rdate(vg.vorige_datum);
+  } else {
+    sub = _rnum(vg.volume_nu) + ' kg vs ' + _rnum(vg.volume_toen) + ' kg op ' + _rdate(vg.vorige_datum);
+  }
+  if (o.rol && o.rol !== 'volgens schema') sub = o.rol + ' · ' + sub;
+
+  top.appendChild(_re('div', 'rep-chip ' + (_REP_CHIP[vg.oordeel] || 'flat'), _REP_WOORD[vg.oordeel] || '—'));
+  const caret = _re('div', 'rep-caret', compact ? '' : '›');
+  top.appendChild(caret);
+  head.appendChild(top);
+  head.appendChild(_re('div', 'rep-ex-sub', sub));
+
+  const dc = _doelChip(o.doel);
+  head.appendChild(_re('div', 'rep-chip doel ' + dc.cls, dc.txt));
+
+  wrap.appendChild(head);
+  if (compact) return wrap;
+
+  const body = _re('div', 'rep-ex-body');
+  body.style.display = 'none';
+  (o.sets || []).forEach(st => {
+    const row = _re('div', 'rep-set');
+    row.appendChild(_re('div', 'rep-set-nr', 'S' + st.set_nr));
+    row.appendChild(_re('div', 'rep-set-done', _rnum(st.kg) + ' kg × ' + st.reps));
+    const na = (st.oordeel === 'geen doel' || st.oordeel === 'doel per set onbekend');
+    const doelTxt = na
+      ? (st.doel_kg === null || st.doel_kg === undefined ? 'geen doel' : 'doel onbekend')
+      : 'doel ' + _rnum(st.doel_kg) + ' kg' + (st.doel_reps ? ' × ' + st.doel_reps : '');
+    row.appendChild(_re('div', 'rep-set-goal', doelTxt));
+    const ok = (st.oordeel === 'gehaald' || st.oordeel === 'boven doel');
+    row.appendChild(_re('div', 'rep-set-mark ' + (na ? 'na' : ok ? 'ok' : 'no'),
+      na ? '–' : ok ? '✓' : '✗'));
+    body.appendChild(row);
+  });
+  if (o.doel && o.doel.let_op) body.appendChild(_re('div', 'rep-line', 'Let op: ' + o.doel.let_op + '.'));
+  if (vg.basis) body.appendChild(_re('div', 'rep-line', vg.basis));
+  if (o.beste_set && o.beste_set.e1rm) {
+    body.appendChild(_re('div', 'rep-line', 'Zwaarste set ' + _rnum(o.beste_set.kg) + ' kg × '
+      + o.beste_set.reps + ' — geschat 1RM ' + _rnum(o.beste_set.e1rm) + ' kg'));
+  }
+  wrap.appendChild(body);
+
+  head.onclick = () => {
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    caret.textContent = open ? '›' : '‹';
+  };
+  return wrap;
+}
+
+// Verslag in het detailscherm van een workout -- hier vindt Ruud het altijd terug.
+function loadDetailReport(cloudId) {
+  const box = document.getElementById('detailReport');
+  if (!box) return;
+  box.textContent = '';
+  if (!cloudMode || !cloudId) return;
+  const token = ++_repRenderToken;
+  box.appendChild(_re('div', 'rep-empty', 'Verslag laden…'));
+  fetchReport(cloudId).then(rep => {
+    if (token !== _repRenderToken) return;  // ondertussen een andere workout geopend
+    renderReport(rep, box, { compact: false });
+  }).catch(() => {
+    if (token !== _repRenderToken) return;
+    box.textContent = '';
+    box.appendChild(_re('div', 'rep-empty', 'Verslag kon niet geladen worden (offline?).'));
+  });
+}
+
+// Verslag direct na het opslaan -- compacte versie in het onderste paneel.
+async function showWorkoutReport(workoutId, schemaName) {
+  try {
+    const rep = await fetchReport(workoutId);
+    document.getElementById('evalTitle').textContent = 'Sessieverslag';
+    const dagen = (rep.rust || {}).dagen_sinds_dit_schema;
+    document.getElementById('evalSubtitle').textContent =
+      (rep.schema ? rep.schema.naam : schemaName)
+      + (dagen !== null && dagen !== undefined ? ' · ' + dagen + ' dagen na de vorige keer' : '');
+
+    const sum = document.getElementById('evalSummary');
+    sum.textContent = '';
+    sum.style.display = 'none';
+    const items = document.getElementById('evalItems');
+    renderReport(rep, items, { compact: true });
+
+    const open = document.getElementById('evalFullBtn');
+    if (open) open.onclick = () => openWorkoutDetailById(workoutId);
+
+    document.getElementById('evalOverlay').classList.add('open');
+    progressCache = {};
+  } catch (e) {
+    console.log('Verslag laden mislukt, terug naar evaluatie:', e);
+    showWorkoutEvaluation(workoutId, schemaName);
+  }
+}
+
+async function openWorkoutDetailById(cloudId) {
+  document.getElementById('evalOverlay').classList.remove('open');
+  await loadCloudWorkouts();
+  const ws = mergeWorkouts();
+  const i = ws.findIndex(w => w._cloudId === cloudId);
+  if (i >= 0) showDetail(i, ws); else showView('history');
+}
+
+// === WORKOUT EVALUATION (fallback) ===
 async function showWorkoutEvaluation(workoutId, schemaName) {
   try {
     const ev = await api('/api/workouts/' + workoutId + '/evaluation');
     document.getElementById('evalTitle').textContent = 'Workout Evaluatie';
     const prevStr = ev.previous_date ? new Date(ev.previous_date).toLocaleDateString('nl-NL', {day:'numeric',month:'short'}) : null;
     document.getElementById('evalSubtitle').textContent = prevStr ? 'vs ' + prevStr : 'Eerste sessie ' + schemaName;
-    document.getElementById('evalSummary').textContent = ev.summary;
+    const sumEl = document.getElementById('evalSummary');
+    sumEl.style.display = '';
+    sumEl.textContent = ev.summary;
 
     const container = document.getElementById('evalItems');
     container.textContent = '';

@@ -87,6 +87,11 @@ class WorkoutSession(Base):
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     synced_from_offline: Mapped[bool] = mapped_column(Boolean, default=False)
     client_workout_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
+    # Sessieverslag: deterministisch berekend bij het opslaan en daarna bevroren.
+    # Opgeslagen i.p.v. live berekend omdat de schema-targets na elke sessie
+    # worden opgehoogd -- een later herberekend verslag zou de sessie langs een
+    # doel leggen dat toen nog niet bestond. Zie app/report.py.
+    report: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     user: Mapped[User] = relationship(back_populates="workout_sessions")

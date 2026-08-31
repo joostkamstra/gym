@@ -105,6 +105,7 @@ class WorkoutResponse(BaseModel):
     notes: str | None
     sets: list[WorkoutSetResponse]
     target_updates: list[TargetUpdate] | None = None
+    report: dict | None = None
     client_workout_id: uuid.UUID | None = None
     created_at: datetime
 

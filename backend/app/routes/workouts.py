@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload, attributes
 from app.database import get_db
 from app.models import User, Schema, WorkoutSession, WorkoutSet, Exercise
 from app.auth import get_current_user
+from app.report import build_slot_plan, generate_report
 from app.schemas import (
     WorkoutCreateRequest,
     WorkoutResponse,
@@ -387,6 +388,7 @@ async def auto_update_targets(
 def _build_workout_response(
     session: WorkoutSession,
     target_updates: list[TargetUpdate] | None = None,
+    include_report: bool = True,
 ) -> WorkoutResponse:
     return WorkoutResponse(
         id=session.id,
@@ -408,6 +410,7 @@ def _build_workout_response(
             for s in sorted(session.sets, key=lambda s: (s.superset_key, s.set_number))
         ],
         target_updates=target_updates,
+        report=session.report if include_report else None,
         client_workout_id=session.client_workout_id,
         created_at=session.created_at,
     )
@@ -442,7 +445,7 @@ async def list_workouts(
     sessions = result.scalars().unique().all()
 
     return WorkoutListResponse(
-        workouts=[_build_workout_response(s) for s in sessions],
+        workouts=[_build_workout_response(s, include_report=False) for s in sessions],
         total=total,
         page=page,
         page_size=page_size,
@@ -512,6 +515,11 @@ async def create_workout(
 
     await db.flush()
 
+    # Snapshot van de doelen-ladder ZOALS DIE TIJDENS DEZE SESSIE GOLD. Moet
+    # hier staan: auto_update_targets hieronder hoogt de targets op, en daarna
+    # is niet meer te achterhalen waar de sessie tegen afgemeten moest worden.
+    slot_plan = build_slot_plan(schema.data)
+
     # Auto-update targets using double progression protocol
     session_sets = (
         await db.execute(
@@ -539,6 +547,19 @@ async def create_workout(
         .where(WorkoutSession.id == session.id)
     )
     session = result.scalar_one()
+
+    # Sessieverslag. Faalt dit, dan mag de workout zelf er niet aan kapotgaan --
+    # opslaan is het belangrijkste; het verslag is via ?refresh=1 alsnog te maken.
+    try:
+        session.report = await generate_report(
+            db, session, slot_plan=slot_plan, target_updates=target_updates
+        )
+        attributes.flag_modified(session, "report")
+        await db.flush()
+    except Exception as e:  # noqa: BLE001
+        import logging
+        logging.getLogger(__name__).exception("Sessieverslag mislukt: %s", e)
+
     return _build_workout_response(session, target_updates=target_updates)
 
 
@@ -557,6 +578,40 @@ async def delete_workout(
     if not session:
         raise HTTPException(status_code=404, detail="Workout not found")
     await db.delete(session)
+
+
+@router.get("/{workout_id}/report")
+async def get_report(
+    workout_id: UUID,
+    refresh: bool = Query(False, description="Verslag opnieuw uitrekenen en opslaan"),
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Het opgeslagen sessieverslag.
+
+    Zonder `refresh` krijg je het verslag zoals het bij het opslaan is berekend --
+    dat is de historisch juiste versie, want de doelen zijn sindsdien opgehoogd.
+    Met `refresh=1` wordt het opnieuw gemaakt op basis van de data van nu; de
+    doelen-per-set van toen zijn dan niet meer bekend en het verslag zegt dat in
+    het veld `basis`.
+    """
+    result = await db.execute(
+        select(WorkoutSession)
+        .options(selectinload(WorkoutSession.sets), selectinload(WorkoutSession.schema))
+        .where(WorkoutSession.id == workout_id, WorkoutSession.user_id == user.id)
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Workout not found")
+
+    if session.report and not refresh:
+        return session.report
+
+    report = await generate_report(db, session)
+    session.report = report
+    attributes.flag_modified(session, "report")
+    await db.commit()
+    return report
 
 
 @router.get("/{workout_id}/evaluation", response_model=WorkoutEvaluation)
