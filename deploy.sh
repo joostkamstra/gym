@@ -130,4 +130,8 @@ rm -f "$TAR_PATH"
 echo ""
 echo "==> 4. lokale cleanup"
 echo ""
-echo "Klaar. https://gym.cloudwijk.nl"
+# LET OP: gym.cloudwijk.nl bestaat NIET in DNS (NXDOMAIN) en staat niet in de
+# Caddyfile. De app hangt rechtstreeks aan poort 8002; dat is de URL die Ruud
+# gebruikt. Stond hier jarenlang fout -> curl gaf 000 en dat leest als een
+# kapotte deploy.
+echo "Klaar. http://163.172.152.203:8002/"
