@@ -63,3 +63,5 @@ ups, objs = run({"C": C}, "C", [("zz","Sled Leg Press",100,10),("zz","Sled Leg P
 alt = objs["C"].data["supersets"][0]["exercises"][0]["alt"]["target_sets"]
 check("alt gevonden zonder geldig slot", [t["kg"] for t in alt] == [105,115,115], alt)
 print("\nFOUTEN:", fails)
+
+sys.exit(1 if fails else 0)
