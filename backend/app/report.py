@@ -133,7 +133,10 @@ def build_slot_plan(schema_data: dict) -> list[dict]:
                 "geplande_sets": len(ex.get("target_sets") or []) or ss.get("sets") or 0,
                 "doelen": {
                     ex.get("name"): ex.get("target_sets") or None,
-                    **({alt["name"]: alt.get("target_sets") or None} if alt.get("name") else {}),
+                    # Heet het alternatief hetzelfde als de hoofdoefening, dan wint de
+                    # hoofdoefening: die doelen ziet de gebruiker en die worden bijgesteld.
+                    **({alt["name"]: alt.get("target_sets") or None}
+                       if alt.get("name") and alt.get("name") != ex.get("name") else {}),
                 },
                 "doel_kg": ex.get("target_kg"),
             })

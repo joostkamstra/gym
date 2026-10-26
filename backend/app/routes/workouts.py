@@ -58,6 +58,43 @@ def _find_exercise_in_schema(
     return None, None
 
 
+def _find_target_def(
+    schema_data: dict,
+    exercise_name: str,
+    slot: str | None = None,
+    exercise_id: str | None = None,
+) -> dict | None:
+    """Vind het blok met de doelen voor wat er echt gedaan is: de hoofdoefening
+    óf het alternatief. Een alternatief heeft een eigen `target_sets`; zonder deze
+    lookup werd dat nooit bijgesteld.
+
+    Eerst via het slot (`superset_key`, bv. 'a1'): dat is de knop die de gebruiker
+    in de app heeft omgezet. Pas daarna op naam door het hele schema -- slot-ids
+    zijn niet stabiel over schema-herzieningen. Bij gelijke naam wint de
+    hoofdoefening, want die doelen ziet de gebruiker als hij niet wisselt.
+    """
+    supersets = schema_data.get("supersets", [])
+    if slot:
+        for superset in supersets:
+            for exercise in superset.get("exercises", []):
+                if (exercise.get("id") or "").lower() != slot.lower():
+                    continue
+                if exercise.get("name") == exercise_name:
+                    return exercise
+                alt = exercise.get("alt") or {}
+                if alt.get("name") == exercise_name:
+                    return alt
+    exercise, _ = _find_exercise_in_schema(schema_data, exercise_name=exercise_name, exercise_id=exercise_id)
+    if exercise:
+        return exercise
+    for superset in supersets:
+        for exercise in superset.get("exercises", []):
+            alt = exercise.get("alt") or {}
+            if alt.get("name") == exercise_name:
+                return alt
+    return None
+
+
 async def _resolve_exercise_ids(db: AsyncSession, names: set[str]) -> dict[str, str]:
     """Resolve exercise names (including aliases) to exercise IDs.
     Returns dict mapping each input name to exercise_id (as str UUID)."""
@@ -159,6 +196,7 @@ async def propagate_target_increase(
     new_kg: float,
     source_schema_id: UUID,
     name_to_id: dict[str, str] | None = None,
+    reps_at_top: int | None = None,
 ) -> list[str]:
     """Propagate a weight increase to OTHER schemas of the same user that contain this exercise.
 
@@ -174,29 +212,38 @@ async def propagate_target_increase(
         data = copy.deepcopy(other.data)
         dirty = False
         for ss in data.get("supersets", []):
-            for ex in ss.get("exercises", []):
-                # Match priority: exercise_id -> alias-resolved id -> name equality
-                ex_id = ex.get("exercise_id")
-                matches = False
-                if exercise_id and ex_id == exercise_id:
-                    matches = True
-                elif name_to_id and ex_id and ex.get("name") and name_to_id.get(ex["name"]) == exercise_id:
-                    matches = True
-                elif ex.get("name") == exercise_name:
-                    matches = True
-                if not matches:
-                    continue
-                target_sets = ex.get("target_sets", [])
-                if not target_sets:
-                    continue
-                current_max_kg = max((t.get("kg", 0) for t in target_sets), default=0)
-                if new_kg > current_max_kg:
-                    min_reps = min((t.get("reps", 0) for t in target_sets), default=0)
-                    if min_reps == 0:
-                        min_reps = target_sets[0].get("reps", 8)
+            for primary in ss.get("exercises", []):
+                # Hoofdoefening én alternatief: allebei hebben eigen doelen.
+                for ex in (primary, primary.get("alt") or {}):
+                    # Match priority: exercise_id -> alias-resolved id -> name equality
+                    ex_id = ex.get("exercise_id")
+                    matches = False
+                    if exercise_id and ex_id == exercise_id:
+                        matches = True
+                    elif name_to_id and ex_id and ex.get("name") and name_to_id.get(ex["name"]) == exercise_id:
+                        matches = True
+                    elif ex.get("name") == exercise_name:
+                        matches = True
+                    if not matches:
+                        continue
+                    target_sets = ex.get("target_sets", [])
+                    if not target_sets:
+                        continue
+                    current_max_kg = max((t.get("kg", 0) for t in target_sets), default=0)
+                    if new_kg <= current_max_kg:
+                        continue
+                    # Alleen doorzetten bij hetzelfde rep-schema op het topgewicht:
+                    # 125 kg × 10 zegt niets over wat iemand × 15 kan.
+                    other_reps_at_top = max(
+                        (t.get("reps", 0) for t in target_sets if t.get("kg", 0) == current_max_kg), default=0
+                    )
+                    if reps_at_top and other_reps_at_top != reps_at_top:
+                        continue
+                    # Hele ladder evenveel omhoog schuiven, zodat opwarmsets lichter
+                    # blijven (voorheen werd alles op new_kg gezet: een vlakke ladder).
+                    delta = new_kg - current_max_kg
                     for t in target_sets:
-                        t["kg"] = new_kg
-                        t["reps"] = min_reps
+                        t["kg"] = round(t.get("kg", 0) + delta, 1)
                     # Always sync target_kg with the max ladder kg
                     ex["target_kg"] = new_kg
                     dirty = True
@@ -246,7 +293,9 @@ async def auto_update_targets(
         # Use exercise_id if the group key looks like a UUID, else treat as name
         lookup_id = group_key if len(group_key) == 36 and "-" in group_key else None
         lookup_name = actual_sets[0].exercise_name
-        exercise_def, _ = _find_exercise_in_schema(schema_data, exercise_name=lookup_name, exercise_id=lookup_id)
+        exercise_def = _find_target_def(
+            schema_data, lookup_name, slot=actual_sets[0].superset_key, exercise_id=lookup_id
+        )
         exercise_name = lookup_name  # for downstream code + update records
         if not exercise_def:
             continue
@@ -264,6 +313,9 @@ async def auto_update_targets(
         # the highest-rep-target set actually represents "top of range".
         top_weight = max((t.get("kg", 0) for t in target_sets), default=0)
         top_reps = max((t.get("reps", 0) for t in target_sets), default=0)
+        # Rep-schema op het topgewicht, vóór de ophoging. Bepaalt naar welke andere
+        # schema's een ophoging mag doorlopen (zie propagate_target_increase).
+        reps_at_top = max((t.get("reps", 0) for t in target_sets if t.get("kg", 0) == top_weight), default=0)
         all_sets_hit = True
         all_sets_hit_top = True  # strict: all working sets reach top_reps at top_weight
         set_results = []  # (set_index, actual, target, met_target)
@@ -302,7 +354,9 @@ async def auto_update_targets(
             for set_idx, actual, target, _ in set_results:
                 old_kg = target.get("kg", 0)
                 old_reps = target.get("reps", 0)
-                new_kg = _round_to_increment(old_kg + increment, increment)
+                # Minstens één stap omhoog, maar nooit onder wat er deze set al
+                # gedaan is: wie ruim boven doel zit, haalt het doel in één keer in.
+                new_kg = _round_to_increment(max(old_kg + increment, actual.kg), increment)
                 new_reps = min_reps
 
                 target_sets[set_idx]["kg"] = new_kg
@@ -335,6 +389,7 @@ async def auto_update_targets(
                     max_new_kg,
                     schema.id,
                     name_to_id=name_to_id,
+                    reps_at_top=reps_at_top,
                 )
                 if propagated:
                     # Tag all weight_up updates for this exercise with propagated_to
